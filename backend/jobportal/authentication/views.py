@@ -21,29 +21,36 @@ class Registerview(APIView):
     
 
 
+
 class LoginView(APIView):
     def post(self, request):
-        username = request.data.get('username')
+        username_email = request.data.get('username')
         password = request.data.get('password')
 
-        user = authenticate(username=username, password=password)
+        try:
+            if '@' in username_email:
+                user1 = user.objects.get(email=username_email)
+            else:
+                user1 = user.objects.get(username=username_email)
+        except user.DoesNotExist:
+            user1 = None        
 
-        if user:
-            payload = {'user': user.username}  # Initialize payload with username
+        if user1 is not None and user1.check_password(password):
+            payload = {'user': user1.username}
             
-            if user.is_superuser:
+            if user1.is_superuser:
                 payload['user_type'] = 'superuser'
-            elif user.usertype == 'jobseeker':
+            elif user1.usertype == 'jobseeker':
                 payload['user_type'] = 'jobseeker'
-            elif user.usertype == 'employer':
+            elif user1.usertype == 'employer':
                 payload['user_type'] = 'employer'
 
-            refresh = RefreshToken.for_user(user)
-            refresh.payload = payload  # Assign the constructed payload
+            refresh = RefreshToken.for_user(user1)
+            refresh.payload = payload 
             
             return Response({"token":str(refresh.access_token)})
         else:
-            return Response({"error": "Invalid Credentials"})
+            return Response({"error": "Invalid Credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 
