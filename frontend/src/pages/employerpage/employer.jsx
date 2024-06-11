@@ -1,9 +1,11 @@
 import Postjob from "../../components/company/postjob";
+import Myjobs from "../../components/company/myjobs";
+import Viewjob from "../../components/company/viewjob";
 import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 
 function Employer() {
-    const [activeComponent, setActiveComponent] = useState("email");
+    const [activeComponent, setActiveComponent] = useState("myjobs");
 
   return (
     <>
@@ -214,6 +216,7 @@ function Employer() {
               </div>
               <div className="snap-center shrink-0 pe-5 sm:pe-8 sm:last:pe-0">
                 <a
+                  onClick={()=>{setActiveComponent('myjobs')}}
                   className="inline-flex items-center gap-x-2 hover:text-gray-500 dark:text-neutral-400 dark:hover:text-neutral-500"
                   href="#"
                 >
@@ -224,9 +227,15 @@ function Employer() {
           </nav>
         </main>
       </div>
-      <div style={{ backgroundColor: "#EEEEEE" }}>
+      <div className="h-full" style={{ backgroundColor: "#EEEEEE" }}>
       {activeComponent === "postjob" &&(
         <Postjob/>
+      )}
+      {activeComponent === "myjobs" &&(
+        <Myjobs setActiveComponent={setActiveComponent}/>
+      )}
+      {activeComponent === "viewjob"&&(
+        <Viewjob/>
       )}
       </div>
     </>

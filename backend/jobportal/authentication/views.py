@@ -36,22 +36,28 @@ class LoginView(APIView):
             user1 = None        
 
         if user1 is not None and user1.check_password(password):
-            payload = {'user': user1.username}
-            
-            if user1.is_superuser:
-                payload['user_type'] = 'superuser'
-            elif user1.usertype == 'jobseeker':
-                payload['user_type'] = 'jobseeker'
-            elif user1.usertype == 'employer':
-                payload['user_type'] = 'employer'
-
             refresh = RefreshToken.for_user(user1)
-            refresh.payload = payload 
+            if user1.is_superuser:
+                user_details = {
+                'id': user1.id,
+                'username': user1.username,
+                'email': user1.email,
+                'usertype':'superuser',
+                'companyname':user1.companyname
+                }    
+            else:
+                user_details = {
+                'id': user1.id,
+                'username': user1.username,
+                'email': user1.email,
+                'usertype': user1.usertype,
+                'companyname':user1.companyname
+                }    
             
-            return Response({"token":str(refresh.access_token)})
+            return Response({'token': str(refresh.access_token), 'user': user_details}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Invalid Credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-
+   
 
 
 class UsersView(APIView):
@@ -60,3 +66,5 @@ class UsersView(APIView):
         serializer = userserializer(users, many=True)
         return Response(serializer.data)
     
+
+

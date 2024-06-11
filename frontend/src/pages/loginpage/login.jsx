@@ -26,7 +26,7 @@ function Login() {
   //Fetch all Registered Users//
 
   useEffect(() => {
-    MakeApiRequest("get", `${config.baseUrl}authentication/users/`, headers, {})
+    MakeApiRequest("get", `${config.baseUrl}authentication/users/`, headers,{} ,{})
       .then((response) => {
         console.log(response);
         setUsers(response);
@@ -57,7 +57,7 @@ function Login() {
       return;
     }
 
-    MakeApiRequest("post",`${config.baseUrl}authentication/register/`,headers,data)
+    MakeApiRequest("post",`${config.baseUrl}authentication/register/`,headers,{},data)
       .then((response) => {
         console.log(response);
         setRegistersuccess(true);
@@ -104,7 +104,7 @@ function Login() {
       return;
     }
 
-    MakeApiRequest("post",`${config.baseUrl}authentication/register/`,headers,data)
+    MakeApiRequest("post",`${config.baseUrl}authentication/register/`,headers,{},data)
       .then((response) => {
         console.log(response);
             setRegistersuccess(true);
@@ -146,28 +146,38 @@ function Login() {
       return;
     }
 
-    MakeApiRequest(
-      "post",
-      `${config.baseUrl}authentication/login/`,
-      headers,
-      data
-    )
+    MakeApiRequest("post",`${config.baseUrl}authentication/login/`,headers,{},data)
       .then((response) => {
         console.log(response);
         const token = response.token;
-        const decoded = jwtDecode(token);
-        if (decoded.user_type === "superuser") {
-          console.log("admin login Successful");
-          Cookies.set("token", response.token);
-          navigate("/admin");
-        } else if (decoded.user_type === "jobseeker") {
-          console.log("jobseeker login Successful");
-          Cookies.set("token", response.token);
-          navigate("/jobseeker");
-        } else if (decoded.user_type === "employer") {
-          console.log("employer login Successful");
-          Cookies.set("token", response.token);
-          navigate("/employer");
+        const user = response.user;
+        if (user && user.usertype) {
+          const userType = user.usertype;
+          switch (userType) {
+            case "superuser":
+              console.log("admin login Successful");
+              Cookies.set("token", token);
+              localStorage.setItem("user",JSON.stringify(user))
+              navigate("/admin");
+              break;
+            case "jobseeker":
+              console.log("jobseeker login Successful");
+              Cookies.set("token", token);
+              localStorage.setItem("user",JSON.stringify(user))
+              navigate("/jobseeker");
+              break;
+            case "employer":
+              console.log("employer login Successful");
+              Cookies.set("token", token);
+              localStorage.setItem("user",JSON.stringify(user))
+              navigate("/employer");
+              break;
+            default:
+              console.log("Unknown user type:", userType);
+              break;
+          }
+        } else {
+          console.error("Invalid user data in token response:", user);
         }
       })
       .catch((error) => {
