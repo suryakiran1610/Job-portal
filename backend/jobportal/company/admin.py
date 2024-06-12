@@ -1,3 +1,4 @@
 from django.contrib import admin
+from .models import jobcategories
 
-# Register your models here.
+admin.site.register(jobcategories)

@@ -1,11 +1,67 @@
 import Postjob from "../../components/company/postjob";
 import Myjobs from "../../components/company/myjobs";
 import Viewjob from "../../components/company/viewjob";
+import Editjobs from "../../components/company/editjobs";
+import Profile from "../../components/company/profile";
 import { Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import MakeApiRequest from "../../Functions/AxiosApi";
+import config from "../../Functions/config";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+
+
+
 
 function Employer() {
     const [activeComponent, setActiveComponent] = useState("myjobs");
+    const userdetails=JSON.parse(localStorage.getItem("user"))
+    const [profile,setProfile]=useState("")
+    const navigatee=useNavigate()
+    const token = Cookies.get("token");
+    const [profileImageURL, setProfileImageURL] = useState("");
+
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+  
+
+    const handleLogout = () => {
+      Cookies.remove('token')
+      localStorage.removeItem('user');
+      navigatee('/login')
+    };
+
+    useEffect(() => {
+      const params = {
+          userid: userdetails.id,
+      };
+
+      MakeApiRequest(
+      "get",
+      `${config.baseUrl}company/users/`,
+      headers,
+      params,
+      {}
+      )
+      .then((response) => {
+          console.log("profile", response);
+          setProfile(response);
+      })
+      .catch((error) => {
+          console.error("Error:", error);
+          if (error.response && error.response.status === 401) {
+          console.log(
+              "Unauthorized access. Token might be expired or invalid."
+          );
+          } else {
+          console.error("Unexpected error occurred:", error);
+          }
+      });
+  }, []);
+
+
 
   return (
     <>
@@ -120,7 +176,7 @@ function Employer() {
                   >
                     <img
                       className="inline-block size-[38px] rounded-full"
-                      src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=320&h=320&q=80"
+                      src={`http://127.0.0.1:8000${profile.profile_image}`}
                       alt="Image Description"
                     />
                   </button>
@@ -134,11 +190,12 @@ function Employer() {
                         Signed in as
                       </p>
                       <p className="text-sm font-medium text-gray-800 dark:text-neutral-300">
-                        james@site.com
+                        {userdetails.email}
                       </p>
                     </div>
                     <div className="mt-2 py-2 first:pt-0 last:pb-0">
                       <a
+                        onClick={handleLogout}
                         className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
                         href="#"
                       >
@@ -161,6 +218,7 @@ function Employer() {
                         Logout
                       </a>
                       <a
+                        onClick={()=>{setActiveComponent('profile')}}
                         className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
                         href="#"
                       >
@@ -235,7 +293,14 @@ function Employer() {
         <Myjobs setActiveComponent={setActiveComponent}/>
       )}
       {activeComponent === "viewjob"&&(
-        <Viewjob/>
+        <Viewjob setActiveComponent={setActiveComponent}/>
+      )}
+      {activeComponent === "editjob"&&(
+        <Editjobs setActiveComponent={setActiveComponent}/>
+      )}
+      {activeComponent === "profile" &&(
+        <Profile profileImageURL={profileImageURL}
+        setProfileImageURL={setProfileImageURL}/>
       )}
       </div>
     </>

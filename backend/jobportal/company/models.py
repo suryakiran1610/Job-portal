@@ -19,3 +19,6 @@ class jobpost(models.Model):
     companylocation = models.CharField(max_length=255, blank=True, null=True)
     companywebsite = models.CharField(max_length=255, blank=True, null=True)
     jobposteddate = models.DateField(auto_now_add=True,blank=True, null=True)
+
+class jobcategories(models.Model):
+    jobcategory=models.CharField(max_length=255,null=True,blank=True)
