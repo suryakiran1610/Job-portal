@@ -4,11 +4,13 @@ import config from "../../Functions/config";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 
-function Postjob() {
+function Postjob({ setActiveComponent }) {
   const [errors,setErrors]=useState({})
   const token=Cookies.get('token')
+  const [message, setMessage] = useState("");
   const userdetails=JSON.parse(localStorage.getItem("user"))
   const [jobcategory,setJobcategory]=useState([])
+  const [salaryError, setSalaryError] = useState("");
   const [jobdetails, setJobdetails] = useState({
     company_user_id:userdetails.id,
     jobtitle: "",
@@ -65,6 +67,14 @@ function Postjob() {
             delete newErrors[name];
         }
         setErrors(newErrors);
+
+    if (name === 'jobsalary') {
+        if (Number(value) < 20000) {
+          setSalaryError("Salary should be greater than 20000");
+        } else {
+          setSalaryError("");
+        }
+    }
   }
 
   const validateFields = () => {
@@ -86,7 +96,7 @@ function Postjob() {
     
     
     const validationErrors = validateFields();
-    if (Object.keys(validationErrors).length > 0) {
+    if (Object.keys(validationErrors).length > 0 || salaryError) {
         setErrors(validationErrors);
         return;
     }
@@ -99,6 +109,11 @@ function Postjob() {
     MakeApiRequest('post', `${config.baseUrl}company/postjob/`, headers, {},formData)
         .then(response => {
             console.log(response)
+            setMessage("Job Posted successfully");
+            setTimeout(() => {
+            setActiveComponent("myjobs");
+            console.log("Redirecting to myjobs component");
+        }, 2000);
         })
         .catch(error => {
           console.error('Error:', error);
@@ -240,7 +255,8 @@ function Postjob() {
                   className="py-2 px-3 pe-11 block w-full border-gray-200 shadow-sm text-sm rounded-lg focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
                   placeholder="Salary"
                 />
-                {errors.jobsalary && <span className="text-red-500 text-xs">{errors.jobsalary}</span>}
+                {salaryError && <span className="text-red-500 text-xs mr-2">{salaryError}</span>}
+                {errors.jobsalary && <span className="text-red-500 text-xs ml-2">{errors.jobsalary}</span>}
               </div>
 
               <div className="sm:col-span-3">
@@ -466,6 +482,18 @@ function Postjob() {
               >
                 Submit Job
               </button>
+              {message &&
+                (message === "Job Posted successfully" ? (
+                  <div
+                    className="mt-2 bg-teal-100 border border-teal-200 text-sm text-teal-800 rounded-lg p-4 dark:bg-teal-800/10 dark:border-teal-900 dark:text-teal-500"
+                    role="alert"
+                  >
+                    <span className="font-bold">Success:</span> Job Posted
+                    successfully.
+                  </div>
+                ) : null
+                  
+                )}
             </div>
           </form>
         </div>

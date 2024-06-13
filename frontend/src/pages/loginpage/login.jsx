@@ -13,6 +13,7 @@ function Login() {
   const [errors, setErrors] = useState({});
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [fullname,setFullname]=useState("")
   const [companyname, setCompanyname] = useState("");
   const [password, setPassword] = useState("");
   const [users, setUsers] = useState([]);
@@ -44,6 +45,7 @@ function Login() {
       email,
       password,
       username,
+      fullname,
       usertype: "jobseeker",
     };
 
@@ -51,6 +53,8 @@ function Login() {
     if (!email) newErrors.email = "Email is required";
     if (!password) newErrors.password = "Password is required";
     if (!username) newErrors.username = "Username is required";
+    if (!fullname) newErrors.fullname = "Fullname is required";
+
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -210,6 +214,21 @@ function Login() {
     }
   };
 
+  //Fullname Validation//
+
+  const handleFullnameChange = (e) => {
+    const fullnameValue = e.target.value;
+    setFullname(fullnameValue);
+
+    const newErrors = { ...errors };
+    if (!fullnameValue) {
+      newErrors.fullname = "FullName is required";
+    } else {
+      delete newErrors.fullname;
+    }
+    setErrors(newErrors);
+  };
+
   //Username Validation//
 
   const handleUsernameChange = (e) => {
@@ -308,6 +327,19 @@ function Login() {
                 </span>
               </p>
               <form onSubmit={JobseekerSubmit}>
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    onChange={handleFullnameChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    placeholder="Full Name"
+                  />
+                  {errors.fullname && (
+                    <span className="text-red-500 text-xs">
+                      {errors.fullname}
+                    </span>
+                  )}
+                </div>
                 <div className="mb-4">
                   <input
                     type="text"

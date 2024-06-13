@@ -15,7 +15,7 @@ class jobpost(models.Model):
     jobqualification= models.CharField(max_length=1000,null=True,blank=True)
     jobexperiance = models.IntegerField(null=True,blank=True)
     jobkeywords = models.CharField(max_length=355,null=True,blank=True)
-    companyname = models.CharField(max_length=255, unique=True)
+    companyname = models.CharField(max_length=255,blank=True, null=True)
     companylocation = models.CharField(max_length=255, blank=True, null=True)
     companywebsite = models.CharField(max_length=255, blank=True, null=True)
     jobposteddate = models.DateField(auto_now_add=True,blank=True, null=True)

@@ -57,7 +57,7 @@ function Viewjob({ setActiveComponent }) {
   }
 
   return (
-    <div className="max-w-[65rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+    <div className="max-w-[65rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
       <div
         onClick={handlegoback}
         className="flex items-center cursor-pointer text-slate-700"

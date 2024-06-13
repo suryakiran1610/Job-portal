@@ -11,6 +11,7 @@ function Editjobs({ setActiveComponent }) {
   const [job, setJob] = useState(null);
   const [initialJobDetails, setInitialJobDetails] = useState({});
   const [message, setMessage] = useState("");
+  const [salaryError, setSalaryError] = useState("");
   const userdetails = JSON.parse(localStorage.getItem("user"));
   const [jobdetails, setJobdetails] = useState({
     company_user_id: userdetails.id,
@@ -94,6 +95,14 @@ function Editjobs({ setActiveComponent }) {
       ...prevState,
       [name]: value,
     }));
+
+    if (name === 'jobsalary') {
+      if (Number(value) < 20000) {
+        setSalaryError("Salary should be greater than 20000");
+      } else {
+        setSalaryError("");
+      }
+  }
   }
 
   const handleSubmit = (e) => {
@@ -108,6 +117,11 @@ function Editjobs({ setActiveComponent }) {
       setMessage("No changes detected");
       return;
     }
+    if (salaryError) {
+        setErrors("Salary should be greater than 20000");
+        return;
+    }
+
 
     const params = {
       job_id: job.id,
@@ -277,6 +291,7 @@ function Editjobs({ setActiveComponent }) {
                   className="py-2 px-3 pe-11 block w-full border-gray-200 shadow-sm text-sm rounded-lg focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
                   placeholder="Salary"
                 />
+                  {salaryError && <span className="text-red-500 text-xs mr-2">{salaryError}</span>}
               </div>
 
               <div className="sm:col-span-3">

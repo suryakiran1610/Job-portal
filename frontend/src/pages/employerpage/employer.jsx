@@ -3,6 +3,7 @@ import Myjobs from "../../components/company/myjobs";
 import Viewjob from "../../components/company/viewjob";
 import Editjobs from "../../components/company/editjobs";
 import Profile from "../../components/company/profile";
+import Applicants from "../../components/company/applicants";
 import { Routes, Route } from "react-router-dom";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
@@ -33,6 +34,40 @@ function Employer() {
       navigatee('/login')
     };
 
+    const updateUserProfile = (updatedProfile) => {
+      setProfile(updatedProfile);
+    };
+
+    const fetchUserProfile = () => {
+      const params = {
+        userid: userdetails.id,
+    };
+    
+
+    MakeApiRequest(
+    "get",
+    `${config.baseUrl}company/users/`,
+    headers,
+    params,
+    {}
+    )
+    .then((response) => {
+        console.log("profile", response);
+        setProfile(response);
+    })
+    .catch((error) => {
+        console.error("Error:", error);
+        if (error.response && error.response.status === 401) {
+        console.log(
+            "Unauthorized access. Token might be expired or invalid."
+        );
+        } else {
+        console.error("Unexpected error occurred:", error);
+        }
+    });
+  } 
+
+
     useEffect(() => {
       const params = {
           userid: userdetails.id,
@@ -60,6 +95,13 @@ function Employer() {
           }
       });
   }, []);
+
+  const updateUserProfileImage = (newImage) => {
+    setProfile(prevState => ({
+        ...prevState,
+        profile_image: newImage
+    }));
+};
 
 
 
@@ -287,7 +329,7 @@ function Employer() {
       </div>
       <div className="h-full" style={{ backgroundColor: "#EEEEEE" }}>
       {activeComponent === "postjob" &&(
-        <Postjob/>
+        <Postjob setActiveComponent={setActiveComponent}/>
       )}
       {activeComponent === "myjobs" &&(
         <Myjobs setActiveComponent={setActiveComponent}/>
@@ -299,8 +341,10 @@ function Employer() {
         <Editjobs setActiveComponent={setActiveComponent}/>
       )}
       {activeComponent === "profile" &&(
-        <Profile profileImageURL={profileImageURL}
-        setProfileImageURL={setProfileImageURL}/>
+        <Profile fetchUserProfile={fetchUserProfile} updateUserProfileImage={updateUserProfileImage} updateUserProfile={updateUserProfile}/>
+      )}
+      {activeComponent === "applicants" &&(
+        <Applicants setActiveComponent={setActiveComponent}/>
       )}
       </div>
     </>
@@ -308,3 +352,4 @@ function Employer() {
 }
 
 export default Employer;
+

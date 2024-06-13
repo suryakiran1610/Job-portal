@@ -11,11 +11,10 @@ function Myjobs({ setActiveComponent }) {
   const [limit, setLimit] = useState(5);
   const [startIndex, setStartIndex] = useState(0);
   const [togglemodal, setTogglemodal] = useState(false);
-  const [jobid,setJobid]=useState('')
+  const [message, setMessage] = useState("");
+  const [jobid, setJobid] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
-  const [buttonstatus,setButtonstatus]=useState(true)
-
-
+  const [buttonstatus, setButtonstatus] = useState(true);
 
   const handleViewJob = (jobId) => {
     localStorage.setItem("viewedJobId", jobId);
@@ -29,6 +28,11 @@ function Myjobs({ setActiveComponent }) {
 
   const Handlejobpost = () => {
     setActiveComponent("postjob");
+  };
+
+  const handleViewapplicants = (jobId) => {
+    localStorage.setItem("viewedJobId", jobId);
+    setActiveComponent("applicants");
   };
 
   const headers = {
@@ -55,11 +59,10 @@ function Myjobs({ setActiveComponent }) {
     )
       .then((response) => {
         console.log(response);
-        if(response.length<5){
-          setButtonstatus(false)
-        }
-        else{
-          setButtonstatus(true)
+        if (response.length < 5) {
+          setButtonstatus(false);
+        } else {
+          setButtonstatus(true);
         }
         setJobs(response);
       })
@@ -85,12 +88,11 @@ function Myjobs({ setActiveComponent }) {
 
   const handledeletemodal = (jobId) => {
     setShowDropdown(false);
-    setJobid(jobId)
+    setJobid(jobId);
     setTogglemodal(true);
   };
-  
 
-  const handleDeleteJob =()=>{
+  const handleDeleteJob = () => {
     const params = {
       jobid: jobid,
     };
@@ -105,7 +107,7 @@ function Myjobs({ setActiveComponent }) {
       .then((response) => {
         console.log(response);
         setJobs(jobs.filter((job) => job.id !== jobid));
-        setTogglemodal(false)
+        setTogglemodal(false);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -117,11 +119,10 @@ function Myjobs({ setActiveComponent }) {
           console.error("Unexpected error occurred:", error);
         }
       });
-  }
+  };
 
-  
   return (
-    <div className="max-w-[65rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+    <div className="max-w-[75rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
       <div className="flex flex-col">
         <div className="-m-1.5 overflow-x-auto">
           <div className="p-1.5 min-w-full inline-block align-middle">
@@ -135,7 +136,7 @@ function Myjobs({ setActiveComponent }) {
                     <button
                       type="button"
                       onClick={Handlejobpost}
-                      className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
+                      className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent  text-white  bg-slate-800 hover:bg-slate-900 disabled:opacity-50 disabled:pointer-events-none"
                     >
                       Post Job
                     </button>
@@ -202,7 +203,7 @@ function Myjobs({ setActiveComponent }) {
                     >
                       <td className="size-px whitespace-nowrap">
                         <a className="block relative z-10" href="#">
-                          <div className="px-16 py-2">
+                          <div className="px-9 py-2">
                             <div className="block text-sm text-blue-600 decoration-2 hover:underline dark:text-blue-500">
                               {job.jobtitle}
                             </div>
@@ -235,9 +236,9 @@ function Myjobs({ setActiveComponent }) {
                             type="button"
                             className="hs-dropdown-toggle py-1.5 px-2 inline-flex justify-center items-center gap-2 rounded-lg text-gray-700 align-middle disabled:opacity-50 disabled:pointer-events-none transition-all text-sm dark:text-neutral-400 dark:hover:text-white dark:focus:ring-offset-gray-800"
                             onClick={(event) => {
-                              setShowDropdown(true)
+                              setShowDropdown(true);
                               const menu =
-                              event.currentTarget.nextElementSibling;
+                                event.currentTarget.nextElementSibling;
                               menu.classList.toggle("hidden");
                               menu.classList.toggle("opacity-0");
                               menu.classList.toggle("opacity-100");
@@ -261,42 +262,43 @@ function Myjobs({ setActiveComponent }) {
                             </svg>
                           </button>
                           {showDropdown && (
-                          <div
-                            className="absolute left-0 w-auto bg-white rounded-md shadow-lg hidden divide-y divide-gray-200 dark:divide-neutral-700"
-                            style={{
-                              zIndex: 1000,
-                              marginTop: "-30px",
-                              transform: "translateX(15%)",
-                            }}
-                          >
-                            <a
-                              onClick={() => handleViewJob(job.id)}
-                              className="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                              href="#"
+                            <div
+                              className="absolute left-0 w-auto bg-white rounded-md shadow-lg hidden divide-y divide-gray-200 dark:divide-neutral-700"
+                              style={{
+                                zIndex: 1000,
+                                marginTop: "-30px",
+                                transform: "translateX(15%)",
+                              }}
                             >
-                              View
-                            </a>
-                            <a
-                              onClick={() => handleEditJob(job.id)}
-                              className="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                              href="#"
-                            >
-                              Edit
-                            </a>
-                            <a
-                              onClick={() => handledeletemodal(job.id)}
-                              className="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                              href="#"
-                            >
-                              Delete
-                            </a>
-                            <a
-                              className="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                              href="#"
-                            >
-                              Applicants
-                            </a>
-                          </div>
+                              <a
+                                onClick={() => handleViewJob(job.id)}
+                                className="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                                href="#"
+                              >
+                                View
+                              </a>
+                              <a
+                                onClick={() => handleEditJob(job.id)}
+                                className="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                                href="#"
+                              >
+                                Edit
+                              </a>
+                              <a
+                                onClick={() => handledeletemodal(job.id)}
+                                className="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                                href="#"
+                              >
+                                Delete
+                              </a>
+                              <a
+                                 onClick={() => handleViewapplicants(job.id)}
+                                className="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                                href="#"
+                              >
+                                Applicants
+                              </a>
+                            </div>
                           )}
                         </div>
                       </td>
@@ -317,10 +319,9 @@ function Myjobs({ setActiveComponent }) {
 
                 <div>
                   <div className="inline-flex gap-x-2">
-                  {buttonstatus ? null : (
                     <button
                       type="button"
-                      disabled={!buttonstatus}
+                      disabled={startIndex === 0}
                       onClick={handleLoadPrevious}
                       className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
                     >
@@ -340,11 +341,10 @@ function Myjobs({ setActiveComponent }) {
                       </svg>
                       Prev
                     </button>
-                  )}
-                  {buttonstatus ? null : (
+
                     <button
                       type="button"
-                      disabled={!buttonstatus}
+                      disabled={!buttonstatus} 
                       onClick={handleLoadMore}
                       className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
                     >
@@ -364,7 +364,6 @@ function Myjobs({ setActiveComponent }) {
                         <path d="m9 18 6-6-6-6" />
                       </svg>
                     </button>
-                  )}
                   </div>
                 </div>
               </div>
