@@ -504,7 +504,7 @@ function Editjobs({ setActiveComponent }) {
             <div className="py-8 first:pt-0 last:pb-0 border-t first:border-transparent border-gray-200 dark:border-neutral-700 dark:first:border-transparent">
               <button
                 type="submit"
-                className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent  bg-slate-800 hover:bg-teal-800 text-white  disabled:opacity-50 disabled:pointer-events-none"
+                className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent  bg-slate-800 hover:bg-slate-900 text-white  disabled:opacity-50 disabled:pointer-events-none"
               >
                 Save
               </button>
