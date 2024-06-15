@@ -8,7 +8,4 @@ urlpatterns = [
     path('users/',views.Users.as_view(),name="users"),
     path('passwordchange/',views.PasswordChange.as_view(),name="passwordchange"),
 
-
-
-
 ]

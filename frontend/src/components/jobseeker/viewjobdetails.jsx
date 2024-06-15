@@ -6,14 +6,14 @@ import { CiClock2 } from "react-icons/ci";
 import Cookies from "js-cookie";
 import { FaArrowLeft } from "react-icons/fa";
 
-function Viewjob({ setActiveComponent }) {
+function Viewjobdetails({ setActiveComponent }) {
   const token = Cookies.get("token");
   const viewedJobId = localStorage.getItem("viewedJobId");
   const [job, setJob] = useState(null);
 
   const handlegoback = (e) => {
     e.preventDefault();
-    setActiveComponent("myjobs");
+    setActiveComponent("search");
   };
 
   const headers = {
@@ -100,11 +100,29 @@ function Viewjob({ setActiveComponent }) {
             <h3 className="text-xl font-semibold">Keywords</h3>
             <div className="flex flex-wrap">
               {job.jobkeywords.split(",").map((keyword, index) => (
-                <div key={index} className="border rounded-md px-3 py-1 m-1 bg-slate-300">
+                <div
+                  key={index}
+                  className="border rounded-md px-3 py-1 m-1 bg-slate-300"
+                >
                   {keyword.trim()}
                 </div>
               ))}
             </div>
+          </div>
+          <div className="flex justify-center items-center mt-6">
+            <button
+              type="button"
+              class="py-2 mr-2 px-2 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-800 text-white hover:bg-gray-900 disabled:opacity-50 disabled:pointer-events-none dark:bg-white dark:text-neutral-800"
+            >
+              Apply Now
+            </button>
+            <button
+              type="button"
+              class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-800 text-white hover:bg-gray-900 disabled:opacity-50 disabled:pointer-events-none dark:bg-white dark:text-neutral-800"
+            >
+              Save Job
+            </button>
+            
           </div>
         </div>
 
@@ -127,7 +145,7 @@ function Viewjob({ setActiveComponent }) {
               </li>
               <li>
                 <strong className="mr-2">Location:</strong>
-                {job.joblocation},{job.joblocationstate}
+                {job.joblocation}
               </li>
               <li>
                 <strong className="mr-2">Job Nature:</strong>
@@ -159,4 +177,4 @@ function Viewjob({ setActiveComponent }) {
   );
 }
 
-export default Viewjob;
+export default Viewjobdetails;

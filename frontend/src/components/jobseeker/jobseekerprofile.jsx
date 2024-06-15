@@ -363,7 +363,7 @@ function JobseekerProfile(props) {
             <form onSubmit={handleSubmit} encType="multipart/form-data">
               <div className="p-2">
                 <label className="block text-sm font-medium mb-2">
-                  Full Name
+                  FullName
                 </label>
                 <input
                   onChange={Handleprofiledetails}

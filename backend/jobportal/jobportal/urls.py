@@ -22,7 +22,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('authentication/',include('authentication.urls')),
-    path('company/',include('company.urls'))
+    path('company/',include('company.urls')),
+    path('jobseeker/',include('jobseeker.urls'))
+
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

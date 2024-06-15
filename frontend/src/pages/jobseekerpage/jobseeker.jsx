@@ -1,16 +1,16 @@
 import { Routes, Route } from "react-router-dom";
 import JobseekerProfile from "../../components/jobseeker/jobseekerprofile.jsx";
+import Jobseekersearch from "../../components/jobseeker/jobseekersearch.jsx";
+import Viewjobdetails from "../../components/jobseeker/viewjobdetails.jsx";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { FaSearch } from "react-icons/fa";
-import { FaLocationDot } from "react-icons/fa6";
+
 
 function Jobseeker() {
-    const [activeComponent, setActiveComponent] = useState("");
-    const [searchbar,setSearchbar]=useState(true)
+    const [activeComponent, setActiveComponent] = useState("search");
     const userdetails=JSON.parse(localStorage.getItem("user"))
     const [profile,setProfile]=useState("")
     const navigatee=useNavigate()
@@ -113,6 +113,7 @@ function Jobseeker() {
         >
           <div className="me-5 md:me-8 flex">
             <a
+              onClick={()=>{setActiveComponent('search')}}
               className="flex-none text-xl font-semibold text-white"
               href="#"
               aria-label="Brand"
@@ -199,7 +200,7 @@ function Jobseeker() {
                       Logout
                     </a>
                     <a
-                      onClick={()=>{setActiveComponent('profile'),setSearchbar(false)}}
+                      onClick={()=>{setActiveComponent('profile')}}
                       className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
                       href="#"
                     >
@@ -238,6 +239,7 @@ function Jobseeker() {
           <div className="max-w-7xl snap-x w-full flex items-center overflow-x-auto px-4 sm:px-6 lg:px-8 pb-4 md:pb-0 mx-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500 dark:bg-neutral-900">
             <div className="snap-center shrink-0 pe-5 sm:pe-8 sm:last-pe-0">
               <a
+                onClick={()=>{setActiveComponent('search')}}
                 className="inline-flex items-center gap-x-2 hover:text-gray-500 dark:text-neutral-400 dark:hover:text-neutral-500"
                 href="#"
               >
@@ -267,46 +269,16 @@ function Jobseeker() {
       </main>
       </div>
 
-      <div className="h-screen" style={{ backgroundColor: "#EEEEEE" }}>
-        {searchbar &&(
-            <div className="flex items-center justify-center p-4">
-                <form className="bg-white shadow-xl flex w-full max-w-3xl border h-16 rounded-xl overflow-hidden items-center">
-                <div className="relative flex-1 ml-1 h-full p-1">
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                        <FaSearch />
-                    </span>
-                    <input
-                    type="text"
-                    placeholder="Job title, keywords, or company"
-                    className="w-full h-full px-4 py-2 pl-12  text-sm text-gray-900 border-none rounded-l-lg focus:outline-none"
-                    />
-                </div>
-
-                <div className="h-12 border-l border-gray-300"></div> 
-                
-                <div className="relative flex-1 h-full p-1">
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                        <FaLocationDot />
-                    </span>
-                    <input
-                    type="text"
-                    placeholder='City, state, zip code, or "remote"'
-                    className="w-full h-full px-4 py-2 pl-10 text-sm text-gray-900 border-none rounded-r-lg focus:outline-none"
-                    />
-                </div>
-                <div className="p-3 items-center">
-                    <button className="px-4 py-2 text-white  bg-slate-800 hover:bg-slate-900 rounded-lg">
-                        Find jobs
-                    </button>
-                </div>
-                </form>
-            </div>
-        )}
-
-        {activeComponent === "profile" &&(
+      <div className="h-full" style={{ backgroundColor: "#EEEEEE" }}>
+      {activeComponent === "profile" &&(
         <JobseekerProfile fetchUserProfile={fetchUserProfile} updateUserProfileImage={updateUserProfileImage} updateUserProfile={updateUserProfile}/>
       )}
-        
+      {activeComponent === "search" &&(
+        <Jobseekersearch setActiveComponent={setActiveComponent} />
+      )}
+      {activeComponent === "viewjobdetails" &&(
+        <Viewjobdetails setActiveComponent={setActiveComponent}/>
+      )}
     </div>
     </>
   );

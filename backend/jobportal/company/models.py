@@ -10,6 +10,7 @@ class jobpost(models.Model):
     jobvacancy = models.IntegerField(null=True,blank=True)
     jobsalary = models.CharField(max_length=255,null=True,blank=True)
     joblocation = models.CharField(max_length=255,null=True,blank=True)
+    joblocationstate= models.CharField(max_length=255,null=True,blank=True)
     jobdescription = models.CharField(max_length=1000,null=True,blank=True)
     jobresponsibility = models.CharField(max_length=1000, null=True, blank=True)
     jobqualification= models.CharField(max_length=1000,null=True,blank=True)
