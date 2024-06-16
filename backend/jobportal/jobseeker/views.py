@@ -10,7 +10,11 @@ from rest_framework.decorators import api_view,permission_classes
 from rest_framework.parsers import MultiPartParser, FormParser
 
 from company.models import jobpost
+from .models import savejob
+from .models import applyjob
 from company.serializers import jobpostserializer
+from .serializers import savejobserializer
+from .serializers import applyjobserializer
 
 class GetallJobs(APIView):
     permission_classes = [IsAuthenticated]
@@ -39,6 +43,44 @@ class GetallJobs(APIView):
         jobs = jobs[start_index:start_index + limit]
         serializer = jobpostserializer(jobs, many=True)
         return Response(serializer.data)
+
+class ApplyJob(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        print(request.data)
+        serializer=applyjobserializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    def get(self,request):
+        userid = int(request.query_params.get('userid'))
+        jobs=applyjob.objects.filter(user_id=userid)
+        serializer=applyjobserializer(jobs,many=True)
+        return Response(serializer.data)
+
+class SaveJobView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = savejobserializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        userid = int(request.query_params.get('userid'))
+        jobs = savejob.objects.filter(userid=userid)
+        serializer = savejobserializer(jobs, many=True)
+        return Response(serializer.data)
+    
+
+        
+
+
+
 
 

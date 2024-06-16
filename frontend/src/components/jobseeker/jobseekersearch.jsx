@@ -13,9 +13,9 @@ function Jobseekersearch({ setActiveComponent }) {
   const [jobs, setJobs] = useState([]);
   const token = Cookies.get("token");
   const userdetails = JSON.parse(localStorage.getItem("user"));
-  const [keywords,setKeywords]=useState("")
-  const [location,setLocation]=useState("")
-
+  const [keywords, setKeywords] = useState("");
+  const [location, setLocation] = useState("");
+  const [allsavedjobs, setAllsavedjobs] = useState([]);
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -94,6 +94,34 @@ function Jobseekersearch({ setActiveComponent }) {
     loadJobs();
   };
 
+  useEffect(() => {
+    const params = {
+      userid: userdetails.id,
+    };
+
+    MakeApiRequest(
+      "get",
+      `${config.baseUrl}jobseeker/savejob/`,
+      headers,
+      params,
+      {}
+    )
+      .then((response) => {
+        console.log("Saved Jobs Response:", response);
+        setAllsavedjobs(response);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, []);
+
+  const isJobSaved = (jobId) => {
+    return allsavedjobs.some((savedJob) => Number(savedJob.jobid) === jobId);
+  };
+
+  // Updated code within the component
+  const isSaved = jobs.map((job) => isJobSaved(job.id));
+
   return (
     <>
       <div className="flex items-center justify-center p-0">
@@ -103,10 +131,10 @@ function Jobseekersearch({ setActiveComponent }) {
               <FaSearch />
             </span>
             <input
-                onChange={(e)=>setKeywords(e.target.value)}
-                type="text"
-                placeholder="Job title, keywords, or company"
-                className="w-full h-full px-4 py-2 pl-12 text-sm text-gray-900 border-none rounded-l-lg focus:outline-none"
+              onChange={(e) => setKeywords(e.target.value)}
+              type="text"
+              placeholder="Job title, keywords, or company"
+              className="w-full h-full px-4 py-2 pl-12 text-sm text-gray-900 border-none rounded-l-lg focus:outline-none"
             />
           </div>
 
@@ -117,14 +145,17 @@ function Jobseekersearch({ setActiveComponent }) {
               <FaLocationDot />
             </span>
             <input
-                onChange={(e)=>setLocation(e.target.value)}
-                type="text"
-                placeholder="City or state"
-                className="w-full h-full px-4 py-2 pl-10 text-sm text-gray-900 border-none rounded-r-lg focus:outline-none"
+              onChange={(e) => setLocation(e.target.value)}
+              type="text"
+              placeholder="City or state"
+              className="w-full h-full px-4 py-2 pl-10 text-sm text-gray-900 border-none rounded-r-lg focus:outline-none"
             />
           </div>
           <div className="p-3 items-center">
-            <button onClick={handleSearch} className="px-4 py-2 text-white bg-slate-800 hover:bg-slate-900 rounded-lg">
+            <button
+              onClick={handleSearch}
+              className="px-4 py-2 text-white bg-slate-800 hover:bg-slate-900 rounded-lg"
+            >
               Find jobs
             </button>
           </div>
@@ -135,16 +166,25 @@ function Jobseekersearch({ setActiveComponent }) {
           {jobs.map((job, index) => (
             <div key={index} className="max-w-xs w-full sm:w-1/2 lg:w-1/3 p-4">
               <div className="bg-white border border-gray-200 rounded-lg shadow p-6 dark:bg-gray-800 dark:border-gray-700">
-              <div className="flex justify-end">
-                <FaBookmark />
-                </div>              
-              <h1 onClick={()=>{viewjobdetails(job.id)}} className="text-xl font-bold cursor-pointer hover:underline">{job.jobtitle}</h1>
-              <p className="text-gray-600">{job.companyname}</p>
+                <div className="flex justify-end">
+                  {isSaved[index] && <FaBookmark />}
+                </div>
+                <h1
+                  onClick={() => {
+                    viewjobdetails(job.id);
+                  }}
+                  className="text-xl font-bold cursor-pointer hover:underline"
+                >
+                  {job.jobtitle}
+                </h1>
+                <p className="text-gray-600">{job.companyname}</p>
                 <p className="text-gray-600">{job.joblocation}</p>
                 <ul className="list-disc list-inside mt-2 text-gray-800">
-                <li>{splitDescriptionIntoListItems(job.jobdescription)}.</li>
+                  <li>{splitDescriptionIntoListItems(job.jobdescription)}.</li>
                 </ul>
-                <p className="text-gray-500 mt-4">Posted {calculateDaysSincePosted(job.jobposteddate)} days ago</p>
+                <p className="text-gray-500 mt-4">
+                  Posted {calculateDaysSincePosted(job.jobposteddate)} days ago
+                </p>
               </div>
             </div>
           ))}
@@ -205,4 +245,3 @@ function Jobseekersearch({ setActiveComponent }) {
 }
 
 export default Jobseekersearch;
-

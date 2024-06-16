@@ -9,7 +9,13 @@ import { FaArrowLeft } from "react-icons/fa";
 function Viewjobdetails({ setActiveComponent }) {
   const token = Cookies.get("token");
   const viewedJobId = localStorage.getItem("viewedJobId");
+  const userdetails = JSON.parse(localStorage.getItem("user"));
   const [job, setJob] = useState(null);
+  const [allappliedjobs, setAllappliedjobs] = useState([]);
+  const [allsavedjobs,setAllsavedjobs]=useState([]);
+  const [addresumemodal, setAddresumemodal] = useState(false);
+  const [addresume, setAddresume] = useState(null);
+  const [message, setMessage] = useState("");
 
   const handlegoback = (e) => {
     e.preventDefault();
@@ -33,20 +39,122 @@ function Viewjobdetails({ setActiveComponent }) {
       {}
     )
       .then((response) => {
-        console.log(response);
+        console.log("Job Details Response:", response);
         setJob(response);
       })
       .catch((error) => {
         console.error("Error:", error);
-        if (error.response && error.response.status === 401) {
-          console.log(
-            "Unauthorized access. Token might be expired or invalid."
-          );
-        } else {
-          console.error("Unexpected error occurred:", error);
-        }
       });
   }, []);
+
+  useEffect(() => {
+    const params = {
+      userid: userdetails.id,
+    };
+
+    MakeApiRequest(
+      "get",
+      `${config.baseUrl}jobseeker/applyjob/`,
+      headers,
+      params,
+      {}
+    )
+      .then((response) => {
+        console.log("Applied Jobs Response:", response);
+        setAllappliedjobs(response);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    const params = {
+      userid: userdetails.id,
+    };
+
+    MakeApiRequest(
+      "get",
+      `${config.baseUrl}jobseeker/savejob/`,
+      headers,
+      params,
+      {}
+    )
+      .then((response) => {
+        console.log("Saved Jobs Response:", response);
+        setAllsavedjobs(response);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, []);
+
+  const Applyjob = () => {
+    if (!addresume) {
+      setMessage("Please upload a resume before applying");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("job_id", job.id);
+    formData.append("jobtitle", job.jobtitle);
+    formData.append("companyname", job.companyname);
+    formData.append("user_id", userdetails.id);
+    formData.append("resume", addresume);
+
+    MakeApiRequest(
+      "post",
+      `${config.baseUrl}jobseeker/applyjob/`,
+      headers,
+      {},
+      formData
+    )
+      .then((response) => {
+        console.log("Apply Job Response:", response);
+        setMessage("Job Applied successfully");
+        setTimeout(() => {
+          setAddresumemodal(false)
+          setMessage("");
+        }, 2000);
+        setAllappliedjobs((prev) => [...prev, response]);
+
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  const Savejob = () => {
+    const formData = new FormData();
+    formData.append("jobid", job.id);
+    formData.append("job_title", job.jobtitle);
+    formData.append("company_name", job.companyname);
+    formData.append("userid", userdetails.id);
+
+    MakeApiRequest(
+      "post",
+      `${config.baseUrl}jobseeker/savejob/`,
+      headers,
+      {},
+      formData
+    )
+      .then((response) => {
+        console.log("Save Job Response:", response);
+        setMessage("Job Saved successfully");
+        setTimeout(() => {
+          setMessage("");
+        }, 2000);
+        setAllsavedjobs((prev) => [...prev, response]);      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  const isJobApplied =
+    job && allappliedjobs.some((appliedJob) => appliedJob.job_id === job.id);
+
+  const isSaved =
+    job && allsavedjobs.some((savedJob) => Number(savedJob.jobid) === job.id);
 
   if (!job) {
     return (
@@ -57,7 +165,7 @@ function Viewjobdetails({ setActiveComponent }) {
   }
 
   return (
-    <div className="max-w-[65rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+    <div className="w-full min-h-screen sm:px-6 lg:px-8 lg:py-7 mx-auto">
       <div
         onClick={handlegoback}
         className="flex items-center cursor-pointer text-slate-700"
@@ -110,20 +218,50 @@ function Viewjobdetails({ setActiveComponent }) {
             </div>
           </div>
           <div className="flex justify-center items-center mt-6">
-            <button
-              type="button"
-              class="py-2 mr-2 px-2 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-800 text-white hover:bg-gray-900 disabled:opacity-50 disabled:pointer-events-none dark:bg-white dark:text-neutral-800"
-            >
-              Apply Now
-            </button>
-            <button
-              type="button"
-              class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-800 text-white hover:bg-gray-900 disabled:opacity-50 disabled:pointer-events-none dark:bg-white dark:text-neutral-800"
-            >
-              Save Job
-            </button>
-            
+            {isJobApplied ? (
+              <button
+                type="button"
+                className="py-2 mr-2 px-2 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-800 text-white disabled:opacity-50"
+                disabled
+              >
+                Applied
+              </button>
+            ) : (
+              <button
+                onClick={() => setAddresumemodal(true)}
+                type="button"
+                className="py-2 mr-2 px-2 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-800 text-white hover:bg-gray-900"
+              >
+                Apply Now
+              </button>
+            )}
+            {isSaved ? (
+              <button
+                type="button"
+                className="py-2 mr-2 px-2 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-800 text-white disabled:opacity-50"
+                disabled
+              >
+                Saved
+              </button>
+            ) : (
+              <button
+                onClick={Savejob}
+                type="button"
+                className="py-2 mr-2 px-2 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-800 text-white hover:bg-gray-900"
+              >
+                Save Now
+              </button>
+            )}
           </div>
+          {message &&
+            (message === "Job Saved successfully" ? (
+              <div
+                className="mt-2 bg-teal-100 border border-teal-200 text-sm text-teal-800 rounded-lg p-4 dark:bg-teal-800/10 dark:border-teal-900 dark:text-teal-500"
+                role="alert"
+              >
+                <span className="font-bold">Success:</span> Job Saved successfully.
+              </div>
+            ) : null)}
         </div>
 
         {/* Right Side Divs */}
@@ -173,6 +311,77 @@ function Viewjobdetails({ setActiveComponent }) {
           </div>
         </div>
       </div>
+
+      {addresumemodal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-md w-full">
+            <div className="flex justify-between items-center py-3 px-4 border-b">
+              <h3 className="font-bold text-gray-800">ADD Resume</h3>
+              <button
+                onClick={() => setAddresumemodal(false)}
+                type="button"
+                className="text-gray-800 hover:bg-gray-100 rounded-full p-1"
+              >
+                <svg
+                  className="w-6 h-6"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="p-2">
+              <label className="block text-sm font-medium mb-2">Resume:</label>
+              <input
+                onChange={(e) => setAddresume(e.target.files[0])}
+                type="file"
+                className="py-2 px-2 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div className="flex justify-end items-center gap-x-2 py-3 px-4 border-t">
+              <button
+                onClick={() => setAddresumemodal(false)}
+                type="button"
+                className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50"
+              >
+                Close
+              </button>
+              <button
+                onClick={Applyjob}
+                type="submit"
+                className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700"
+              >
+                Apply
+              </button>
+            </div>
+            {message && (
+              <div
+                className={`mt-2 border rounded-lg p-4 ${
+                  message === "Job Applied successfully"
+                    ? "bg-teal-100 border-teal-200 text-teal-800 dark:bg-teal-800/10 dark:border-teal-900 dark:text-teal-500"
+                    : "bg-yellow-100 border-yellow-200 text-yellow-800 dark:bg-yellow-800/10 dark:border-yellow-900 dark:text-yellow-500"
+                }`}
+                role="alert"
+              >
+                <span className="font-bold">
+                  {message === "Job Applied successfully"
+                    ? "Success:"
+                    : "Warning:"}
+                </span>{" "}
+                {message}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
