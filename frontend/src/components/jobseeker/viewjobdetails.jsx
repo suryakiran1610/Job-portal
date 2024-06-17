@@ -101,6 +101,10 @@ function Viewjobdetails({ setActiveComponent }) {
     formData.append("companyname", job.companyname);
     formData.append("user_id", userdetails.id);
     formData.append("resume", addresume);
+    formData.append("companyuserid", job.company_user_id);
+    formData.append("username", userdetails.fullname);
+
+
 
     MakeApiRequest(
       "post",

@@ -60,6 +60,18 @@ class ApplyJob(APIView):
         jobs=applyjob.objects.filter(user_id=userid)
         serializer=applyjobserializer(jobs,many=True)
         return Response(serializer.data)
+    
+    def delete(self, request):
+        print(request.data)
+        jobid = int(request.query_params.get('jobid'))
+        try:
+            appliedjob = applyjob.objects.get(id=jobid)
+        except applyjob.DoesNotExist:
+            return Response({'error': 'Job not found'}, status=404)
+
+        appliedjob.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
 
 class SaveJobView(APIView):
     permission_classes = [IsAuthenticated]
@@ -75,6 +87,47 @@ class SaveJobView(APIView):
         userid = int(request.query_params.get('userid'))
         jobs = savejob.objects.filter(userid=userid)
         serializer = savejobserializer(jobs, many=True)
+        return Response(serializer.data)
+    
+    def delete(self, request):
+        print(request.data)
+        jobid = int(request.query_params.get('jobid'))
+        try:
+            savedjob = savejob.objects.get(id=jobid)
+        except savejob.DoesNotExist:
+            return Response({'error': 'Job not found'}, status=404)
+
+        savedjob.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    
+class LimitSaveJobView(APIView):  
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+        limit = int(request.query_params.get('limit', 5))
+        start_index = int(request.query_params.get('startIndex', 0))
+        id=int(request.query_params.get('user_id'))
+
+        jobs =savejob.objects.filter(userid=id)
+        jobs=jobs[start_index:start_index+limit]
+
+        serializer=savejobserializer(jobs,many=True)
+        return Response(serializer.data)
+
+
+class LimitAppliedJobView(APIView):  
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+        limit = int(request.query_params.get('limit', 5))
+        start_index = int(request.query_params.get('startIndex', 0))
+        id=int(request.query_params.get('user_id'))
+
+        jobs =applyjob.objects.filter(user_id=id)
+        jobs=jobs[start_index:start_index+limit]
+
+        serializer=applyjobserializer(jobs,many=True)
         return Response(serializer.data)
     
 

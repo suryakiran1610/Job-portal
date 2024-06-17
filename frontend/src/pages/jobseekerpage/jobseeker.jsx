@@ -2,6 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import JobseekerProfile from "../../components/jobseeker/jobseekerprofile.jsx";
 import Jobseekersearch from "../../components/jobseeker/jobseekersearch.jsx";
 import Viewjobdetails from "../../components/jobseeker/viewjobdetails.jsx";
+import Appliedjobs from "../../components/jobseeker/appliedjobs.jsx";
+import Savedjobs from "../../components/jobseeker/savedjobs.jsx";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import Cookies from "js-cookie";
@@ -16,6 +18,7 @@ function Jobseeker() {
     const navigatee=useNavigate()
     const token = Cookies.get("token");
     const [profileImageURL, setProfileImageURL] = useState("");
+
 
 
     const headers = {
@@ -248,7 +251,7 @@ function Jobseeker() {
             </div>
             <div className="snap-center shrink-0 pe-5 sm:pe-8 sm:last:pe-0">
               <a
-                // onClick={()=>{setActiveComponent('postjob')}}
+                onClick={()=>{setActiveComponent('appliedjobs')}}
                 className="inline-flex items-center gap-x-2 hover:text-gray-500 dark:text-neutral-400 dark:hover:text-neutral-500"
                 href="#"
               >
@@ -257,7 +260,7 @@ function Jobseeker() {
             </div>
             <div className="snap-center shrink-0 pe-5 sm:pe-8 sm:last:pe-0">
               <a
-                //   onClick={()=>{setActiveComponent('myjobs')}}
+                  onClick={()=>{setActiveComponent('savedjobs')}}
                 className="inline-flex items-center gap-x-2 hover:text-gray-500 dark:text-neutral-400 dark:hover:text-neutral-500"
                 href="#"
               >
@@ -278,6 +281,12 @@ function Jobseeker() {
       )}
       {activeComponent === "viewjobdetails" &&(
         <Viewjobdetails setActiveComponent={setActiveComponent}/>
+      )}
+      {activeComponent === "savedjobs" &&(
+        <Savedjobs setActiveComponent={setActiveComponent}/>
+      )}
+      {activeComponent === "appliedjobs" &&(
+        <Appliedjobs setActiveComponent={setActiveComponent}/>
       )}
     </div>
     </>

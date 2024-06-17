@@ -4,6 +4,8 @@ import Viewjob from "../../components/company/viewjob";
 import Editjobs from "../../components/company/editjobs";
 import Profile from "../../components/company/profile";
 import Applicants from "../../components/company/applicants";
+import UserProfile from "../../components/company/userprofile";
+import Companysearch from "../../components/company/companysearch";
 import { Routes, Route } from "react-router-dom";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
@@ -127,63 +129,9 @@ function Employer() {
             </div>
 
             <div className="w-full flex items-center justify-end ms-auto sm:justify-between sm:gap-x-3 sm:order-3">
-              <div className="sm:hidden">
-                <button
-                  type="button"
-                  className="w-[2.375rem] h-[2.375rem] inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full text-white hover:bg-white/20 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:ring-1 focus:ring-gray-600"
-                >
-                  <svg
-                    className="flex-shrink-0 size-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="m21 21-4.3-4.3" />
-                  </svg>
-                </button>
-              </div>
+              
 
-              <div className="hidden mx-auto sm:block">
-                <label htmlFor="icon" className="sr-only">
-                  Search
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none z-20 ps-4">
-                    <svg
-                      className="flex-shrink-0 size-4 text-white dark:text-neutral-500"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="11" cy="11" r="8" />
-                      <path d="m21 21-4.3-4.3" />
-                    </svg>
-                  </div>
-                  <input
-                    type="text"
-                    id="icon"
-                    name="icon"
-                    className="py-2 px-4 ps-11 pe-20 block w-92 md:w-96 bg-transparent border-white shadow-sm rounded-lg text-sm text-white focus:z-10 focus:border-gray-900 focus:ring-white placeholder:text-white dark:border-neutral-700 dark:text-neutral-500 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
-                    placeholder="Search"
-                  />
-                  <div className="absolute inset-y-0 end-0 flex items-center pointer-events-none z-20 pe-4">
-                    <span className="text-gray-500 dark:text-neutral-500"></span>
-                  </div>
-                </div>
-              </div>
+              <div className="hidden mx-auto sm:block"></div>
 
               <div className="flex flex-row items-center justify-end gap-2">
                 <button
@@ -299,6 +247,7 @@ function Employer() {
             <div className="max-w-7xl snap-x w-full flex items-center overflow-x-auto px-4 sm:px-6 lg:px-8 pb-4 md:pb-0 mx-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500 dark:bg-neutral-900">
               <div className="snap-center shrink-0 pe-5 sm:pe-8 sm:last-pe-0">
                 <a
+                  onClick={()=>{setActiveComponent('companysearch')}}
                   className="inline-flex items-center gap-x-2 hover:text-gray-500 dark:text-neutral-400 dark:hover:text-neutral-500"
                   href="#"
                 >
@@ -345,6 +294,12 @@ function Employer() {
       )}
       {activeComponent === "applicants" &&(
         <Applicants setActiveComponent={setActiveComponent}/>
+      )}
+      {activeComponent === "userprofile" &&(
+        <UserProfile setActiveComponent={setActiveComponent}/>
+      )}
+      {activeComponent === "companysearch" &&(
+        <Companysearch setActiveComponent={setActiveComponent}/>
       )}
       </div>
     </>

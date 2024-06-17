@@ -11,7 +11,9 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from .models import jobpost
 from .models import jobcategories
 from authentication.models import user
+from jobseeker.models import applyjob
 from authentication.serializers import userserializer
+from jobseeker.serializers import applyjobserializer
 from .serializers import jobpostserializer
 from .serializers import jobcategoriesserializer
 
@@ -103,16 +105,21 @@ class Users(APIView):
         else:
             return Response({'error': 'Job not found'}, status=404)
         
-    def put(self,request):
-        print(request.data)
-        userid=int(request.query_params.get('userid'))
-        editprofile = user.objects.get(id=userid)
+    def put(self, request):
+        print(request.data)  # Log the request data
+        userid = int(request.query_params.get('userid'))
+        try:
+            editprofile = user.objects.get(id=userid)
+        except user.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer =userserializer(editprofile,data=request.data, partial=True)
+        serializer = userserializer(editprofile, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
+        else:
+            print(serializer.errors)  # Log the serializer errors
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PasswordChange(APIView):
     permission_classes = [IsAuthenticated]
@@ -139,6 +146,28 @@ class PasswordChange(APIView):
         usr.set_password(new_password)
         usr.save()
         return Response({'message': 'Password updated successfully'}, status=status.HTTP_200_OK)
+
+class FilterApplicants(APIView):  
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+        limit = int(request.query_params.get('limit', 5))
+        start_index = int(request.query_params.get('startIndex', 0))
+        id=int(request.query_params.get('job_id'))
+
+        applicants =applyjob.objects.filter(job_id=id)
+        applicants=applicants[start_index:start_index+limit]
+
+        serializer=applyjobserializer(applicants,many=True)
+        return Response(serializer.data)    
+
+class AllApplicants(APIView):  
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+        applicants =applyjob.objects.all()
+        serializer=applyjobserializer(applicants,many=True)
+        return Response(serializer.data)    
 
 
 

@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 function Myjobs({ setActiveComponent }) {
   const token = Cookies.get("token");
   const userdetails = JSON.parse(localStorage.getItem("user"));
+  const viewedJobId = localStorage.getItem("viewedJobId");
   const [jobs, setJobs] = useState([]);
   const [limit, setLimit] = useState(5);
   const [startIndex, setStartIndex] = useState(0);
@@ -15,6 +16,9 @@ function Myjobs({ setActiveComponent }) {
   const [jobid, setJobid] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [buttonstatus, setButtonstatus] = useState(true);
+  const [applicants,setApplicants]=useState([])
+  const [applicantCounts, setApplicantCounts] = useState({});
+
 
   const handleViewJob = (jobId) => {
     localStorage.setItem("viewedJobId", jobId);
@@ -77,6 +81,42 @@ function Myjobs({ setActiveComponent }) {
         }
       });
   };
+
+  useEffect(() => {
+    loadApplicants();
+  }, [jobs]);
+
+
+  const loadApplicants = () => {
+    MakeApiRequest(
+      "get",
+      `${config.baseUrl}company/allapplicants/`,
+      headers,
+      {},
+      {}
+    )
+      .then((response) => {
+        setApplicants(response);
+        const counts = response.reduce((acc, applicant) => {
+          acc[applicant.job_id] = (acc[applicant.job_id] || 0) + 1;
+          return acc;
+        }, {});
+        setApplicantCounts(counts);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        if (error.response && error.response.status === 401) {
+          console.log(
+            "Unauthorized access. Token might be expired or invalid."
+          );
+        } else {
+          console.error("Unexpected error occurred:", error);
+        }
+      });
+  };
+
+
+
 
   const handleLoadMore = () => {
     setStartIndex(startIndex + limit);
@@ -223,7 +263,7 @@ function Myjobs({ setActiveComponent }) {
                         <a className="block relative z-10" href="#">
                           <div className="px-16 py-2">
                             <span className="inline-flex items-center gap-1.5 py-1 px-2 rounded-lg text-xs font-medium bg-gray-100 text-gray-800 dark:bg-neutral-900 dark:text-neutral-200">
-                              Applicants
+                            {applicantCounts[job.id] || 0} Applicants
                             </span>
                           </div>
                         </a>

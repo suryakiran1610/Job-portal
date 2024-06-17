@@ -9,7 +9,7 @@ function Profile(props) {
   const [toggleeditmodal, setToggleeditmodal] = useState(false);
   const [togglepasswordmodal, setTogglepasswordmodal] = useState(false);
   const token = Cookies.get("token");
-  const [profile, setProfile] = useState("");
+  const [profile, setProfile] = useState({});
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
   const [errors, setErrors] = useState({});
