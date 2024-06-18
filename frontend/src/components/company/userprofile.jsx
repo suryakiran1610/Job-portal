@@ -10,6 +10,8 @@ function UserProfile({ setActiveComponent }) {
   const userdetail = JSON.parse(localStorage.getItem("applieduserid"));
   const token = Cookies.get("token");
   const [user, setUser] = useState([]);
+  const [error, setError] = useState(null);
+
 
   const handlegoback = (e) => {
     e.preventDefault();
@@ -38,6 +40,7 @@ function UserProfile({ setActiveComponent }) {
       })
       .catch((error) => {
         console.error("Error:", error);
+        setError(error);
         if (error.response && error.response.status === 401) {
           console.log(
             "Unauthorized access. Token might be expired or invalid."
@@ -47,6 +50,14 @@ function UserProfile({ setActiveComponent }) {
         }
       });
   }, []);
+
+  if (error && error.response && error.response.status === 500) {
+    return (
+      <div className="max-w-[65rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+        <h1 className="text-red-700">User No Longer Exists.</h1>
+      </div>
+    );
+  }
 
   
    

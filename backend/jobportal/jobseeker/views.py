@@ -129,7 +129,17 @@ class LimitAppliedJobView(APIView):
 
         serializer=applyjobserializer(jobs,many=True)
         return Response(serializer.data)
-    
+
+class Alljobs(APIView):  
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+        
+        jobs =applyjob.objects.filter(user_id=id)
+        jobs=jobs[start_index:start_index+limit]
+
+        serializer=applyjobserializer(jobs,many=True)
+        return Response(serializer.data)    
 
         
 

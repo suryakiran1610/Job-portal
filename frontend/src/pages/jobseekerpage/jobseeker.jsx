@@ -280,7 +280,7 @@ function Jobseeker() {
         <Jobseekersearch setActiveComponent={setActiveComponent} />
       )}
       {activeComponent === "viewjobdetails" &&(
-        <Viewjobdetails setActiveComponent={setActiveComponent}/>
+        <Viewjobdetails />
       )}
       {activeComponent === "savedjobs" &&(
         <Savedjobs setActiveComponent={setActiveComponent}/>

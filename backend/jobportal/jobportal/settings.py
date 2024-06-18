@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'authentication',
     'company',
     'jobseeker',
+    'adminn',
     'rest_framework',
     'corsheaders',
     'rest_framework_simplejwt',

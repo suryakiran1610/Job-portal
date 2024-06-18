@@ -6,7 +6,7 @@ import { CiClock2 } from "react-icons/ci";
 import Cookies from "js-cookie";
 import { FaArrowLeft } from "react-icons/fa";
 
-function Viewjobdetails({ setActiveComponent }) {
+function Viewjobdetails() {
   const token = Cookies.get("token");
   const viewedJobId = localStorage.getItem("viewedJobId");
   const userdetails = JSON.parse(localStorage.getItem("user"));
@@ -17,10 +17,7 @@ function Viewjobdetails({ setActiveComponent }) {
   const [addresume, setAddresume] = useState(null);
   const [message, setMessage] = useState("");
 
-  const handlegoback = (e) => {
-    e.preventDefault();
-    setActiveComponent("search");
-  };
+  
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -163,20 +160,14 @@ function Viewjobdetails({ setActiveComponent }) {
   if (!job) {
     return (
       <div className="max-w-[65rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
-        Loading...
+        <h1 className="text-red-700">Job Expired...</h1>
       </div>
     );
   }
 
   return (
     <div className="w-full min-h-screen sm:px-6 lg:px-8 lg:py-7 mx-auto">
-      <div
-        onClick={handlegoback}
-        className="flex items-center cursor-pointer text-slate-700"
-      >
-        <FaArrowLeft className="text-xs mr-1" />
-        <p className="text-sm">Back to Jobs</p>
-      </div>
+      
       <div className="flex flex-col md:flex-row p-4">
         <div className="flex-1 bg-white p-9 shadow-md mb-4 md:mb-0 rounded-sm">
           <h2 className="text-2xl font-bold text-green-600 mb-3">

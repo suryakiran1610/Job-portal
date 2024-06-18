@@ -120,6 +120,7 @@ function Employer() {
           >
             <div className="me-5 md:me-8 flex">
               <a
+                onClick={()=>{setActiveComponent('companysearch')}}
                 className="flex-none text-xl font-semibold text-white"
                 href="#"
                 aria-label="Brand"
@@ -284,7 +285,7 @@ function Employer() {
         <Myjobs setActiveComponent={setActiveComponent}/>
       )}
       {activeComponent === "viewjob"&&(
-        <Viewjob setActiveComponent={setActiveComponent}/>
+        <Viewjob />
       )}
       {activeComponent === "editjob"&&(
         <Editjobs setActiveComponent={setActiveComponent}/>

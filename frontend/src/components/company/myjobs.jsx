@@ -242,7 +242,7 @@ function Myjobs({ setActiveComponent }) {
                       className="bg-white hover:bg-gray-50 dark:bg-neutral-900 dark:hover:bg-neutral-800"
                     >
                       <td className="size-px whitespace-nowrap">
-                        <a className="block relative z-10" href="#">
+                        <a onClick={() => handleViewJob(job.id)} className="block relative z-10" href="#">
                           <div className="px-9 py-2">
                             <div className="block text-sm text-blue-600 decoration-2 hover:underline dark:text-blue-500">
                               {job.jobtitle}
@@ -260,7 +260,7 @@ function Myjobs({ setActiveComponent }) {
                         </a>
                       </td>
                       <td className="size-px whitespace-nowrap">
-                        <a className="block relative z-10" href="#">
+                        <a onClick={() => handleViewapplicants(job.id)} className="block relative z-10" href="#">
                           <div className="px-16 py-2">
                             <span className="inline-flex items-center gap-1.5 py-1 px-2 rounded-lg text-xs font-medium bg-gray-100 text-gray-800 dark:bg-neutral-900 dark:text-neutral-200">
                             {applicantCounts[job.id] || 0} Applicants

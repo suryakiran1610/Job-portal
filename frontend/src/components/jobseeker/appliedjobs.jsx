@@ -253,15 +253,15 @@ function Appliedjobs({ setActiveComponent }) {
                           </td>
                           <td className="size-px whitespace-nowrap">
                             <div className="ps-6 lg:ps-3 xl:ps-0 pe-6 py-3 ml-10">
-                              <div class="group inline-flex items-center divide-x divide-gray-300 border border-gray-300 bg-white shadow-sm rounded-lg transition-all dark:divide-neutral-700 dark:bg-neutral-700 dark:border-neutral-700">
-                                <div class="hs-tooltip inline-block">
+                              <div className="group inline-flex items-center divide-x divide-gray-300 border border-gray-300 bg-white shadow-sm rounded-lg transition-all dark:divide-neutral-700 dark:bg-neutral-700 dark:border-neutral-700">
+                                <div className="hs-tooltip inline-block">
                                   <a
                                     onClick={()=>{DownloadResume(appliedjobs.resume)}}
-                                    class="hs-tooltip-toggle py-1.5 px-2 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-s-md bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
+                                    className="hs-tooltip-toggle py-1.5 px-2 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-s-md bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
                                     href="#"
                                   >
                                     <svg
-                                      class="size-4"
+                                      className="size-4"
                                       xmlns="http://www.w3.org/2000/svg"
                                       width="16"
                                       height="16"
@@ -273,15 +273,15 @@ function Appliedjobs({ setActiveComponent }) {
                                     </svg>
                                   </a>
                                 </div>
-                                <div class="hs-dropdown [--placement:bottom-right] relative inline-flex">
+                                <div className="hs-dropdown [--placement:bottom-right] relative inline-flex">
                                   <button
                                     onClick={()=>ViewResume(appliedjobs.resume)}
                                     id="hs-table-dropdown-1"
                                     type="button"
-                                    class="hs-dropdown-toggle py-1.5 px-2 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-e-md bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
+                                    className="hs-dropdown-toggle py-1.5 px-2 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-e-md bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
                                   >
                                     <svg
-                                      class="flex-shrink-0 size-4"
+                                      className="flex-shrink-0 size-4"
                                       xmlns="http://www.w3.org/2000/svg"
                                       width="16"
                                       height="16"
