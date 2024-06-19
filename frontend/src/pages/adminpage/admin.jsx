@@ -2,8 +2,16 @@ import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";import Admindashboard from "../../components/admin/admindashboard";
+import React, { useEffect, useState } from "react";
+import Admindashboard from "../../components/admin/admindashboard";
 import Adminprofile from "../../components/admin/adminprofile";
+import Viewcompanies from "../../components/admin/viewcompanies";
+import Companyprofile from "../../components/admin/companyprofile";
+import Viewjobseeker from "../../components/admin/viewjobseekers";
+import Jobseekerprofile from "../../components/admin/jobseekerprofile";
+import ViewJobs from "../../components/admin/viewjobs";
+import Jobdetails from "../../components/admin/jobdetails";
+import Editjobdetails from "../../components/admin/editjobdetails";
 import { FaRegBell } from "react-icons/fa";
 import { IoHome } from "react-icons/io5";
 import { FaUsersLine } from "react-icons/fa6";
@@ -281,6 +289,7 @@ function Admin() {
 
               <li>
                 <a
+                  onClick={()=>{setActiveComponent('viewcompanies')}}
                   className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                   href="#"
                 >
@@ -291,6 +300,7 @@ function Admin() {
 
               <li>
                 <a
+                  onClick={()=>{setActiveComponent('viewjobseekers')}}
                   className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                   href="#"
                 >
@@ -300,6 +310,7 @@ function Admin() {
               </li>
               <li>
                 <a
+                  onClick={()=>{setActiveComponent('viewjobs')}}
                   className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300"
                   href="#"
                 >
@@ -320,12 +331,33 @@ function Admin() {
           </nav>
         </div>
 
-        <div className="w-full h-screen lg:ps-44 " style={{ backgroundColor: "#EEEEEE" }}>
+        <div className="w-full h-full lg:ps-44 " style={{ backgroundColor: "#EEEEEE" }}>
           {activeComponent === "dashboard" &&(
             <Admindashboard/>
           )}
           {activeComponent === "adminprofile" &&(
             <Adminprofile fetchUserProfile={fetchUserProfile} updateUserProfileImage={updateUserProfileImage} updateUserProfile={updateUserProfile}/>
+          )}
+          {activeComponent === "viewcompanies" &&(
+            <Viewcompanies setActiveComponent={setActiveComponent}/>
+          )}
+          {activeComponent === "viewcompanyprofile" &&(
+            <Companyprofile setActiveComponent={setActiveComponent}/>
+          )}
+          {activeComponent === "viewjobseekers" &&(
+            <Viewjobseeker setActiveComponent={setActiveComponent}/>
+          )}
+          {activeComponent === "viewjobseekerprofile" &&(
+            <Jobseekerprofile setActiveComponent={setActiveComponent}/>
+          )}
+          {activeComponent === "viewjobs" &&(
+            <ViewJobs setActiveComponent={setActiveComponent}/>
+          )}
+          {activeComponent === "viewjobdetails" &&(
+            <Jobdetails setActiveComponent={setActiveComponent}/>
+          )}
+          {activeComponent === "editjobdetails" &&(
+            <Editjobdetails setActiveComponent={setActiveComponent}/>
           )}
         </div>
       </div>

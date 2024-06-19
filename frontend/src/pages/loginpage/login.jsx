@@ -187,11 +187,14 @@ function Login() {
       .catch((error) => {
         console.error("Error during login:", error);
         if (error.response && error.response.status === 401) {
-          setErrors({ form: "Invalid credentials" });
+            const errorMessage = error.response.data.error || "Unauthorized";
+            setErrors({ form: errorMessage });
         } else {
-          console.error("Error during login:", error);
+            console.error("Unexpected error during login:", error);
+            setErrors({ form: "An unexpected error occurred. Please try again later." });
         }
-      });
+    });
+    
   };
 
   //Email Validation//

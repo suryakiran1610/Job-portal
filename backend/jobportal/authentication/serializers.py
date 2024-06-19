@@ -4,10 +4,15 @@ from .models import user
 class userserializer(serializers.ModelSerializer):
     class Meta:
         model = user
-        fields = ['email', 'password', 'username', 'companyname', 'usertype','mobile','address','profile_image','fullname']
+        fields = ['email', 'password', 'username', 'companyname', 'usertype','mobile','address','profile_image','fullname','date_joined','is_active','id']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
+
+        is_active = True
+        if validated_data['usertype'] == 'employer':
+            is_active = False
+
         user1 = user(
             email=validated_data['email'],
             username=validated_data.get('username'),
@@ -17,6 +22,7 @@ class userserializer(serializers.ModelSerializer):
             profile_image=validated_data.get('profile_image'),
             address=validated_data.get('address'),
             usertype=validated_data['usertype'],
+            is_active=is_active,
         )
         user1.set_password(validated_data['password'])
         user1.save()

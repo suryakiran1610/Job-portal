@@ -36,6 +36,9 @@ class LoginView(APIView):
             user1 = None        
 
         if user1 is not None and user1.check_password(password):
+            if not user1.is_active:
+                return Response({"error": "Account is not active."}, status=status.HTTP_401_UNAUTHORIZED)
+            
             refresh = RefreshToken.for_user(user1)
             if user1.is_superuser:
                 user_details = {

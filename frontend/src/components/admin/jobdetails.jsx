@@ -6,7 +6,7 @@ import { CiClock2 } from "react-icons/ci";
 import Cookies from "js-cookie";
 import { FaArrowLeft } from "react-icons/fa";
 
-function Viewjob() {
+function Jobdetails() {
   const token = Cookies.get("token");
   const viewedJobId = localStorage.getItem("viewedJobId");
   const [job, setJob] = useState(null);
@@ -150,4 +150,4 @@ function Viewjob() {
   );
 }
 
-export default Viewjob;
+export default Jobdetails;

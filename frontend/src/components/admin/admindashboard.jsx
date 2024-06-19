@@ -6,9 +6,9 @@ import Cookies from "js-cookie";
 
 function Admindashboard() {
     const token = Cookies.get("token");
-    const [jobs,setJobs]=useState([])
-    const [jobseeker,setJobseeker]=useState([])
-    const [company,setCompany]=useState([])
+    const [jobs,setJobs]=useState({ jobs: [],recent_jobs_count: 0 })
+    const [jobseeker,setJobseeker]=useState({ jobseeker: [],recent_jobseeker_count: 0 })
+    const [company, setCompany] = useState({ company: [], recent_company_count: 0 });
 
 
     const headers = {
@@ -93,11 +93,11 @@ function Admindashboard() {
 
   return (
     <div>
-      <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div className="w-full min-h-screen  sm:px-6 lg:px-8 lg:py-7 mx-auto">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="flex flex-col gap-y-3 lg:gap-y-5 p-4 md:p-5 bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-800">
             <div className="inline-flex justify-center items-center">
-              <span className="size-2 inline-block bg-gray-500 rounded-full me-2"></span>
+              <span className="size-2 inline-block bg-green-500 rounded-full me-2"></span>
               <span className="text-xs font-semibold uppercase text-gray-600 dark:text-neutral-400">
                 Company
               </span>
@@ -105,15 +105,14 @@ function Admindashboard() {
 
             <div className="text-center">
               <h3 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-800 dark:text-neutral-200">
-                150
+                {company.company.length}
               </h3>
             </div>
 
             <dl className="flex justify-center items-center divide-x divide-gray-200 dark:divide-neutral-800">
               <dd className="text-start ps-3">
                 <span className="block text-sm text-gray-500 dark:text-neutral-500">
-                  {" "}
-                  5 last week
+                {company.recent_company_count} last week
                 </span>
               </dd>
             </dl>
@@ -129,15 +128,14 @@ function Admindashboard() {
 
             <div className="text-center">
               <h3 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-800 dark:text-neutral-200">
-                25
+                {jobseeker.jobseeker.length}
               </h3>
             </div>
 
             <dl className="flex justify-center items-center divide-x divide-gray-200 dark:divide-neutral-800">
               <dd className="text-start ps-3">
                 <span className="block text-sm text-gray-500 dark:text-neutral-500">
-                  {" "}
-                  7 last week
+                  {jobseeker.recent_jobseeker_count} last week
                 </span>
               </dd>
             </dl>
@@ -145,7 +143,7 @@ function Admindashboard() {
 
           <div className="flex flex-col gap-y-3 lg:gap-y-5 p-4 md:p-5 bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-800">
             <div className="inline-flex justify-center items-center">
-              <span className="size-2 inline-block bg-red-500 rounded-full me-2"></span>
+              <span className="size-2 inline-block bg-green-500 rounded-full me-2"></span>
               <span className="text-xs font-semibold uppercase text-gray-600 dark:text-neutral-400">
                 Jobs
               </span>
@@ -153,15 +151,14 @@ function Admindashboard() {
 
             <div className="text-center">
               <h3 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-800 dark:text-neutral-200">
-                4
+                {jobs.jobs.length}
               </h3>
             </div>
 
             <dl className="flex justify-center items-center divide-x divide-gray-200 dark:divide-neutral-800">
               <dd className="text-start ps-3">
                 <span className="block text-sm text-gray-500 dark:text-neutral-500">
-                  {" "}
-                  7 last week
+                  {jobs.recent_jobs_count} last week
                 </span>
               </dd>
             </dl>
@@ -199,7 +196,7 @@ function Admindashboard() {
 
             <div className="text-center">
               <h3 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-800 dark:text-neutral-200">
-                4
+              {company.notactivatedcompanies}
               </h3>
             </div>
 
@@ -207,7 +204,7 @@ function Admindashboard() {
               <dd className="text-start ps-3">
                 <span className="block text-sm text-gray-500 dark:text-neutral-500">
                   {" "}
-                  7 last week
+                  {company.notactivatedcompanies} for Approval
                 </span>
               </dd>
             </dl>
