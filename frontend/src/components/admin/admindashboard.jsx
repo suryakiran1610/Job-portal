@@ -9,6 +9,8 @@ function Admindashboard() {
     const [jobs,setJobs]=useState({ jobs: [],recent_jobs_count: 0 })
     const [jobseeker,setJobseeker]=useState({ jobseeker: [],recent_jobseeker_count: 0 })
     const [company, setCompany] = useState({ company: [], recent_company_count: 0 });
+    const [notifications, setNotifications] = useState({notification:[],unreadnotificationcount:0});
+
 
 
     const headers = {
@@ -89,6 +91,31 @@ function Admindashboard() {
             });
   
     },[])
+
+    useEffect(()=>{
+      MakeApiRequest(
+          "get",
+          `${config.baseUrl}adminn/getallnotification/`,
+          headers,
+          {},
+          {}
+        )
+          .then((response) => {
+              console.log("notification",response)
+              setNotifications(response);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            if (error.response && error.response.status === 401) {
+              console.log(
+                "Unauthorized access. Token might be expired or invalid."
+              );
+            } else {
+              console.error("Unexpected error occurred:", error);
+            }
+          });
+
+  },[])
 
 
   return (
@@ -173,7 +200,7 @@ function Admindashboard() {
 
             <div className="text-center">
               <h3 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-800 dark:text-neutral-200">
-                4
+                {notifications.notification.length}
               </h3>
             </div>
 
@@ -181,7 +208,7 @@ function Admindashboard() {
               <dd className="text-start ps-3">
                 <span className="block text-sm text-gray-500 dark:text-neutral-500">
                   {" "}
-                  7 last week
+                  {notifications.unreadnotificationcount} Unread Notification
                 </span>
               </dd>
             </dl>

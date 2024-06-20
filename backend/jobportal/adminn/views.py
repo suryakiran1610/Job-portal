@@ -12,8 +12,10 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 from company.models import jobpost
 from authentication.models import user
+from .models import notification
 from company.serializers import jobpostserializer
 from authentication.serializers import userserializer
+from .serializers import notificationserializer
 
 class GetallJobs(APIView):
     permission_classes = [IsAuthenticated]
@@ -22,8 +24,8 @@ class GetallJobs(APIView):
         jobs = jobpost.objects.all()
         serializer = jobpostserializer(jobs, many=True)
         
-        # Calculate the number of job posts in the last 3 days
-        seven_days_ago = now() - timedelta(days=3)
+        # Calculate the number of job posts in the last 7 days
+        seven_days_ago = now() - timedelta(days=7)
         recent_jobs_count = jobpost.objects.filter(jobposteddate__gte=seven_days_ago).count()
         
         response_data = {
@@ -41,7 +43,7 @@ class Getallcompany(APIView):
         serializer = userserializer(company, many=True)
         
         # Calculate the number of job posts in the last 7 days
-        seven_days_ago = now() - timedelta(days=3)
+        seven_days_ago = now() - timedelta(days=7)
         recent_company_count = user.objects.filter(usertype='employer',date_joined__date__gte=seven_days_ago).count()
 
         not_activated_companies=user.objects.filter(usertype='employer',is_active = 0).count()
@@ -83,8 +85,8 @@ class Getalljobseeker(APIView):
         jobseeker = user.objects.filter(usertype='jobseeker')
         serializer = userserializer(jobseeker, many=True)
         
-        # Calculate the number of job posts in the last 3 days
-        seven_days_ago = now() - timedelta(days=3)
+        # Calculate the number of job posts in the last 7 days
+        seven_days_ago = now() - timedelta(days=7)
         recent_jobseeker_count = user.objects.filter(usertype='jobseeker',date_joined__date__gte=seven_days_ago).count()
         
         response_data = {
@@ -156,3 +158,66 @@ class LimitJobsView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+
+class GetallNotification(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        notifications = notification.objects.all()
+        serializer = notificationserializer(notifications, many=True)
+
+        unreadnotifications = notification.objects.filter(isread=0).count()
+
+        
+        response_data = {
+            'notification': serializer.data,
+            'unreadnotificationcount': unreadnotifications,
+        }
+        
+        return Response(response_data)
+
+class Deletecompany_DeleteNotification(APIView): 
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        print(request.data)
+        companyid = int(request.query_params.get('companyid'))
+        try:
+            company = user.objects.get(id=companyid)
+            notifications=notification.objects.get(companyid=companyid)
+        except user.DoesNotExist:
+            return Response({'error': 'company not found'}, status=404)
+
+        company.delete()
+        notifications.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class DeleteNotification(APIView): 
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        print(request.data)
+        notificationid =request.query_params.get('notificationid')
+        if notificationid:
+            try:
+                notifications = notification.objects.get(id=notificationid)
+                notifications.delete()
+            except notification.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND) 
+        else:
+            notifications = notification.objects.all()
+            notifications.delete()  
+        return Response(status=status.HTTP_204_NO_CONTENT)    
+
+class Notificationn_Readed(APIView): 
+    permission_classes = [IsAuthenticated]   
+       
+    def put(self,request):
+        print(request.data)
+        Notification=int(request.query_params.get('notificationid'))
+        notifications = notification.objects.get(id=Notification)
+        notifications.isread = 1
+        notifications.save()
+        return Response({'message': 'Notification Readed'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+   

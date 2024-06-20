@@ -12,6 +12,7 @@ import Jobseekerprofile from "../../components/admin/jobseekerprofile";
 import ViewJobs from "../../components/admin/viewjobs";
 import Jobdetails from "../../components/admin/jobdetails";
 import Editjobdetails from "../../components/admin/editjobdetails";
+import Notification from "../../components/admin/notification";
 import { FaRegBell } from "react-icons/fa";
 import { IoHome } from "react-icons/io5";
 import { FaUsersLine } from "react-icons/fa6";
@@ -19,97 +20,121 @@ import { HiUsers } from "react-icons/hi";
 import { IoNotifications } from "react-icons/io5";
 import { RiTimelineView } from "react-icons/ri";
 
-
 function Admin() {
   const [activeComponent, setActiveComponent] = useState("dashboard");
-  const userdetails=JSON.parse(localStorage.getItem("user"))
-  const [profile,setProfile]=useState("")
-  const navigatee=useNavigate()
+  const userdetails = JSON.parse(localStorage.getItem("user"));
+  const [profile, setProfile] = useState("");
+  const navigatee = useNavigate();
   const token = Cookies.get("token");
-
-
+  const [notifications, setNotifications] = useState({
+    notification: [],
+    unreadnotificationcount: 0,
+  });
 
   const headers = {
-      Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
   };
-  
 
   const handleLogout = () => {
-      Cookies.remove('token')
-      localStorage.removeItem('user');
-      navigatee('/login')
+    Cookies.remove("token");
+    localStorage.removeItem("user");
+    navigatee("/login");
   };
 
   const updateUserProfile = (updatedProfile) => {
-      setProfile(updatedProfile);
-    };
+    setProfile(updatedProfile);
+  };
 
-    const fetchUserProfile = () => {
-      const params = {
-        userid: userdetails.id,
+  const fetchUserProfile = () => {
+    const params = {
+      userid: userdetails.id,
     };
-    
 
     MakeApiRequest(
-    "get",
-    `${config.baseUrl}company/users/`,
-    headers,
-    params,
-    {}
-    )
-    .then((response) => {
-        console.log("profile", response);
-        setProfile(response);
-    })
-    .catch((error) => {
-        console.error("Error:", error);
-        if (error.response && error.response.status === 401) {
-        console.log(
-            "Unauthorized access. Token might be expired or invalid."
-        );
-        } else {
-        console.error("Unexpected error occurred:", error);
-        }
-    });
-  } 
-
-
-    useEffect(() => {
-      const params = {
-          userid: userdetails.id,
-      };
-
-      MakeApiRequest(
       "get",
       `${config.baseUrl}company/users/`,
       headers,
       params,
       {}
-      )
+    )
       .then((response) => {
-          console.log("profile", response);
-          setProfile(response);
+        console.log("profile", response);
+        setProfile(response);
       })
       .catch((error) => {
-          console.error("Error:", error);
-          if (error.response && error.response.status === 401) {
+        console.error("Error:", error);
+        if (error.response && error.response.status === 401) {
           console.log(
-              "Unauthorized access. Token might be expired or invalid."
+            "Unauthorized access. Token might be expired or invalid."
           );
-          } else {
+        } else {
           console.error("Unexpected error occurred:", error);
-          }
+        }
+      });
+  };
+
+  useEffect(() => {
+    const params = {
+      userid: userdetails.id,
+    };
+
+    MakeApiRequest(
+      "get",
+      `${config.baseUrl}company/users/`,
+      headers,
+      params,
+      {}
+    )
+      .then((response) => {
+        console.log("profile", response);
+        setProfile(response);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        if (error.response && error.response.status === 401) {
+          console.log(
+            "Unauthorized access. Token might be expired or invalid."
+          );
+        } else {
+          console.error("Unexpected error occurred:", error);
+        }
       });
   }, []);
 
   const updateUserProfileImage = (newImage) => {
-    setProfile(prevState => ({
-        ...prevState,
-        profile_image: newImage
+    setProfile((prevState) => ({
+      ...prevState,
+      profile_image: newImage,
     }));
-  }  
+  };
 
+  useEffect(() => {
+    updateNotification();
+  }, []);
 
+  const updateNotification = () => {
+    MakeApiRequest(
+      "get",
+      `${config.baseUrl}adminn/getallnotification/`,
+      headers,
+      {},
+      {}
+    )
+      .then((response) => {
+        console.log("notification", response);
+        setNotifications(response);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        if (error.response && error.response.status === 401) {
+          console.log(
+            "Unauthorized access. Token might be expired or invalid."
+          );
+        } else {
+          console.error("Unexpected error occurred:", error);
+        }
+      });
+  };
 
   return (
     <>
@@ -133,17 +158,25 @@ function Admin() {
             </div>
 
             <div className="w-full flex items-center justify-end ms-auto sm:justify-between sm:gap-x-3 sm:order-3">
-              
               <div className="hidden sm:block"></div>
 
               <div className="flex flex-row items-center justify-end gap-2">
+                {notifications.unreadnotificationcount>0 && (
+                <div className="relative">
+                  <div className="absolute left-6 bottom-1 w-3 h-3 flex justify-center items-center bg-red-500 rounded-full">
+                    <span className="text-sm text-white p-1"></span>
+                  </div>
+                </div>
+                )}
                 <button
+                  onClick={() => {
+                    setActiveComponent("viewnotifications");
+                  }}
                   type="button"
                   className="group w-[2.375rem] h-[2.375rem] inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent hover:text-black hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none"
-                  >
-                    <FaRegBell className="text-lg text-white group-hover:text-black" />
+                >
+                  <FaRegBell className="text-lg text-white group-hover:text-black" />
                 </button>
-                
 
                 <div className="hs-dropdown [--placement:bottom-right] relative inline-flex">
                   <button
@@ -154,7 +187,7 @@ function Admin() {
                     <img
                       className="inline-block size-[38px] rounded-full"
                       src={`http://127.0.0.1:8000${profile.profile_image}`}
-                    alt="Image Description"
+                      alt="Image Description"
                     />
                   </button>
 
@@ -172,7 +205,9 @@ function Admin() {
                     </div>
                     <div className="mt-2 py-2 first:pt-0 last:pb-0">
                       <a
-                        onClick={()=>{setActiveComponent('adminprofile')}}
+                        onClick={() => {
+                          setActiveComponent("adminprofile");
+                        }}
                         className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
                         href="#"
                       >
@@ -225,7 +260,10 @@ function Admin() {
           </nav>
         </header>
 
-        <div style={{ backgroundColor: "#EEEEEE" }} className="sticky top-0 inset-x-0 z-20  border-y px-4 sm:px-6 md:px-8 lg:hidden dark:bg-neutral-800 dark:border-neutral-700">
+        <div
+          style={{ backgroundColor: "#EEEEEE" }}
+          className="sticky top-0 inset-x-0 z-20  border-y px-4 sm:px-6 md:px-8 lg:hidden dark:bg-neutral-800 dark:border-neutral-700"
+        >
           <div className="flex justify-between items-center py-2">
             <ol className="ms-3 flex items-center whitespace-nowrap"></ol>
 
@@ -268,9 +306,7 @@ function Admin() {
                 lg:block lg:translate-x-0 lg:end-auto lg:bottom-0
                 dark:bg-neutral-800 dark:border-neutral-700
               "
-
         >
-
           <nav
             className="hs-accordion-group p-6 w-full flex flex-col flex-wrap"
             data-hs-accordion-always-open
@@ -278,8 +314,10 @@ function Admin() {
             <ul className="space-y-1.5">
               <li>
                 <a
-                  onClick={()=>{setActiveComponent('dashboard')}}
-                  className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
+                  onClick={() => {
+                    setActiveComponent("dashboard");
+                  }}
+                  className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                   href="#"
                 >
                   <IoHome />
@@ -289,8 +327,10 @@ function Admin() {
 
               <li>
                 <a
-                  onClick={()=>{setActiveComponent('viewcompanies')}}
-                  className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
+                  onClick={() => {
+                    setActiveComponent("viewcompanies");
+                  }}
+                  className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                   href="#"
                 >
                   <FaUsersLine />
@@ -300,8 +340,10 @@ function Admin() {
 
               <li>
                 <a
-                  onClick={()=>{setActiveComponent('viewjobseekers')}}
-                  className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
+                  onClick={() => {
+                    setActiveComponent("viewjobseekers");
+                  }}
+                  className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                   href="#"
                 >
                   <HiUsers />
@@ -310,8 +352,10 @@ function Admin() {
               </li>
               <li>
                 <a
-                  onClick={()=>{setActiveComponent('viewjobs')}}
-                  className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300"
+                  onClick={() => {
+                    setActiveComponent("viewjobs");
+                  }}
+                  className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300"
                   href="#"
                 >
                   <RiTimelineView />
@@ -320,44 +364,60 @@ function Admin() {
               </li>
               <li>
                 <a
-                  className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300"
+                  onClick={() => {
+                    setActiveComponent("viewnotifications");
+                  }}
+                  className=" relative w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300"
                   href="#"
                 >
-                  <IoNotifications />
-                  Notifications
+                  <div className="absolute left-0 top-1 w-5 h-5 flex justify-center items-center bg-red-500 rounded-full">
+                    <span className="text-sm text-white p-1">
+                      {notifications.unreadnotificationcount}
+                    </span>
+                  </div>
+                  <IoNotifications className="text-lg" />
+                  <span>Notifications</span>
                 </a>
               </li>
             </ul>
           </nav>
         </div>
 
-        <div className="w-full h-full lg:ps-44 " style={{ backgroundColor: "#EEEEEE" }}>
-          {activeComponent === "dashboard" &&(
-            <Admindashboard/>
+        <div
+          className="w-full h-full lg:ps-44 "
+          style={{ backgroundColor: "#EEEEEE" }}
+        >
+          {activeComponent === "dashboard" && <Admindashboard />}
+          {activeComponent === "adminprofile" && (
+            <Adminprofile
+              fetchUserProfile={fetchUserProfile}
+              updateUserProfileImage={updateUserProfileImage}
+              updateUserProfile={updateUserProfile}
+            />
           )}
-          {activeComponent === "adminprofile" &&(
-            <Adminprofile fetchUserProfile={fetchUserProfile} updateUserProfileImage={updateUserProfileImage} updateUserProfile={updateUserProfile}/>
+          {activeComponent === "viewcompanies" && (
+            <Viewcompanies setActiveComponent={setActiveComponent} />
           )}
-          {activeComponent === "viewcompanies" &&(
-            <Viewcompanies setActiveComponent={setActiveComponent}/>
+          {activeComponent === "viewcompanyprofile" && (
+            <Companyprofile setActiveComponent={setActiveComponent} />
           )}
-          {activeComponent === "viewcompanyprofile" &&(
-            <Companyprofile setActiveComponent={setActiveComponent}/>
+          {activeComponent === "viewjobseekers" && (
+            <Viewjobseeker setActiveComponent={setActiveComponent} />
           )}
-          {activeComponent === "viewjobseekers" &&(
-            <Viewjobseeker setActiveComponent={setActiveComponent}/>
+          {activeComponent === "viewjobseekerprofile" && (
+            <Jobseekerprofile setActiveComponent={setActiveComponent} />
           )}
-          {activeComponent === "viewjobseekerprofile" &&(
-            <Jobseekerprofile setActiveComponent={setActiveComponent}/>
+          {activeComponent === "viewjobs" && (
+            <ViewJobs setActiveComponent={setActiveComponent} />
           )}
-          {activeComponent === "viewjobs" &&(
-            <ViewJobs setActiveComponent={setActiveComponent}/>
+          {activeComponent === "viewjobdetails" && (
+            <Jobdetails setActiveComponent={setActiveComponent} />
           )}
-          {activeComponent === "viewjobdetails" &&(
-            <Jobdetails setActiveComponent={setActiveComponent}/>
+          {activeComponent === "editjobdetails" && (
+            <Editjobdetails setActiveComponent={setActiveComponent} />
           )}
-          {activeComponent === "editjobdetails" &&(
-            <Editjobdetails setActiveComponent={setActiveComponent}/>
+          {activeComponent === "viewnotifications" && (
+            <Notification updateNotification={updateNotification} />
           )}
         </div>
       </div>

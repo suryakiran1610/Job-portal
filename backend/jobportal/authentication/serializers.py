@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import user
+from adminn.models import notification
 
 class userserializer(serializers.ModelSerializer):
     class Meta:
@@ -26,4 +27,12 @@ class userserializer(serializers.ModelSerializer):
         )
         user1.set_password(validated_data['password'])
         user1.save()
+
+        if user1.usertype == 'employer':
+            notification.objects.create(
+                message="New Company Registered",
+                companyname=user1.companyname,
+                companyid=user1.id
+            )
+
         return user1

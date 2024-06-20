@@ -10,6 +10,16 @@ urlpatterns = [
         path('limitcompanyview/',views.LimitCompanyView.as_view(),name="limitcompanyview"),
         path('limitjobsview/',views.LimitJobsView.as_view(),name="limitjobsview"),
 
+        path('getallnotification/',views.GetallNotification.as_view(),name="getallnotification"),
+        path('deletecompany_deletenotification/',views.Deletecompany_DeleteNotification.as_view(),name="deletecompany_deletenotification"),
+
+        path('deletenotification/',views.DeleteNotification.as_view(),name="deletenotification"),
+        path('notificationn_readed/',views.Notificationn_Readed.as_view(),name="notificationn_readed"),
+
+
+
+
+
 
 
 ]
