@@ -277,11 +277,14 @@ function Myjobs({ setActiveComponent }) {
                             className="hs-dropdown-toggle py-1.5 px-2 inline-flex justify-center items-center gap-2 rounded-lg text-gray-700 align-middle disabled:opacity-50 disabled:pointer-events-none transition-all text-sm dark:text-neutral-400 dark:hover:text-white dark:focus:ring-offset-gray-800"
                             onClick={(event) => {
                               setShowDropdown(true);
-                              const menu =
-                                event.currentTarget.nextElementSibling;
-                              menu.classList.toggle("hidden");
-                              menu.classList.toggle("opacity-0");
-                              menu.classList.toggle("opacity-100");
+                              const menu = event.currentTarget.nextElementSibling;
+                              if (menu) {
+                                menu.classList.toggle("hidden");
+                                menu.classList.toggle("opacity-0");
+                                menu.classList.toggle("opacity-100");
+                              } else {
+                                console.error("Menu not found");
+                              }
                             }}
                           >
                             <svg

@@ -25,7 +25,7 @@ class GetallJobs(APIView):
         keywords = request.query_params.get('keywords', '').strip()
         location = request.query_params.get('location', '').strip()
 
-        jobs = jobpost.objects.all()
+        jobs = jobpost.objects.all().order_by('-jobposteddate')
 
         if keywords:
             jobs = jobs.filter(

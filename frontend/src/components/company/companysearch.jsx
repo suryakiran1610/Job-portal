@@ -82,9 +82,18 @@ function Companysearch({ setActiveComponent }) {
   const calculateDaysSincePosted = (postedDate) => {
     const currentDate = new Date();
     const postedDateObj = new Date(postedDate);
+
+    currentDate.setHours(0, 0, 0, 0);
+    postedDateObj.setHours(0, 0, 0, 0);
+
     const diffTime = Math.abs(currentDate - postedDateObj);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+    
+    if (diffDays === 0) {
+      return "today";
+    } else {
+      return `${diffDays} days ago`;
+    }
   };
 
   const handleSearch = (e) => {
@@ -154,7 +163,7 @@ function Companysearch({ setActiveComponent }) {
                   <li>{splitDescriptionIntoListItems(job.jobdescription)}.</li>
                 </ul>
                 <p className="text-gray-500 mt-4">
-                  Posted {calculateDaysSincePosted(job.jobposteddate)} days ago
+                  Posted {calculateDaysSincePosted(job.jobposteddate)}
                 </p>
               </div>
             </div>

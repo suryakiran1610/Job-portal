@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import { saveAs } from 'file-saver';
-
+import JobseekerNavbar from "../navbars/jobseekernavbar";
 
 function Appliedjobs({ setActiveComponent }) {
   const [allappliedjobs, setAllappliedjobs] = useState([]);
@@ -128,6 +128,7 @@ function Appliedjobs({ setActiveComponent }) {
 
   return (
     <>
+    <JobseekerNavbar/>
       <div className="max-w-[65rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
         <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
           <div className="flex flex-col">
