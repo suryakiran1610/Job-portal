@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
 
 function ViewJobs({ setActiveComponent }) {
   const [alljobs, setAlljobs] = useState([]);
@@ -212,28 +214,24 @@ function ViewJobs({ setActiveComponent }) {
                           <td className="size-px whitespace-nowrap">
                             <div className="px-6 py-3 ml-1">
                               <div className="flex items-center gap-x-3">
-                                <span
-                                  onClick={() => {
-                                    viewjobdetails(jobs.id);
-                                  }}
+                                <Link
+                                  to={`/admin?tab=/admin/jobdetails&jobid=${jobs.id}`}
                                   className="text-sm text-blue-600 dark:text-neutral-500 cursor-pointer hover:text-blue-800"
                                 >
                                   View
-                                </span>
+                                </Link>
                               </div>
                             </div>
                           </td>
                           <td className="size-px whitespace-nowrap">
                             <div className="px-6 py-3 ml-1">
                               <div className="flex items-center gap-x-3">
-                                <span
-                                  onClick={() => {
-                                    editjobdetails(jobs.id);
-                                  }}
+                                <Link
+                                  to={`/admin?tab=/admin/jobedit&jobid=${jobs.id}`}
                                   className="text-sm text-violet-600 dark:text-neutral-500 cursor-pointer hover:text-violet-800"
                                 >
                                   Edit
-                                </span>
+                                </Link>
                               </div>
                             </div>
                           </td>

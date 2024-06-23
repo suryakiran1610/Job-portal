@@ -3,6 +3,9 @@ import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import CompanyNavbar from "../navbars/companynavbar";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+
 
 function Myjobs({ setActiveComponent }) {
   const token = Cookies.get("token");
@@ -18,25 +21,26 @@ function Myjobs({ setActiveComponent }) {
   const [buttonstatus, setButtonstatus] = useState(true);
   const [applicants,setApplicants]=useState([])
   const [applicantCounts, setApplicantCounts] = useState({});
+  const navigate=useNavigate()
 
 
   const handleViewJob = (jobId) => {
-    localStorage.setItem("viewedJobId", jobId);
-    setActiveComponent("viewjob");
+    navigate(`/employer/jobdetails/${jobId}`) 
+
   };
 
   const handleEditJob = (jobId) => {
-    localStorage.setItem("viewedJobId", jobId);
-    setActiveComponent("editjob");
+    navigate(`/employer/editjobs/${jobId}`) 
   };
 
   const Handlejobpost = () => {
-    setActiveComponent("postjob");
+    navigate("/employer/postjob") 
+
   };
 
   const handleViewapplicants = (jobId) => {
-    localStorage.setItem("viewedJobId", jobId);
-    setActiveComponent("applicants");
+    navigate(`/employer/applicants/${jobId}`) 
+
   };
 
   const headers = {
@@ -162,7 +166,10 @@ function Myjobs({ setActiveComponent }) {
   };
 
   return (
-    <div className="max-w-[75rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+    <>
+        <CompanyNavbar/>
+        <div className="w-full h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-1 mx-auto" style={{ backgroundColor: "#EEEEEE" }}>
+        <div className="max-w-[75rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
       <div className="flex flex-col">
         <div className="-m-1.5 overflow-x-auto">
           <div className="p-1.5 min-w-full inline-block align-middle">
@@ -242,7 +249,7 @@ function Myjobs({ setActiveComponent }) {
                       className="bg-white hover:bg-gray-50 dark:bg-neutral-900 dark:hover:bg-neutral-800"
                     >
                       <td className="size-px whitespace-nowrap">
-                        <a onClick={() => handleViewJob(job.id)} className="block relative z-10" href="#">
+                        <a onClick={() =>{handleViewJob(job.id)}} className="block relative z-10 cursor-pointer">
                           <div className="px-9 py-2">
                             <div className="block text-sm text-blue-600 decoration-2 hover:underline dark:text-blue-500">
                               {job.jobtitle}
@@ -251,7 +258,7 @@ function Myjobs({ setActiveComponent }) {
                         </a>
                       </td>
                       <td className="h-px w-72 min-w-72">
-                        <a className="block relative z-10" href="#">
+                        <a className="block relative z-10">
                           <div className="px-16 py-2">
                             <p className="text-sm text-gray-500 dark:text-neutral-500">
                               {job.jobposteddate}
@@ -260,7 +267,7 @@ function Myjobs({ setActiveComponent }) {
                         </a>
                       </td>
                       <td className="size-px whitespace-nowrap">
-                        <a onClick={() => handleViewapplicants(job.id)} className="block relative z-10" href="#">
+                        <a onClick={() => handleViewapplicants(job.id)} className="block relative z-10 cursor-pointer" >
                           <div className="px-16 py-2">
                             <span className="inline-flex items-center gap-1.5 py-1 px-2 rounded-lg text-xs font-medium bg-gray-100 text-gray-800 dark:bg-neutral-900 dark:text-neutral-200">
                             {applicantCounts[job.id] || 0} Applicants
@@ -316,28 +323,24 @@ function Myjobs({ setActiveComponent }) {
                               <a
                                 onClick={() => handleViewJob(job.id)}
                                 className="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                                href="#"
                               >
                                 View
                               </a>
                               <a
                                 onClick={() => handleEditJob(job.id)}
                                 className="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                                href="#"
                               >
                                 Edit
                               </a>
                               <a
                                 onClick={() => handledeletemodal(job.id)}
                                 className="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                                href="#"
                               >
                                 Delete
                               </a>
                               <a
                                  onClick={() => handleViewapplicants(job.id)}
                                 className="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                                href="#"
                               >
                                 Applicants
                               </a>
@@ -456,6 +459,8 @@ function Myjobs({ setActiveComponent }) {
         </div>
       )}
     </div>
+    </div>
+    </>
   );
 }
 

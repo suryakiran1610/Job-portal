@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState } from "react";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import ProfileContext from "../../context/ProfileContext";
 
-function Adminprofile(props) {
+
+function Adminprofile() {
   const userdetails = JSON.parse(localStorage.getItem("user"));
   const [toggleeditmodal, setToggleeditmodal] = useState(false);
   const [togglepasswordmodal, setTogglepasswordmodal] = useState(false);
   const token = Cookies.get("token");
-  const [profile, setProfile] = useState("");
+  const { profile, setProfile } = useContext(ProfileContext);
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
   const [errors, setErrors] = useState({});
@@ -199,9 +201,7 @@ function Adminprofile(props) {
           setToggleeditmodal(false);
           setMessage("");
         }, 2000);
-        props.updateUserProfile(response);
-        props.updateUserProfileImage(response.profile_image);
-        props.fetchUserProfile();
+
       })
       .catch((error) => {
         console.error("Error:", error);

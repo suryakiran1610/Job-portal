@@ -4,6 +4,10 @@ import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import { saveAs } from 'file-saver';
 import { FaArrowLeft } from "react-icons/fa";
+import CompanyNavbar from "../navbars/companynavbar";
+import { useParams } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+
 
 
 function Applicants({ setActiveComponent }) {
@@ -15,6 +19,10 @@ function Applicants({ setActiveComponent }) {
   const [startIndex, setStartIndex] = useState(0);
   const [buttonstatus, setButtonstatus] = useState(true);
   const [jobid, setJobid] = useState("");
+  const { id } = useParams();
+  const navigate=useNavigate()
+
+
 
 
   const handlegoback = (e) => {
@@ -33,7 +41,7 @@ function Applicants({ setActiveComponent }) {
   const loadJobs = () => {
     const params = {
       limit: limit,
-      job_id:viewedJobId,
+      job_id:id,
       startIndex: startIndex,
     };
 
@@ -93,22 +101,17 @@ function Applicants({ setActiveComponent }) {
   }
 
   const viewuserprofile=(userid)=>{
-      localStorage.setItem("applieduserid", userid);
-      setActiveComponent("userprofile");
+    navigate(`/employer/jobseekerprofile/${userid}`) 
+
   };
 
   
 
   return (
     <>
+    <CompanyNavbar/>
+    <div style={{ backgroundColor: "#EEEEEE" }}>
     <div className="max-w-[65rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
-      <div
-        onClick={handlegoback}
-        className="flex items-center cursor-pointer text-slate-700"
-      >
-        <FaArrowLeft className="text-xs mr-1" />
-        <p className="text-sm">Back to Jobs</p>
-      </div>
       <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
         <div className="flex flex-col">
           <div className="-m-1.5 overflow-x-auto">
@@ -327,6 +330,7 @@ function Applicants({ setActiveComponent }) {
             </div>
           </div>
         </div>
+      </div>
       </div>
       </div>
       </>

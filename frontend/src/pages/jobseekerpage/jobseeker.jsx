@@ -18,9 +18,15 @@ function Jobseeker() {
     const navigatee=useNavigate()
     const token = Cookies.get("token");
     const [profileImageURL, setProfileImageURL] = useState("");
+    const location = useLocation();
+    const [tab, setTab] = useState();
 
-
-
+    useEffect(() => {
+      const urlParams = new URLSearchParams(location.search);
+      const tabFromUrl = urlParams.get("tab");
+      if (tabFromUrl) setTab(tabFromUrl);
+    }, [location.search]);
+  
     const headers = {
         Authorization: `Bearer ${token}`,
     };
@@ -203,7 +209,7 @@ function Jobseeker() {
                       Logout
                     </a>
                     <a
-                      onClick={()=>{setActiveComponent('profile')}}
+                      // onClick={()=>{setActiveComponent('profile')}}
                       className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
                       href="#"
                     >

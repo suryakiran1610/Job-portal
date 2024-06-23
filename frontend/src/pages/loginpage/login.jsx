@@ -162,19 +162,19 @@ function Login() {
               console.log("admin login Successful");
               Cookies.set("token", token);
               localStorage.setItem("user",JSON.stringify(user))
-              navigate("/admin");
+              navigate("/admin?tab=/admin/dashboard");
               break;
             case "jobseeker":
               console.log("jobseeker login Successful");
               Cookies.set("token", token);
               localStorage.setItem("user",JSON.stringify(user))
-              navigate("/jobseeker");
+              navigate("/jobseeker/jobseekersearch");
               break;
             case "employer":
               console.log("employer login Successful");
               Cookies.set("token", token);
               localStorage.setItem("user",JSON.stringify(user))
-              navigate("/employer");
+              navigate("/employer/employersearch");
               break;
             default:
               console.log("Unknown user type:", userType);

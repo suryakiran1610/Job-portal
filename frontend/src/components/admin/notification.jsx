@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
-import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 
 function Notification(props) {

@@ -2,15 +2,17 @@ import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
-function Viewcompanies({ setActiveComponent }) {
+
+function Viewcompanies() {
   const [allcompanies, setAllcompanies] = useState([]);
   const token = Cookies.get("token");
   const userdetails = JSON.parse(localStorage.getItem("user"));
   const [limit, setLimit] = useState(5);
   const [startIndex, setStartIndex] = useState(0);
   const [buttonstatus, setButtonstatus] = useState(true);
-  const [companyid, setCompanyid] = useState("");
+  const [companyid, setCompanyid] = useState(null);
   const [togglemodal, setTogglemodal] = useState(false);
   const [togglestatusmodal, setTogglestatusmodal] = useState(false);
   const [companyid_activate,setCompanyid_activate]=useState("")
@@ -65,10 +67,6 @@ function Viewcompanies({ setActiveComponent }) {
     setStartIndex(Math.max(0, startIndex - limit));
   };
 
-  const viewcompanyprofile = (companyId) => {
-    localStorage.setItem("applieduserid", companyId);
-    setActiveComponent("viewcompanyprofile");
-  };
 
   const handledeletemodal = (companyId) => {
     setCompanyid(companyId);
@@ -309,14 +307,12 @@ function Viewcompanies({ setActiveComponent }) {
                           <td className="size-px whitespace-nowrap">
                             <div className="px-3 py-3 ml-1">
                               <div className="flex items-center gap-x-3">
-                                <span
-                                  onClick={() => {
-                                    viewcompanyprofile(company.id);
-                                  }}
+                                <Link
+                                  to={`/admin?tab=/admin/companyprofile&companyid=${company.id}`}
                                   className="text-sm text-blue-600 dark:text-neutral-500 cursor-pointer hover:text-blue-800"
                                 >
                                   View
-                                </span>
+                                </Link>
                               </div>
                             </div>
                           </td>

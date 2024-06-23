@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import MakeApiRequest from "../../Functions/AxiosApi";
+import { useLocation } from "react-router-dom";
 import config from "../../Functions/config";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import BeatLoader from "react-spinners/BeatLoader";
+
 
 function Jobseekerprofile() {
-  const userdetails = JSON.parse(localStorage.getItem("applieduserid"));
+  const location = useLocation();
   const [toggleeditmodal, setToggleeditmodal] = useState(false);
   const [togglepasswordmodal, setTogglepasswordmodal] = useState(false);
   const token = Cookies.get("token");
@@ -13,6 +16,8 @@ function Jobseekerprofile() {
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
   const [errors, setErrors] = useState({});
+  const [userid,setUserid]=useState(null)
+  const [isloading, setIsloading] = useState(false);
   const [initialprofiledetails, setInitialprofiledetails] = useState({});
   const [passwordError, setPasswordError] = useState("");
   const [editedprofile, setEditedprofile] = useState({
@@ -23,6 +28,13 @@ function Jobseekerprofile() {
     mobile: "",
     profile_image: "",
   });
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const userIdFromUrl = urlParams.get("userid");
+    setUserid(userIdFromUrl);
+    userdetails(userIdFromUrl)
+  }, [location.search]);
 
   const [changepassword, setChangepassword] = useState({
     oldpassword: "",
@@ -88,11 +100,14 @@ function Jobseekerprofile() {
 
   
 
-  useEffect(() => {
-    const params = {
-      userid: userdetails,
-    };
+  const userdetails=(userId) => {
+    if (userId) {
 
+    const params = {
+      userid: userId,
+    };
+    setIsloading(true);
+    setTimeout(() => {
     MakeApiRequest(
       "get",
       `${config.baseUrl}company/users/`,
@@ -103,10 +118,12 @@ function Jobseekerprofile() {
       .then((response) => {
         console.log("profile", response);
         setProfile(response);
+        setIsloading(false);
         setInitialprofiledetails(response);
       })
       .catch((error) => {
         console.error("Error:", error);
+        setIsloading(false);
         if (error.response && error.response.status === 401) {
           console.log(
             "Unauthorized access. Token might be expired or invalid."
@@ -115,7 +132,9 @@ function Jobseekerprofile() {
           console.error("Unexpected error occurred:", error);
         }
       });
-  }, []);
+    }, 600);
+  }
+  }
 
   function Handleprofiledetails(e) {
     const { name, value, type, files } = e.target;
@@ -170,7 +189,7 @@ function Jobseekerprofile() {
     }
 
     const params = {
-      userid: userdetails,
+      userid: userid,
     };
 
     const formData = new FormData();
@@ -238,7 +257,7 @@ function Jobseekerprofile() {
     e.preventDefault();
     console.log(token);
     const params = {
-      userid: userdetails,
+      userid: userid,
     };
 
     const formData = new FormData();
@@ -277,10 +296,21 @@ function Jobseekerprofile() {
       });
   };
 
-  if (!profile) {
+  if(isloading){
+    return(
+      <div className="max-w-[65rem] h-screen  flex justify-center items-center px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+        <BeatLoader
+          color="#6b7280"
+          margin={1}
+          size={50}
+        />
+      </div>
+    )
+  }
+  if(!profile) {
     return (
       <div className="max-w-[65rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
-        <h1 className="text-red-700">User No Longer Exists.</h1>
+        <h1 className="text-red-700">User No Longer Exists...</h1>
       </div>
     );
   }

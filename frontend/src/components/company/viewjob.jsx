@@ -5,11 +5,21 @@ import { IoLocationOutline } from "react-icons/io5";
 import { CiClock2 } from "react-icons/ci";
 import Cookies from "js-cookie";
 import { FaArrowLeft } from "react-icons/fa";
+import { useParams } from "react-router-dom";
+import CompanyNavbar from "../navbars/companynavbar";
+import BeatLoader from "react-spinners/BeatLoader";
+
+
+
 
 function Viewjob() {
   const token = Cookies.get("token");
   const viewedJobId = localStorage.getItem("viewedJobId");
   const [job, setJob] = useState(null);
+  const { id } = useParams();
+  const [isloading, setIsloading] = useState(false);
+
+
 
   
 
@@ -19,9 +29,11 @@ function Viewjob() {
 
   useEffect(() => {
     const params = {
-      jobid: viewedJobId,
+      jobid: id,
     };
 
+    setIsloading(true);
+    setTimeout(() => {
     MakeApiRequest(
       "get",
       `${config.baseUrl}company/viewjob/`,
@@ -32,9 +44,12 @@ function Viewjob() {
       .then((response) => {
         console.log(response);
         setJob(response);
+        setIsloading(false);
+
       })
       .catch((error) => {
         console.error("Error:", error);
+        setIsloading(false);
         if (error.response && error.response.status === 401) {
           console.log(
             "Unauthorized access. Token might be expired or invalid."
@@ -43,19 +58,23 @@ function Viewjob() {
           console.error("Unexpected error occurred:", error);
         }
       });
+    }, 600);
   }, []);
 
-  if (!job) {
-    return (
-      <div className="max-w-[65rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
-        <h1 className="text-red-700">Job Expired</h1>
-      </div>
-    );
-  }
 
   return (
-    <div className="w-full min-h-screen sm:px-6 lg:px-8 lg:py-7 mx-auto">
-      
+    <>
+      <CompanyNavbar/>
+      {isloading ? (
+        <div className="h-screen flex justify-center items-center px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto" style={{ backgroundColor: "#EEEEEE" }}>
+          <BeatLoader color="#6b7280" margin={1} size={50} />
+        </div>
+      ) : !job ? (
+        <div className="h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto" style={{ backgroundColor: "#EEEEEE" }}>
+          <h1 className="text-red-700">Job Expired...</h1>
+        </div>
+      ) : (
+    <div className="w-full min-h-screen sm:px-6 lg:px-8 lg:py-7 mx-auto" style={{ backgroundColor: "#EEEEEE" }}>
       <div className="flex flex-col md:flex-row p-4">
         <div className="flex-1 bg-white p-9 shadow-md mb-4 md:mb-0 rounded-sm">
           <h2 className="text-2xl font-bold text-green-600 mb-3">
@@ -147,6 +166,8 @@ function Viewjob() {
         </div>
       </div>
     </div>
+      )}
+    </>
   );
 }
 

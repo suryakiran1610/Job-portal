@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState } from "react";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import CompanyNavbar from "../navbars/companynavbar";
+import ProfileContext from "../../context/ProfileContext";
 
-function Profile(props) {
+
+function Profile() {
+  const { profile, setProfile } = useContext(ProfileContext);
   const userdetails = JSON.parse(localStorage.getItem("user"));
   const [toggleeditmodal, setToggleeditmodal] = useState(false);
   const [togglepasswordmodal, setTogglepasswordmodal] = useState(false);
   const token = Cookies.get("token");
-  const [profile, setProfile] = useState({});
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
   const [errors, setErrors] = useState({});
@@ -199,9 +202,7 @@ function Profile(props) {
           setToggleeditmodal(false);
           setMessage("");
         }, 2000);
-        props.updateUserProfile(response);
-        props.updateUserProfileImage(response.profile_image);
-        props.fetchUserProfile();
+        
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -281,6 +282,9 @@ function Profile(props) {
   };
 
   return (
+    <>
+        <CompanyNavbar/>
+        <div style={{ backgroundColor: "#EEEEEE" }}>
     <div className="max-w-[65rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
       <div className="flex flex-col md:flex-row md:space-x-4 p-4">
         <div className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center space-y-4 md:w-1/3 mb-6">
@@ -588,6 +592,8 @@ function Profile(props) {
         </div>
       )}
     </div>
+    </div>
+    </>
   );
 }
 

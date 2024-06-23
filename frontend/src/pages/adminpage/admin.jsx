@@ -1,8 +1,8 @@
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import React, {useContext, useEffect, useState } from "react";
 import Admindashboard from "../../components/admin/admindashboard";
 import Adminprofile from "../../components/admin/adminprofile";
 import Viewcompanies from "../../components/admin/viewcompanies";
@@ -19,17 +19,27 @@ import { FaUsersLine } from "react-icons/fa6";
 import { HiUsers } from "react-icons/hi";
 import { IoNotifications } from "react-icons/io5";
 import { RiTimelineView } from "react-icons/ri";
+import ProfileContext from "../../context/ProfileContext";
+
 
 function Admin() {
-  const [activeComponent, setActiveComponent] = useState("dashboard");
+  const location = useLocation();
+  const [tab, setTab] = useState();
   const userdetails = JSON.parse(localStorage.getItem("user"));
-  const [profile, setProfile] = useState("");
+  const { profile, setProfile } = useContext(ProfileContext);
   const navigatee = useNavigate();
   const token = Cookies.get("token");
   const [notifications, setNotifications] = useState({
     notification: [],
     unreadnotificationcount: 0,
   });
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const tabFromUrl = urlParams.get("tab");
+    if (tabFromUrl) setTab(tabFromUrl);
+  }, [location.search]);
+
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -41,37 +51,8 @@ function Admin() {
     navigatee("/login");
   };
 
-  const updateUserProfile = (updatedProfile) => {
-    setProfile(updatedProfile);
-  };
 
-  const fetchUserProfile = () => {
-    const params = {
-      userid: userdetails.id,
-    };
-
-    MakeApiRequest(
-      "get",
-      `${config.baseUrl}company/users/`,
-      headers,
-      params,
-      {}
-    )
-      .then((response) => {
-        console.log("profile", response);
-        setProfile(response);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        if (error.response && error.response.status === 401) {
-          console.log(
-            "Unauthorized access. Token might be expired or invalid."
-          );
-        } else {
-          console.error("Unexpected error occurred:", error);
-        }
-      });
-  };
+  
 
   useEffect(() => {
     const params = {
@@ -100,13 +81,6 @@ function Admin() {
         }
       });
   }, []);
-
-  const updateUserProfileImage = (newImage) => {
-    setProfile((prevState) => ({
-      ...prevState,
-      profile_image: newImage,
-    }));
-  };
 
   useEffect(() => {
     updateNotification();
@@ -168,15 +142,13 @@ function Admin() {
                   </div>
                 </div>
                 )}
-                <button
-                  onClick={() => {
-                    setActiveComponent("viewnotifications");
-                  }}
+                <Link
+                  to={"/admin?tab=/admin/notifications"}
                   type="button"
                   className="group w-[2.375rem] h-[2.375rem] inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent hover:text-black hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none"
                 >
                   <FaRegBell className="text-lg text-white group-hover:text-black" />
-                </button>
+                </Link>
 
                 <div className="hs-dropdown [--placement:bottom-right] relative inline-flex">
                   <button
@@ -204,10 +176,8 @@ function Admin() {
                       </p>
                     </div>
                     <div className="mt-2 py-2 first:pt-0 last:pb-0">
-                      <a
-                        onClick={() => {
-                          setActiveComponent("adminprofile");
-                        }}
+                      <Link
+                        to={"/admin?tab=/admin/profile"}
                         className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
                         href="#"
                       >
@@ -227,7 +197,7 @@ function Admin() {
                           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
                         </svg>
                         Profile
-                      </a>
+                      </Link>
 
                       <a
                         onClick={handleLogout}
@@ -313,60 +283,50 @@ function Admin() {
           >
             <ul className="space-y-1.5">
               <li>
-                <a
-                  onClick={() => {
-                    setActiveComponent("dashboard");
-                  }}
+                <Link
+                   to={"/admin?tab=/admin/dashboard"}
                   className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                   href="#"
                 >
                   <IoHome />
                   Dashboard
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a
-                  onClick={() => {
-                    setActiveComponent("viewcompanies");
-                  }}
+                <Link
+                  to={"/admin?tab=/admin/viewcompanies"}
                   className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                   href="#"
                 >
                   <FaUsersLine />
                   Company
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a
-                  onClick={() => {
-                    setActiveComponent("viewjobseekers");
-                  }}
+                <Link
+                  to={"/admin?tab=/admin/viewjobseekers"}
                   className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
                   href="#"
                 >
                   <HiUsers />
                   Users
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  onClick={() => {
-                    setActiveComponent("viewjobs");
-                  }}
+                <Link
+                 to={"/admin?tab=/admin/viewjobs"}
                   className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300"
                   href="#"
                 >
                   <RiTimelineView />
                   Jobs
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  onClick={() => {
-                    setActiveComponent("viewnotifications");
-                  }}
+                <Link
+                  to={"/admin?tab=/admin/notifications"}
                   className=" relative w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300"
                   href="#"
                 >
@@ -377,7 +337,7 @@ function Admin() {
                   </div>
                   <IoNotifications className="text-lg" />
                   <span>Notifications</span>
-                </a>
+                </Link>
               </li>
             </ul>
           </nav>
@@ -387,38 +347,39 @@ function Admin() {
           className="w-full h-full lg:ps-44 "
           style={{ backgroundColor: "#EEEEEE" }}
         >
-          {activeComponent === "dashboard" && <Admindashboard />}
-          {activeComponent === "adminprofile" && (
-            <Adminprofile
-              fetchUserProfile={fetchUserProfile}
-              updateUserProfileImage={updateUserProfileImage}
-              updateUserProfile={updateUserProfile}
-            />
-          )}
-          {activeComponent === "viewcompanies" && (
-            <Viewcompanies setActiveComponent={setActiveComponent} />
-          )}
-          {activeComponent === "viewcompanyprofile" && (
-            <Companyprofile setActiveComponent={setActiveComponent} />
-          )}
-          {activeComponent === "viewjobseekers" && (
-            <Viewjobseeker setActiveComponent={setActiveComponent} />
-          )}
-          {activeComponent === "viewjobseekerprofile" && (
-            <Jobseekerprofile setActiveComponent={setActiveComponent} />
-          )}
-          {activeComponent === "viewjobs" && (
-            <ViewJobs setActiveComponent={setActiveComponent} />
-          )}
-          {activeComponent === "viewjobdetails" && (
-            <Jobdetails setActiveComponent={setActiveComponent} />
-          )}
-          {activeComponent === "editjobdetails" && (
-            <Editjobdetails setActiveComponent={setActiveComponent} />
-          )}
-          {activeComponent === "viewnotifications" && (
+          {tab === "/admin/notifications" && 
             <Notification updateNotification={updateNotification} />
-          )}
+          }
+          {tab === "/admin/viewjobs" &&
+            <ViewJobs/>
+          }
+          {tab === "/admin/viewjobseekers" && 
+            <Viewjobseeker/>
+          }
+          {tab === "/admin/viewcompanies" &&
+            <Viewcompanies/>
+          }
+          {tab === "/admin/dashboard" &&
+            <Admindashboard/>
+          }
+          {tab === "/companyprofile" &&
+            <Companyprofile/>
+          }
+          {tab === "/admin/companyprofile" &&
+            <Companyprofile/>
+          }
+          {tab === "/admin/jobseekerprofile" &&
+            <Jobseekerprofile/>
+          }
+          {tab === "/admin/jobdetails" &&
+            <Jobdetails/>
+          }
+          {tab === "/admin/jobedit" &&
+            <Editjobdetails/>
+          }
+          {tab === "/admin/profile" &&
+            <Adminprofile/>
+          }
         </div>
       </div>
     </>

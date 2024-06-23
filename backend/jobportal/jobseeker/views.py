@@ -25,22 +25,21 @@ class GetallJobs(APIView):
         keywords = request.query_params.get('keywords', '').strip()
         location = request.query_params.get('location', '').strip()
 
-        jobs = jobpost.objects.all().order_by('-jobposteddate')
-
+        filters = Q()
         if keywords:
-            jobs = jobs.filter(
+            filters &= (
                 Q(jobtitle__icontains=keywords) |
                 Q(companyname__icontains=keywords) |
                 Q(jobkeywords__icontains=keywords)
             )
-        
+
         if location:
-            jobs = jobs.filter(
+            filters &= (
                 Q(joblocation__icontains=location) |
                 Q(joblocationstate__icontains=location)
-            )    
+            )
 
-        jobs = jobs[start_index:start_index + limit]
+        jobs = jobpost.objects.filter(filters).order_by('-jobposteddate')[start_index:start_index + limit]
         serializer = jobpostserializer(jobs, many=True)
         return Response(serializer.data)
 

@@ -21,15 +21,13 @@ class GetallJobs(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        jobs = jobpost.objects.all()
-        serializer = jobpostserializer(jobs, many=True)
-        
+        jobs = jobpost.objects.all().count()        
         # Calculate the number of job posts in the last 7 days
         seven_days_ago = now() - timedelta(days=7)
         recent_jobs_count = jobpost.objects.filter(jobposteddate__gte=seven_days_ago).count()
         
         response_data = {
-            'jobs': serializer.data,
+            'jobs':jobs,
             'recent_jobs_count': recent_jobs_count,
         }
         
@@ -39,8 +37,7 @@ class Getallcompany(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        company = user.objects.filter(usertype='employer')
-        serializer = userserializer(company, many=True)
+        company = user.objects.filter(usertype='employer').count()
         
         # Calculate the number of job posts in the last 7 days
         seven_days_ago = now() - timedelta(days=7)
@@ -50,7 +47,7 @@ class Getallcompany(APIView):
 
         
         response_data = {
-            'company': serializer.data,
+            'company':company,
             'recent_company_count': recent_company_count,
             'notactivatedcompanies':not_activated_companies
         }     
@@ -82,15 +79,14 @@ class Getalljobseeker(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        jobseeker = user.objects.filter(usertype='jobseeker')
-        serializer = userserializer(jobseeker, many=True)
+        jobseeker = user.objects.filter(usertype='jobseeker').count()
         
         # Calculate the number of job posts in the last 7 days
         seven_days_ago = now() - timedelta(days=7)
         recent_jobseeker_count = user.objects.filter(usertype='jobseeker',date_joined__date__gte=seven_days_ago).count()
         
         response_data = {
-            'jobseeker': serializer.data,
+            'jobseeker':jobseeker,
             'recent_jobseeker_count': recent_jobseeker_count
         }        
         return Response(response_data)

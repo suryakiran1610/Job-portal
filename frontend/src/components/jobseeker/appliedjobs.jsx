@@ -4,6 +4,8 @@ import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import { saveAs } from 'file-saver';
 import JobseekerNavbar from "../navbars/jobseekernavbar";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+
 
 function Appliedjobs({ setActiveComponent }) {
   const [allappliedjobs, setAllappliedjobs] = useState([]);
@@ -14,6 +16,8 @@ function Appliedjobs({ setActiveComponent }) {
   const [buttonstatus, setButtonstatus] = useState(true);
   const [jobid, setJobid] = useState("");
   const [togglemodal, setTogglemodal] = useState(false);
+  const navigate=useNavigate()
+
 
 
   const headers = {
@@ -68,8 +72,8 @@ function Appliedjobs({ setActiveComponent }) {
   };
 
   const viewappliedjob = (jobId) => {
-    localStorage.setItem("viewedJobId", jobId);
-    setActiveComponent("viewjobdetails");
+    navigate(`/jobseeker/jobdetails/${jobId}`) 
+
   };
 
   const handledeletemodal = (jobId) => {
@@ -129,7 +133,7 @@ function Appliedjobs({ setActiveComponent }) {
   return (
     <>
     <JobseekerNavbar/>
-      <div className="max-w-[65rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+      <div className="w-full h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto" style={{ backgroundColor: "#EEEEEE" }}>
         <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
           <div className="flex flex-col">
             <div className="-m-1.5 overflow-x-auto">

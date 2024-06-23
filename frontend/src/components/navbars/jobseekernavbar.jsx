@@ -2,17 +2,15 @@ import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import Cookies from "js-cookie";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import React, { useEffect, useState } from "react";
-
+import React, {useContext, useEffect, useState } from "react";
+import ProfileContext from "../../context/ProfileContext";
 
 function JobseekerNavbar() {
-    const [activeComponent, setActiveComponent] = useState("");
+  const { profile, setProfile } = useContext(ProfileContext);
     const userdetails=JSON.parse(localStorage.getItem("user"))
-    const [profile,setProfile]=useState("")
     const navigatee=useNavigate()
     const path = useLocation().pathname;
     const token = Cookies.get("token");
-    const [profileImageURL, setProfileImageURL] = useState("");
 
 
 
@@ -25,41 +23,7 @@ function JobseekerNavbar() {
         Cookies.remove('token')
         localStorage.removeItem('user');
         navigatee('/login')
-    };
-
-    const updateUserProfile = (updatedProfile) => {
-        setProfile(updatedProfile);
-      };
-  
-      const fetchUserProfile = () => {
-        const params = {
-          userid: userdetails.id,
-      };
-      
-  
-      MakeApiRequest(
-      "get",
-      `${config.baseUrl}company/users/`,
-      headers,
-      params,
-      {}
-      )
-      .then((response) => {
-          console.log("profile", response);
-          setProfile(response);
-      })
-      .catch((error) => {
-          console.error("Error:", error);
-          if (error.response && error.response.status === 401) {
-          console.log(
-              "Unauthorized access. Token might be expired or invalid."
-          );
-          } else {
-          console.error("Unexpected error occurred:", error);
-          }
-      });
-    } 
-  
+    };  
   
       useEffect(() => {
         const params = {
@@ -89,14 +53,6 @@ function JobseekerNavbar() {
         });
     }, []);
   
-    const updateUserProfileImage = (newImage) => {
-      setProfile(prevState => ({
-          ...prevState,
-          profile_image: newImage
-      }));
-    }  
-
-
 
   return (
     <>
@@ -110,14 +66,15 @@ function JobseekerNavbar() {
           aria-label="Global"
         >
           <div className="me-5 md:me-8 flex">
-            <a
+            <Link
+                to="/jobseeker/jobseekersearch"
             //   onClick={()=>{setActiveComponent('search')}}
               className="flex-none text-xl font-semibold text-white"
               href="#"
               aria-label="Brand"
             >
               Job Portal
-            </a>
+            </Link>
           </div>
 
           <div className="w-full flex items-center justify-end ms-auto sm:justify-between sm:gap-x-3 sm:order-3">
@@ -157,7 +114,7 @@ function JobseekerNavbar() {
                   <img
                     className="inline-block size-[38px] rounded-full"
                       src={`http://127.0.0.1:8000${profile.profile_image}`}
-                    alt="Image Description"
+                    alt="profile"
                   />
                 </button>
 
@@ -197,11 +154,12 @@ function JobseekerNavbar() {
                       </svg>
                       Logout
                     </a>
-                    <a
+                    <Link
+                        to="/jobseeker/jobseekerprofile"
                         // onClick={()=>{setActiveComponent('profile')}}
                       className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
                       href="#"
-                    >
+                    >  
                       <svg
                         className="flex-shrink-0 size-4"
                         xmlns="http://www.w3.org/2000/svg"
@@ -220,7 +178,7 @@ function JobseekerNavbar() {
                         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                       </svg>
                       Profile
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -236,30 +194,33 @@ function JobseekerNavbar() {
         >
           <div className="max-w-7xl snap-x w-full flex items-center overflow-x-auto px-4 sm:px-6 lg:px-8 pb-4 md:pb-0 mx-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500 dark:bg-neutral-900">
             <div className="snap-center shrink-0 pe-5 sm:pe-8 sm:last-pe-0">
-              <a
+              <Link
+                to="/jobseeker/jobseekersearch"
                 // onClick={()=>{setActiveComponent('search')}}
                 className="inline-flex items-center gap-x-2 hover:text-gray-500 dark:text-neutral-400 dark:hover:text-neutral-500"
                 href="#"
               >
                 Home
-              </a>
+              </Link>
             </div>
             <div className="snap-center shrink-0 pe-5 sm:pe-8 sm:last:pe-0">
-              <a
+              <Link
+               to="/jobseeker/appliedjobs"
                 className="inline-flex items-center gap-x-2 hover:text-gray-500 dark:text-neutral-400 dark:hover:text-neutral-500"
                 href="#"
               >
-              <Link to="/appliedjobs">Applied Jobs</Link>
-              </a>
+              Applied Jobs
+              </Link>
             </div>
             <div className="snap-center shrink-0 pe-5 sm:pe-8 sm:last:pe-0">
-              <a
+              <Link
+                to="/jobseeker/savedjobs"
                 //   onClick={()=>{setActiveComponent('savedjobs')}}
                 className="inline-flex items-center gap-x-2 hover:text-gray-500 dark:text-neutral-400 dark:hover:text-neutral-500"
                 href="#"
               >
                 Saved Jobs
-              </a>
+              </Link>
             </div>
           </div>
         </nav>

@@ -6,9 +6,9 @@ import Cookies from "js-cookie";
 
 function Admindashboard() {
     const token = Cookies.get("token");
-    const [jobs,setJobs]=useState({ jobs: [],recent_jobs_count: 0 })
-    const [jobseeker,setJobseeker]=useState({ jobseeker: [],recent_jobseeker_count: 0 })
-    const [company, setCompany] = useState({ company: [], recent_company_count: 0 });
+    const [jobs,setJobs]=useState({ jobs:0,recent_jobs_count: 0 })
+    const [jobseeker,setJobseeker]=useState({ jobseeker:0,recent_jobseeker_count: 0 })
+    const [company, setCompany] = useState({ company:0, recent_company_count: 0 });
     const [notifications, setNotifications] = useState({notification:[],unreadnotificationcount:0});
 
 
@@ -132,7 +132,7 @@ function Admindashboard() {
 
             <div className="text-center">
               <h3 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-800 dark:text-neutral-200">
-                {company.company.length}
+                {company.company}
               </h3>
             </div>
 
@@ -155,7 +155,7 @@ function Admindashboard() {
 
             <div className="text-center">
               <h3 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-800 dark:text-neutral-200">
-                {jobseeker.jobseeker.length}
+                {jobseeker.jobseeker}
               </h3>
             </div>
 
@@ -178,7 +178,7 @@ function Admindashboard() {
 
             <div className="text-center">
               <h3 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-800 dark:text-neutral-200">
-                {jobs.jobs.length}
+                {jobs.jobs}
               </h3>
             </div>
 

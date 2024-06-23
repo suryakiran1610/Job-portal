@@ -3,8 +3,16 @@ import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import CompanyNavbar from "../navbars/companynavbar";
+import { useParams } from "react-router-dom";
+import BeatLoader from "react-spinners/BeatLoader";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
-function Editjobs({ setActiveComponent }) {
+
+
+
+
+function Editjobs() {
   const token = Cookies.get("token");
   const viewedJobId = localStorage.getItem("viewedJobId");
   const [jobcategory, setJobcategory] = useState([]);
@@ -13,6 +21,9 @@ function Editjobs({ setActiveComponent }) {
   const [message, setMessage] = useState("");
   const [salaryError, setSalaryError] = useState("");
   const userdetails = JSON.parse(localStorage.getItem("user"));
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [isloading, setIsloading] = useState(false);
   const [jobdetails, setJobdetails] = useState({
     company_user_id: userdetails.id,
     jobtitle: "",
@@ -62,9 +73,11 @@ function Editjobs({ setActiveComponent }) {
 
   useEffect(() => {
     const params = {
-      jobid: viewedJobId,
+      jobid: id,
     };
 
+    setIsloading(true);
+    setTimeout(() => {
     MakeApiRequest(
       "get",
       `${config.baseUrl}company/viewjob/`,
@@ -74,12 +87,15 @@ function Editjobs({ setActiveComponent }) {
     )
       .then((response) => {
         console.log("job", response);
+        setIsloading(false);
         setJob(response);
         setJobdetails(response);
         setInitialJobDetails(response);
+
       })
       .catch((error) => {
         console.error("Error:", error);
+        setIsloading(false);
         if (error.response && error.response.status === 401) {
           console.log(
             "Unauthorized access. Token might be expired or invalid."
@@ -88,6 +104,7 @@ function Editjobs({ setActiveComponent }) {
           console.error("Unexpected error occurred:", error);
         }
       });
+    }, 600);
   }, [viewedJobId]);
 
   function Handlejobdetails(e) {
@@ -144,9 +161,9 @@ function Editjobs({ setActiveComponent }) {
         console.log(response);
         setMessage("Job Updated successfully");
         setTimeout(() => {
-            setActiveComponent("myjobs");
+          navigate("/employer/myjobs");
             console.log("Redirecting to myjobs component");
-        }, 2000);
+        }, 1500);
         
       })
       .catch((error) => {
@@ -161,16 +178,21 @@ function Editjobs({ setActiveComponent }) {
       });
   };
 
-  if (!job) {
-    return (
-      <div className="max-w-[65rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
-        Loading...
-      </div>
-    );
-  }
+  
 
   return (
     <div>
+        <CompanyNavbar/>
+        {isloading ? (
+        <div className="h-screen flex justify-center items-center px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto" style={{ backgroundColor: "#EEEEEE" }}>
+          <BeatLoader color="#6b7280" margin={1} size={50} />
+        </div>
+      ) : !job ? (
+        <div className="h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto" style={{ backgroundColor: "#EEEEEE" }}>
+          <h1 className="text-red-700">Job Expired...</h1>
+        </div>
+      ) : (
+        <div style={{ backgroundColor: "#EEEEEE" }}>
       <div className="max-w-4xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
         <div className="bg-white rounded-xl shadow p-4 sm:p-7 dark:bg-neutral-900">
           <form onSubmit={handleSubmit}>
@@ -551,6 +573,8 @@ function Editjobs({ setActiveComponent }) {
           </form>
         </div>
       </div>
+    </div>
+      )}
     </div>
   );
 }

@@ -3,6 +3,9 @@ import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import CompanyNavbar from "../navbars/companynavbar";
+
 
 function Postjob({ setActiveComponent }) {
   const [errors,setErrors]=useState({})
@@ -11,6 +14,7 @@ function Postjob({ setActiveComponent }) {
   const userdetails=JSON.parse(localStorage.getItem("user"))
   const [jobcategory,setJobcategory]=useState([])
   const [salaryError, setSalaryError] = useState("");
+  const navigate = useNavigate();
   const [jobdetails, setJobdetails] = useState({
     company_user_id:userdetails.id,
     jobtitle: "",
@@ -112,9 +116,9 @@ function Postjob({ setActiveComponent }) {
             console.log(response)
             setMessage("Job Posted successfully");
             setTimeout(() => {
-            setActiveComponent("myjobs");
+              navigate("/employer/myjobs");
             console.log("Redirecting to myjobs component");
-        }, 2000);
+        }, 1500);
         })
         .catch(error => {
           console.error('Error:', error);
@@ -131,7 +135,9 @@ function Postjob({ setActiveComponent }) {
 
   return (
     <div>
-      <div className="max-w-4xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+      <CompanyNavbar/>
+      <div style={{ backgroundColor: "#EEEEEE" }}>
+      <div className="max-w-4xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto" >
         <div className="bg-white rounded-xl shadow p-4 sm:p-7 dark:bg-neutral-900">
           <form onSubmit={handleSubmit}>
             <div className="grid sm:grid-cols-12 gap-2 sm:gap-4 py-8 first:pt-0 last:pb-0 border-t first:border-transparent border-gray-200 dark:border-neutral-700 dark:first:border-transparent">
@@ -521,6 +527,7 @@ function Postjob({ setActiveComponent }) {
           </form>
         </div>
       </div>
+    </div>
     </div>
   );
 }
