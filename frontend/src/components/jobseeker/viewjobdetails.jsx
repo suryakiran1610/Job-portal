@@ -32,7 +32,6 @@ function Viewjobdetails() {
     };
 
     setIsloading(true);
-    setTimeout(() => {
       console.log("Redirecting to login component");
       MakeApiRequest(
         "get",
@@ -44,13 +43,15 @@ function Viewjobdetails() {
         .then((response) => {
           console.log("Job Details Response:", response);
           setJob(response);
-          setIsloading(false);
+          const timeoutId = setTimeout(() => {
+            setIsloading(false);
+          }, 500);
+          return () => clearTimeout(timeoutId);  
         })
         .catch((error) => {
           console.error("Error:", error);
           setIsloading(false);
         });
-    }, 600);
   }, []);
 
   useEffect(() => {

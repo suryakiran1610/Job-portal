@@ -5,6 +5,7 @@ import config from "../../Functions/config";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 
+
 function Viewjobseeker({ setActiveComponent }) {
   const [allusers, setAllusers] = useState([]);
   const token = Cookies.get("token");
@@ -13,6 +14,7 @@ function Viewjobseeker({ setActiveComponent }) {
   const [buttonstatus, setButtonstatus] = useState(true);
   const [userid, setUserid] = useState(null);
   const [togglemodal, setTogglemodal] = useState(false);
+
 
   const headers = {
     Authorization: `Bearer ${token}`,

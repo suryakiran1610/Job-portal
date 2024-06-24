@@ -80,7 +80,6 @@ function Editjobdetails({ setActiveComponent }) {
       jobid: jobid,
     };
     setIsloading(true);
-    setTimeout(() => {
     MakeApiRequest(
       "get",
       `${config.baseUrl}company/viewjob/`,
@@ -91,9 +90,13 @@ function Editjobdetails({ setActiveComponent }) {
       .then((response) => {
         console.log("job", response);
         setJob(response);
-        setIsloading(false);
         setJobdetails(response);
         setInitialJobDetails(response);
+        const timeoutId = setTimeout(() => {
+          setIsloading(false);
+        }, 500);
+        return () => clearTimeout(timeoutId);
+
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -106,7 +109,6 @@ function Editjobdetails({ setActiveComponent }) {
           console.error("Unexpected error occurred:", error);
         }
       });
-    }, 600);
   }
   }
 

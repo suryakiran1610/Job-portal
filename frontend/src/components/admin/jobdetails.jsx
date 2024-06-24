@@ -39,7 +39,6 @@ function Jobdetails() {
       jobid: jobid,
     };
     setIsloading(true);
-    setTimeout(() => {
     MakeApiRequest(
       "get",
       `${config.baseUrl}company/viewjob/`,
@@ -50,8 +49,10 @@ function Jobdetails() {
       .then((response) => {
         console.log(response);
         setJob(response);
-        setIsloading(false);
-
+        const timeoutId = setTimeout(() => {
+          setIsloading(false);
+        }, 500);
+        return () => clearTimeout(timeoutId);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -64,7 +65,6 @@ function Jobdetails() {
           console.error("Unexpected error occurred:", error);
         }
       });
-    }, 600);
   }
   }
 

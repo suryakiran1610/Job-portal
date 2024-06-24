@@ -107,7 +107,6 @@ function Jobseekerprofile() {
       userid: userId,
     };
     setIsloading(true);
-    setTimeout(() => {
     MakeApiRequest(
       "get",
       `${config.baseUrl}company/users/`,
@@ -118,8 +117,11 @@ function Jobseekerprofile() {
       .then((response) => {
         console.log("profile", response);
         setProfile(response);
-        setIsloading(false);
         setInitialprofiledetails(response);
+        const timeoutId = setTimeout(() => {
+          setIsloading(false);
+        }, 500);
+        return () => clearTimeout(timeoutId);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -132,7 +134,6 @@ function Jobseekerprofile() {
           console.error("Unexpected error occurred:", error);
         }
       });
-    }, 600);
   }
   }
 

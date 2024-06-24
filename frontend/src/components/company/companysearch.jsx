@@ -48,7 +48,6 @@ function Companysearch() {
       location: location,
     };
     setIsloading(true);
-    setTimeout(() => {
     MakeApiRequest(
       "get",
       `${config.baseUrl}jobseeker/getalljobs/`,
@@ -58,13 +57,17 @@ function Companysearch() {
     )
       .then((response) => {
         console.log(response);
-        setIsloading(false);
         if (response.length < 5) {
           setButtonstatus(false);
         } else {
           setButtonstatus(true);
         }
         setJobs(response);
+        const timeoutId = setTimeout(() => {
+          setIsloading(false);
+        }, 400);
+        return () => clearTimeout(timeoutId);
+
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -77,7 +80,6 @@ function Companysearch() {
           console.error("Unexpected error occurred:", error);
         }
       });
-    }, 300);
   };
 
   const handleLoadMore = () => {

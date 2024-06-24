@@ -277,11 +277,11 @@ function Myjobs({ setActiveComponent }) {
                       </td>
 
                       <td className="size-px whitespace-nowrap">
-                        <div className="relative inline-block px-20 py-2">
+                        <div className="relative inline-block px-20 py-2" onMouseLeave={()=>{setShowDropdown(false)}}>
                           <button
                             id="hs-table-dropdown-1"
                             type="button"
-                            className="hs-dropdown-toggle py-1.5 px-2 inline-flex justify-center items-center gap-2 rounded-lg text-gray-700 align-middle disabled:opacity-50 disabled:pointer-events-none transition-all text-sm dark:text-neutral-400 dark:hover:text-white dark:focus:ring-offset-gray-800"
+                            className=" hs-dropdown-toggle py-1.5 px-2 inline-flex justify-center items-center gap-2 rounded-lg text-gray-700 align-middle disabled:opacity-50 disabled:pointer-events-none transition-all text-sm dark:text-neutral-400 dark:hover:text-white dark:focus:ring-offset-gray-800"
                             onClick={(event) => {
                               setShowDropdown(true);
                               const menu = event.currentTarget.nextElementSibling;

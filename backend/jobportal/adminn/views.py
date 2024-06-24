@@ -37,6 +37,8 @@ class Getallcompany(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        company = user.objects.filter(usertype='employer')
+        serializer = userserializer(company, many=True)
         company = user.objects.filter(usertype='employer').count()
         
         # Calculate the number of job posts in the last 7 days
@@ -47,7 +49,8 @@ class Getallcompany(APIView):
 
         
         response_data = {
-            'company':company,
+            'company': serializer.data,
+            'companycount':company,
             'recent_company_count': recent_company_count,
             'notactivatedcompanies':not_activated_companies
         }     

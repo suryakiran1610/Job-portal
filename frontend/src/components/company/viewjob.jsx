@@ -33,7 +33,6 @@ function Viewjob() {
     };
 
     setIsloading(true);
-    setTimeout(() => {
     MakeApiRequest(
       "get",
       `${config.baseUrl}company/viewjob/`,
@@ -44,8 +43,10 @@ function Viewjob() {
       .then((response) => {
         console.log(response);
         setJob(response);
-        setIsloading(false);
-
+        const timeoutId = setTimeout(() => {
+          setIsloading(false);
+        }, 600);
+        return () => clearTimeout(timeoutId);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -58,7 +59,6 @@ function Viewjob() {
           console.error("Unexpected error occurred:", error);
         }
       });
-    }, 600);
   }, []);
 
 

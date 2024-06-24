@@ -110,7 +110,6 @@ function Companyprofile() {
       userid:companyid,
     };
     setIsloading(true);
-    setTimeout(() => {
     MakeApiRequest(
       "get",
       `${config.baseUrl}company/users/`,
@@ -121,8 +120,12 @@ function Companyprofile() {
       .then((response) => {
         console.log("profile", response);
         setProfile(response);
-        setIsloading(false);
         setInitialprofiledetails(response);
+        const timeoutId = setTimeout(() => {
+          setIsloading(false);
+        }, 500);
+        return () => clearTimeout(timeoutId);
+
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -135,7 +138,6 @@ function Companyprofile() {
           console.error("Unexpected error occurred:", error);
         }
       });
-    }, 600);
   }
     }
   

@@ -285,8 +285,9 @@ function Admin() {
               <li>
                 <Link
                    to={"/admin?tab=/admin/dashboard"}
-                  className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
-                  href="#"
+                   className={`w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold rounded-lg dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300 ${
+                    tab === "/admin/dashboard" ? 'bg-gray-200' : 'hover:bg-gray-200'
+                  }`}
                 >
                   <IoHome />
                   Dashboard
@@ -296,8 +297,9 @@ function Admin() {
               <li>
                 <Link
                   to={"/admin?tab=/admin/viewcompanies"}
-                  className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
-                  href="#"
+                  className={`w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold rounded-lg dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300 ${
+                    tab === "/admin/viewcompanies" ? 'bg-gray-200' : 'hover:bg-gray-200'
+                  }`}
                 >
                   <FaUsersLine />
                   Company
@@ -307,8 +309,9 @@ function Admin() {
               <li>
                 <Link
                   to={"/admin?tab=/admin/viewjobseekers"}
-                  className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
-                  href="#"
+                  className={`w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold rounded-lg dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300 ${
+                    tab === "/admin/viewjobseekers" ? 'bg-gray-200' : 'hover:bg-gray-200'
+                  }`}
                 >
                   <HiUsers />
                   Users
@@ -317,8 +320,9 @@ function Admin() {
               <li>
                 <Link
                  to={"/admin?tab=/admin/viewjobs"}
-                  className="w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300"
-                  href="#"
+                 className={`w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold rounded-lg dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300 ${
+                  tab === "/admin/viewjobs" ? 'bg-gray-200' : 'hover:bg-gray-200'
+                }`}
                 >
                   <RiTimelineView />
                   Jobs
@@ -327,8 +331,9 @@ function Admin() {
               <li>
                 <Link
                   to={"/admin?tab=/admin/notifications"}
-                  className=" relative w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold text-neutral-700 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300"
-                  href="#"
+                  className={` relative w-full flex items-center gap-x-3.5 py-4 px-2.5 text-base font-semibold rounded-lg dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300 ${
+                    tab === "/admin/notifications" ? 'bg-gray-200' : 'hover:bg-gray-200'
+                  }`}
                 >
                   <div className="absolute left-0 top-1 w-5 h-5 flex justify-center items-center bg-red-500 rounded-full">
                     <span className="text-sm text-white p-1">

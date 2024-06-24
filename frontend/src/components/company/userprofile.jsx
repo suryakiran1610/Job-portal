@@ -16,7 +16,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 function UserProfile({ setActiveComponent }) {
   const userdetail = JSON.parse(localStorage.getItem("applieduserid"));
   const token = Cookies.get("token");
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState({});
   const [error, setError] = useState(null);
   const { id } = useParams();
   const [isloading, setIsloading] = useState(false);
@@ -35,7 +35,6 @@ function UserProfile({ setActiveComponent }) {
       userid: id
     };
     setIsloading(true);
-    setTimeout(() => {
     MakeApiRequest(
       "get",
       `${config.baseUrl}company/users/`,
@@ -46,7 +45,10 @@ function UserProfile({ setActiveComponent }) {
       .then((response) => {
         console.log("profile", response);
         setUser(response);
-        setIsloading(false);
+        const timeoutId = setTimeout(() => {
+          setIsloading(false);
+        }, 500);
+        return () => clearTimeout(timeoutId);
 
       })
       .catch((error) => {
@@ -60,9 +62,8 @@ function UserProfile({ setActiveComponent }) {
         } else {
           console.error("Unexpected error occurred:", error);
         }
-      });
-    }, 600);
-  }, []);
+      });    
+  }, [id]);
 
   
 

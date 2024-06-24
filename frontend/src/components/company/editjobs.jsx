@@ -77,7 +77,6 @@ function Editjobs() {
     };
 
     setIsloading(true);
-    setTimeout(() => {
     MakeApiRequest(
       "get",
       `${config.baseUrl}company/viewjob/`,
@@ -87,10 +86,13 @@ function Editjobs() {
     )
       .then((response) => {
         console.log("job", response);
-        setIsloading(false);
         setJob(response);
         setJobdetails(response);
         setInitialJobDetails(response);
+        const timeoutId = setTimeout(() => {
+          setIsloading(false);
+        }, 500);
+        return () => clearTimeout(timeoutId);
 
       })
       .catch((error) => {
@@ -104,8 +106,7 @@ function Editjobs() {
           console.error("Unexpected error occurred:", error);
         }
       });
-    }, 600);
-  }, [viewedJobId]);
+  }, [id]);
 
   function Handlejobdetails(e) {
     const { name, value } = e.target;
