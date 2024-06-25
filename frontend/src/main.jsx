@@ -4,13 +4,14 @@ import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import { ProfileProvider } from './context/ProfileContext.jsx'
-import JobseekerProfile from './components/jobseeker/jobseekerprofile.jsx'
-import JobseekerNavbar from './components/navbars/jobseekernavbar.jsx'
+import { NotificationProvider } from "./context/NotificationContext.jsx";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
+  <NotificationProvider>
     <ProfileProvider>
     <BrowserRouter>
       <App />
     </BrowserRouter>
     </ProfileProvider>
+    </NotificationProvider>
 )

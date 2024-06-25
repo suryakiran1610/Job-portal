@@ -14,7 +14,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 function Editjobs() {
   const token = Cookies.get("token");
-  const viewedJobId = localStorage.getItem("viewedJobId");
   const [jobcategory, setJobcategory] = useState([]);
   const [job, setJob] = useState(null);
   const [initialJobDetails, setInitialJobDetails] = useState({});
@@ -89,11 +88,7 @@ function Editjobs() {
         setJob(response);
         setJobdetails(response);
         setInitialJobDetails(response);
-        const timeoutId = setTimeout(() => {
-          setIsloading(false);
-        }, 500);
-        return () => clearTimeout(timeoutId);
-
+        setIsloading(false);
       })
       .catch((error) => {
         console.error("Error:", error);

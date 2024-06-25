@@ -60,10 +60,7 @@ function Jobseekersearch() {
           setButtonstatus(true);
         }
         setJobs(response);
-        const timeoutId = setTimeout(() => {
-          setIsloading(false);
-        }, 500);
-        return () => clearTimeout(timeoutId);
+        setIsloading(false);
 
       })
       .catch((error) => {

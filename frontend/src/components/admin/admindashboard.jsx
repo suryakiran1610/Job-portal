@@ -3,6 +3,8 @@ import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import Adminsidebar from "../navbars/Adminsidebar";
+import AdminNav from "../navbars/Adminnav";
 
 function Admindashboard() {
     const token = Cookies.get("token");
@@ -120,7 +122,12 @@ function Admindashboard() {
 
   return (
     <div>
-      <div className="w-full min-h-screen  sm:px-6 lg:px-8 lg:py-7 mx-auto">
+      <AdminNav/>
+      <div className="flex min-h-screen"style={{ backgroundColor: "#EEEEEE" }}>
+        <div className="md:64">
+          <Adminsidebar/>
+        </div>
+      <div className="w-11/12 min-h-screen mt-7 sm:px-6 lg:px-8 lg:py-7 mx-auto">
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="flex flex-col gap-y-3 lg:gap-y-5 p-4 md:p-5 bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-800">
             <div className="inline-flex justify-center items-center">
@@ -237,6 +244,7 @@ function Admindashboard() {
             </dl>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

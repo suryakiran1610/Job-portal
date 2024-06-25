@@ -3,12 +3,13 @@ import Cookies from "js-cookie";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-
+import Adminsidebar from "../navbars/Adminsidebar";
+import AdminNav from "../navbars/Adminnav";
 
 function Viewcompanies() {
   const [allcompanies, setAllcompanies] = useState([]);
   const token = Cookies.get("token");
-  const userdetails = JSON.parse(localStorage.getItem("user"));
+  const navigate=useNavigate()
   const [limit, setLimit] = useState(5);
   const [startIndex, setStartIndex] = useState(0);
   const [buttonstatus, setButtonstatus] = useState(true);
@@ -16,6 +17,11 @@ function Viewcompanies() {
   const [togglemodal, setTogglemodal] = useState(false);
   const [togglestatusmodal, setTogglestatusmodal] = useState(false);
   const [companyid_activate,setCompanyid_activate]=useState("")
+
+  const handleViewCompany = (companyId) => {
+    navigate(`/admin/companyprofile/${companyId}`) 
+
+  };
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -152,7 +158,12 @@ function Viewcompanies() {
 
   return (
     <>
-      <div className="max-w-[75rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+      <AdminNav/>
+      <div className="flex min-h-screen"style={{ backgroundColor: "#EEEEEE" }}>
+        <div className="md:64">
+          <Adminsidebar/>
+        </div>
+      <div className="max-w-[75rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-1 mx-auto overflow-auto">
         <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
           <div className="flex flex-col">
             <div className="-m-1.5 overflow-x-auto">
@@ -307,12 +318,12 @@ function Viewcompanies() {
                           <td className="size-px whitespace-nowrap">
                             <div className="px-3 py-3 ml-1">
                               <div className="flex items-center gap-x-3">
-                                <Link
-                                  to={`/admin?tab=/admin/companyprofile&companyid=${company.id}`}
+                                <a
+                                  onClick={() => handleViewCompany(company.id)}
                                   className="text-sm text-blue-600 dark:text-neutral-500 cursor-pointer hover:text-blue-800"
                                 >
                                   View
-                                </Link>
+                                </a>
                               </div>
                             </div>
                           </td>
@@ -476,7 +487,7 @@ function Viewcompanies() {
             </div>
           </div>
         )}
-
+      </div>
       </div>
     </>
   );

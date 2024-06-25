@@ -7,7 +7,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import CompanyNavbar from "../navbars/companynavbar";
 
 
-function Postjob({ setActiveComponent }) {
+function Postjob() {
   const [errors,setErrors]=useState({})
   const token=Cookies.get('token')
   const [message, setMessage] = useState("");

@@ -11,7 +11,6 @@ import BeatLoader from "react-spinners/BeatLoader";
 
 function Viewjobdetails() {
   const token = Cookies.get("token");
-  const viewedJobId = localStorage.getItem("viewedJobId");
   const userdetails = JSON.parse(localStorage.getItem("user"));
   const [job, setJob] = useState(null);
   const [allappliedjobs, setAllappliedjobs] = useState([]);
@@ -43,10 +42,7 @@ function Viewjobdetails() {
         .then((response) => {
           console.log("Job Details Response:", response);
           setJob(response);
-          const timeoutId = setTimeout(() => {
-            setIsloading(false);
-          }, 500);
-          return () => clearTimeout(timeoutId);  
+          setIsloading(false);
         })
         .catch((error) => {
           console.error("Error:", error);

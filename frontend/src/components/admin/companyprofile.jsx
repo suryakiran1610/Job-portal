@@ -1,24 +1,22 @@
 import React, { useEffect, useState } from "react";
 import MakeApiRequest from "../../Functions/AxiosApi";
-import { useLocation } from "react-router-dom";
 import config from "../../Functions/config";
-import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { useParams } from "react-router-dom";
 import BeatLoader from "react-spinners/BeatLoader";
+import Adminsidebar from "../navbars/Adminsidebar";
+import AdminNav from "../navbars/Adminnav";
 
 
 function Companyprofile() {
-  const location = useLocation();
-  const userdetails = JSON.parse(localStorage.getItem("applieduserid"));
   const [toggleeditmodal, setToggleeditmodal] = useState(false);
   const [togglepasswordmodal, setTogglepasswordmodal] = useState(false);
   const token = Cookies.get("token");
   const [profile, setProfile] = useState({});
+  const { id } = useParams();
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
   const [errors, setErrors] = useState({});
-  const [companyid,setCompanyid]=useState(null)
   const [isloading, setIsloading] = useState(false);
   const [initialprofiledetails, setInitialprofiledetails] = useState({});
   const [passwordError, setPasswordError] = useState("");
@@ -31,12 +29,6 @@ function Companyprofile() {
     profile_image: "",
   });
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const companyIdFromUrl = urlParams.get("companyid");
-    setCompanyid(companyIdFromUrl);
-    companydetails(companyIdFromUrl)
-  }, [location.search]);
   
 
 
@@ -104,10 +96,9 @@ function Companyprofile() {
 
   
 
-  const companydetails=(companyid) => {
-    if (companyid) {
+    useEffect(()=>{
     const params = {
-      userid:companyid,
+      userid:id,
     };
     setIsloading(true);
     MakeApiRequest(
@@ -121,11 +112,7 @@ function Companyprofile() {
         console.log("profile", response);
         setProfile(response);
         setInitialprofiledetails(response);
-        const timeoutId = setTimeout(() => {
-          setIsloading(false);
-        }, 500);
-        return () => clearTimeout(timeoutId);
-
+        setIsloading(false);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -138,8 +125,7 @@ function Companyprofile() {
           console.error("Unexpected error occurred:", error);
         }
       });
-  }
-    }
+  },[id]);
   
 
   function Handleprofiledetails(e) {
@@ -195,7 +181,7 @@ function Companyprofile() {
     }
 
     const params = {
-      userid:companyid,
+      userid:id,
     };
 
     const formData = new FormData();
@@ -263,7 +249,7 @@ function Companyprofile() {
     e.preventDefault();
     console.log(token);
     const params = {
-      userid:companyid,
+      userid:id,
     };
 
     const formData = new FormData();
@@ -302,29 +288,25 @@ function Companyprofile() {
       });
   };
 
-  if(isloading){
-    return(
-      <div className="max-w-[65rem] h-screen  flex justify-center items-center px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
-        <BeatLoader
-          color="#6b7280"
-          margin={1}
-          size={50}
-        />
-      </div>
-    )
-  }
-  if(!profile) {
-    return (
-      <div className="max-w-[65rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
-        <h1 className="text-red-700">Company No Longer Exists..</h1>
-      </div>
-    );
-  }
-
   return (
-    <div className="max-w-[65rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+    <>
+    <AdminNav/>
+      <div className="flex min-h-screen"style={{ backgroundColor: "#EEEEEE" }}>
+        <div className="md:64">
+          <Adminsidebar/>
+        </div>
+        {isloading ? (
+        <div className="h-screen flex justify-center items-center px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto" style={{ backgroundColor: "#EEEEEE" }}>
+          <BeatLoader color="#6b7280" margin={1} size={50} />
+        </div>
+      ) : !profile ? (
+        <div className="h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto" style={{ backgroundColor: "#EEEEEE" }}>
+          <h1 className="text-red-700">Company No Longer Exists..</h1>
+        </div>
+      ) : (
+        <div className="flex-1 h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
       <div className="flex flex-col md:flex-row md:space-x-4 p-4">
-        <div className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center space-y-4 md:w-1/3 mb-6">
+        <div className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center space-y-4 md:w-2/3 mb-6">
           <img
             className="w-24 h-24 rounded-full"
             src={`http://127.0.0.1:8000${profile.profile_image}`}
@@ -629,6 +611,9 @@ function Companyprofile() {
         </div>
       )}
     </div>
+      )}
+    </div>
+    </>
   );
 }
 

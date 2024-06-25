@@ -1,7 +1,6 @@
 import React, {useContext, useEffect, useState } from "react";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
-import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import CompanyNavbar from "../navbars/companynavbar";
 import ProfileContext from "../../context/ProfileContext";

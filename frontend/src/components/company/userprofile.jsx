@@ -13,8 +13,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 
 
-function UserProfile({ setActiveComponent }) {
-  const userdetail = JSON.parse(localStorage.getItem("applieduserid"));
+function UserProfile() {
   const token = Cookies.get("token");
   const [user, setUser] = useState({});
   const [error, setError] = useState(null);
@@ -45,10 +44,7 @@ function UserProfile({ setActiveComponent }) {
       .then((response) => {
         console.log("profile", response);
         setUser(response);
-        const timeoutId = setTimeout(() => {
-          setIsloading(false);
-        }, 500);
-        return () => clearTimeout(timeoutId);
+        setIsloading(false);
 
       })
       .catch((error) => {

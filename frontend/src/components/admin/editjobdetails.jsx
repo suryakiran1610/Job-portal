@@ -4,17 +4,19 @@ import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import Cookies from "js-cookie";
 import BeatLoader from "react-spinners/BeatLoader";
+import { useParams } from "react-router-dom";
+import Adminsidebar from "../navbars/Adminsidebar";
+import AdminNav from "../navbars/Adminnav";
 
-function Editjobdetails({ setActiveComponent }) {
+
+function Editjobdetails() {
   const token = Cookies.get("token");
-  const location = useLocation();
   const navigate = useNavigate();
-  const viewedJobId = localStorage.getItem("viewedJobId");
   const [jobcategory, setJobcategory] = useState([]);
   const [job, setJob] = useState(null);
   const [initialJobDetails, setInitialJobDetails] = useState({});
   const [message, setMessage] = useState("");
-  const [jobid,setJobid]=useState(null)
+  const { id } = useParams();
   const [isloading, setIsloading] = useState(false);
   const [salaryError, setSalaryError] = useState("");
   const userdetails = JSON.parse(localStorage.getItem("user"));
@@ -37,12 +39,7 @@ function Editjobdetails({ setActiveComponent }) {
     joblocationstate:"",
   });
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const jobIdFromUrl = urlParams.get("jobid");
-    setJobid(jobIdFromUrl);
-    editjobdetails(jobIdFromUrl)
-  }, [location.search]);
+
 
 
   const headers = {
@@ -73,11 +70,10 @@ function Editjobdetails({ setActiveComponent }) {
       });
   }, []);
 
-  const editjobdetails=(jobid) => {
-    if (jobid) {
+  useEffect(()=>{
 
     const params = {
-      jobid: jobid,
+      jobid: id,
     };
     setIsloading(true);
     MakeApiRequest(
@@ -92,10 +88,7 @@ function Editjobdetails({ setActiveComponent }) {
         setJob(response);
         setJobdetails(response);
         setInitialJobDetails(response);
-        const timeoutId = setTimeout(() => {
-          setIsloading(false);
-        }, 500);
-        return () => clearTimeout(timeoutId);
+        setIsloading(false);
 
       })
       .catch((error) => {
@@ -109,8 +102,7 @@ function Editjobdetails({ setActiveComponent }) {
           console.error("Unexpected error occurred:", error);
         }
       });
-  }
-  }
+  },[id])
 
   function Handlejobdetails(e) {
     const { name, value } = e.target;
@@ -147,7 +139,7 @@ function Editjobdetails({ setActiveComponent }) {
 
 
     const params = {
-      job_id: job.id,
+      job_id:id,
     };
 
     const formData = new FormData();
@@ -166,7 +158,7 @@ function Editjobdetails({ setActiveComponent }) {
         console.log(response);
         setMessage("Job Updated successfully");
         setTimeout(() => {
-          navigate("/admin?tab=/admin/viewjobs");
+          navigate("/admin/viewjobs");
             console.log("Redirecting to viewjobs component");
         }, 1500);
         
@@ -183,29 +175,24 @@ function Editjobdetails({ setActiveComponent }) {
       });
   };
 
-  if(isloading){
-    return(
-      <div className="max-w-[65rem] h-screen  flex justify-center items-center px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
-        <BeatLoader
-          color="#6b7280"
-          margin={1}
-          size={50}
-        />
-      </div>
-    )
-  }
-  if(!job) {
-    return (
-      <div className="max-w-[65rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
-        <h1 className="text-red-700">Job No Longer Exists..</h1>
-      </div>
-    );
-  }
-
 
   return (
     <div>
-      <div className="max-w-4xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+      <AdminNav/>
+      <div className="flex min-h-screen"style={{ backgroundColor: "#EEEEEE" }}>
+        <div className="md:64">
+          <Adminsidebar/>
+        </div>
+        {isloading ? (
+        <div className="h-screen flex justify-center items-center px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto" style={{ backgroundColor: "#EEEEEE" }}>
+          <BeatLoader color="#6b7280" margin={1} size={50} />
+        </div>
+      ) : !job ? (
+        <div className="h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto" style={{ backgroundColor: "#EEEEEE" }}>
+          <h1 className="text-red-700">Job No Longer Exists..</h1>
+        </div>
+      ) : (
+      <div className="w-9/12 px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
         <div className="bg-white rounded-xl shadow p-4 sm:p-7 dark:bg-neutral-900">
           <form onSubmit={handleSubmit}>
             <div className="grid sm:grid-cols-12 gap-2 sm:gap-4 py-8 first:pt-0 last:pb-0 border-t first:border-transparent border-gray-200 dark:border-neutral-700 dark:first:border-transparent">
@@ -584,6 +571,8 @@ function Editjobdetails({ setActiveComponent }) {
             </div>
           </form>
         </div>
+      </div>
+      )}
       </div>
     </div>
   );

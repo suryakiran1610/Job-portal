@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState } from "react";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import Cookies from "js-cookie";
+import Adminsidebar from "../navbars/Adminsidebar";
+import AdminNav from "../navbars/Adminnav";
+import NotificationContext from "../../context/NotificationContext";
 
-function Notification(props) {
+
+function Notification() {
   const token = Cookies.get("token");
-  const [notifications, setNotifications] = useState({ notification: [] });
+  const { notifications,updateNotification } = useContext(NotificationContext);
   const [companyData, setCompanyData] = useState({ company: [] });
   const [togglemodal, setTogglemodal] = useState(false);
   const [companyid, setCompanyid] = useState("");
@@ -13,6 +17,8 @@ function Notification(props) {
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+
+
 
   useEffect(() => {
     MakeApiRequest(
@@ -24,7 +30,7 @@ function Notification(props) {
     )
       .then((response) => {
         console.log("notification", response);
-        setNotifications(response);
+        updateNotification()
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -115,13 +121,8 @@ function Notification(props) {
       .then((response) => {
         console.log(response);
         setTogglemodal(false);
-        props.updateNotification();
-        setNotifications((prevNotifications) => ({
-          ...prevNotifications,
-          notification: prevNotifications.notification.filter(
-            (notification) => notification.companyid !== companyid
-          ),
-        }));
+        updateNotification()
+        
         setCompanyData((prevCompanyData) => ({
           ...prevCompanyData,
           company: prevCompanyData.company.filter(
@@ -156,13 +157,8 @@ function Notification(props) {
       .then((response) => {
         console.log(response);
         setTogglemodal(false);
-        props.updateNotification();
-        setNotifications((prevNotifications) => ({
-          ...prevNotifications,
-          notification: prevNotifications.notification.filter(
-            (notification) => notification.id !== notificationId
-          ),
-        }));
+        updateNotification()
+        
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -190,15 +186,8 @@ function Notification(props) {
     )
       .then((response) => {
         console.log(response);
-        props.updateNotification();
-        setNotifications((prevNotifications) => ({
-          ...prevNotifications,
-          notification: prevNotifications.notification.map((notification) =>
-            notification.id === notificationId
-              ? { ...notification, isread: true }
-              : notification
-          ),
-        }));
+        updateNotification()
+        
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -222,8 +211,7 @@ function Notification(props) {
       .then((response) => {
         console.log(response);
         setTogglemodal(false);
-        props.updateNotification();
-        setNotifications({ notification: [] });
+        updateNotification()
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -239,7 +227,12 @@ function Notification(props) {
 
   return (
     <div>
-      <div className="3xl:w-4/12  h-screen overflow-y-auto md:p-8 p-4 ">
+      <AdminNav/>
+      <div className="flex min-h-screen"style={{ backgroundColor: "#EEEEEE" }}>
+        <div className="md:64">
+          <Adminsidebar/>
+        </div>
+      <div className="flex-grow h-screen overflow-y-auto md:p-8 p-4 ">
         <div className="flex items-center justify-between">
           <p
             tabIndex="0"
@@ -419,6 +412,7 @@ function Notification(props) {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

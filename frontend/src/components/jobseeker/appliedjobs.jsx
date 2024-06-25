@@ -7,7 +7,7 @@ import JobseekerNavbar from "../navbars/jobseekernavbar";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 
 
-function Appliedjobs({ setActiveComponent }) {
+function Appliedjobs() {
   const [allappliedjobs, setAllappliedjobs] = useState([]);
   const token = Cookies.get("token");
   const userdetails = JSON.parse(localStorage.getItem("user"));

@@ -14,7 +14,6 @@ import BeatLoader from "react-spinners/BeatLoader";
 
 function Viewjob() {
   const token = Cookies.get("token");
-  const viewedJobId = localStorage.getItem("viewedJobId");
   const [job, setJob] = useState(null);
   const { id } = useParams();
   const [isloading, setIsloading] = useState(false);
@@ -43,10 +42,7 @@ function Viewjob() {
       .then((response) => {
         console.log(response);
         setJob(response);
-        const timeoutId = setTimeout(() => {
-          setIsloading(false);
-        }, 600);
-        return () => clearTimeout(timeoutId);
+        setIsloading(false);
       })
       .catch((error) => {
         console.error("Error:", error);

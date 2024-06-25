@@ -7,10 +7,9 @@ import CompanyNavbar from "../navbars/companynavbar";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 
 
-function Myjobs({ setActiveComponent }) {
+function Myjobs() {
   const token = Cookies.get("token");
   const userdetails = JSON.parse(localStorage.getItem("user"));
-  const viewedJobId = localStorage.getItem("viewedJobId");
   const [jobs, setJobs] = useState([]);
   const [limit, setLimit] = useState(5);
   const [startIndex, setStartIndex] = useState(0);

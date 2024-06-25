@@ -3,10 +3,11 @@ import Cookies from "js-cookie";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import Adminsidebar from "../navbars/Adminsidebar";
+import AdminNav from "../navbars/Adminnav";
 
 
-
-function Viewjobseeker({ setActiveComponent }) {
+function Viewjobseeker() {
   const [allusers, setAllusers] = useState([]);
   const token = Cookies.get("token");
   const [limit, setLimit] = useState(5);
@@ -14,7 +15,12 @@ function Viewjobseeker({ setActiveComponent }) {
   const [buttonstatus, setButtonstatus] = useState(true);
   const [userid, setUserid] = useState(null);
   const [togglemodal, setTogglemodal] = useState(false);
+  const navigate=useNavigate()
 
+  const handleViewJobseeker = (jobseekerId) => {
+    navigate(`/admin/jobseekerprofile/${jobseekerId}`) 
+
+  };
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -66,10 +72,7 @@ function Viewjobseeker({ setActiveComponent }) {
     setStartIndex(Math.max(0, startIndex - limit));
   };
 
-  const viewjobseekerprofile = (userId) => {
-    localStorage.setItem("applieduserid", userId);
-    setActiveComponent("viewjobseekerprofile");
-  };
+
 
   const handledeletemodal = (companyId) => {
     setUserid(companyId);
@@ -115,7 +118,12 @@ function Viewjobseeker({ setActiveComponent }) {
 
   return (
     <>
-      <div className="max-w-[70rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+      <AdminNav/>
+      <div className="flex min-h-screen"style={{ backgroundColor: "#EEEEEE" }}>
+        <div className="md:64">
+          <Adminsidebar/>
+        </div>
+      <div className="max-w-[70rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-1 mx-auto overflow-auto">
         <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
           <div className="flex flex-col">
             <div className="-m-1.5 overflow-x-auto">
@@ -228,12 +236,12 @@ function Viewjobseeker({ setActiveComponent }) {
                           <td className="size-px whitespace-nowrap">
                             <div className="px-6 py-3 ml-3">
                               <div className="flex items-center gap-x-3">
-                                <Link
-                                  to={`/admin?tab=/admin/jobseekerprofile&userid=${users.id}`}
+                                <a
+                                  onClick={() => handleViewJobseeker(users.id)}
                                   className="text-sm text-blue-600 dark:text-neutral-500 cursor-pointer hover:text-blue-800"
                                 >
                                   View
-                                </Link>
+                                </a>
                               </div>
                             </div>
                           </td>
@@ -357,7 +365,7 @@ function Viewjobseeker({ setActiveComponent }) {
             </div>
           </div>
         )}
-
+      </div>
       </div>
     </>
   );

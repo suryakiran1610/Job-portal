@@ -7,7 +7,7 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 
 
 
-function Savedjobs({ setActiveComponent }) {
+function Savedjobs() {
     const [allsavedjobs,setAllsavedjobs]=useState([]);
     const token = Cookies.get("token");
     const userdetails = JSON.parse(localStorage.getItem("user"));

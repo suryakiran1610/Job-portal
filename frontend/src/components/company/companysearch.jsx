@@ -20,7 +20,6 @@ function Companysearch() {
   const userdetails = JSON.parse(localStorage.getItem("user"));
   const [keywords, setKeywords] = useState("");
   const [location, setLocation] = useState("");
-  const [allsavedjobs, setAllsavedjobs] = useState([]);
   const navigate = useNavigate();
   const [isloading, setIsloading] = useState(false);
 
@@ -57,16 +56,13 @@ function Companysearch() {
     )
       .then((response) => {
         console.log(response);
+        setJobs(response);
         if (response.length < 5) {
           setButtonstatus(false);
         } else {
           setButtonstatus(true);
         }
-        setJobs(response);
-        const timeoutId = setTimeout(() => {
-          setIsloading(false);
-        }, 400);
-        return () => clearTimeout(timeoutId);
+        setIsloading(false);
 
       })
       .catch((error) => {

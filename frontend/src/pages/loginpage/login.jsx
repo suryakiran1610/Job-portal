@@ -162,7 +162,7 @@ function Login() {
               console.log("admin login Successful");
               Cookies.set("token", token);
               localStorage.setItem("user",JSON.stringify(user))
-              navigate("/admin?tab=/admin/dashboard");
+              navigate("/admin/dashboard");
               break;
             case "jobseeker":
               console.log("jobseeker login Successful");

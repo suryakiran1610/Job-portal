@@ -3,7 +3,8 @@ import Cookies from "js-cookie";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-
+import Adminsidebar from "../navbars/Adminsidebar";
+import AdminNav from "../navbars/Adminnav";
 
 function ViewJobs({ setActiveComponent }) {
   const [alljobs, setAlljobs] = useState([]);
@@ -13,6 +14,18 @@ function ViewJobs({ setActiveComponent }) {
   const [buttonstatus, setButtonstatus] = useState(true);
   const [jobid, setJobid] = useState("");
   const [togglemodal, setTogglemodal] = useState(false);
+  const navigate=useNavigate()
+
+
+  const handleViewJob = (jobId) => {
+    navigate(`/admin/jobdetails/${jobId}`) 
+
+  };
+
+  const handleEditJob = (jobId) => {
+    navigate(`/admin/editjobs/${jobId}`) 
+  };
+
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -115,7 +128,12 @@ function ViewJobs({ setActiveComponent }) {
 
   return (
     <>
-      <div className="max-w-[75rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+    <AdminNav/>
+      <div className="flex min-h-screen"style={{ backgroundColor: "#EEEEEE" }}>
+        <div className="md:64">
+          <Adminsidebar/>
+        </div>
+      <div className="max-w-[75rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto overflow-auto">
         <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
           <div className="flex flex-col">
             <div className="-m-1.5 overflow-x-auto">
@@ -214,24 +232,24 @@ function ViewJobs({ setActiveComponent }) {
                           <td className="size-px whitespace-nowrap">
                             <div className="px-6 py-3 ml-1">
                               <div className="flex items-center gap-x-3">
-                                <Link
-                                  to={`/admin?tab=/admin/jobdetails&jobid=${jobs.id}`}
+                                <a
+                                  onClick={() => handleViewJob(jobs.id)}
                                   className="text-sm text-blue-600 dark:text-neutral-500 cursor-pointer hover:text-blue-800"
                                 >
                                   View
-                                </Link>
+                                </a>
                               </div>
                             </div>
                           </td>
                           <td className="size-px whitespace-nowrap">
                             <div className="px-6 py-3 ml-1">
                               <div className="flex items-center gap-x-3">
-                                <Link
-                                  to={`/admin?tab=/admin/jobedit&jobid=${jobs.id}`}
+                                <a
+                                  onClick={() => handleEditJob(jobs.id)}
                                   className="text-sm text-violet-600 dark:text-neutral-500 cursor-pointer hover:text-violet-800"
                                 >
                                   Edit
-                                </Link>
+                                </a>
                               </div>
                             </div>
                           </td>
@@ -355,7 +373,7 @@ function ViewJobs({ setActiveComponent }) {
             </div>
           </div>
         )}
-
+      </div>
       </div>
     </>
   );

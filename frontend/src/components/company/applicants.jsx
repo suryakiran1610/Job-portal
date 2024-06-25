@@ -10,25 +10,18 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 
 
 
-function Applicants({ setActiveComponent }) {
+function Applicants() {
   const [allapplicants, setAllapplicants] = useState([]);
   const token = Cookies.get("token");
-  const userdetails = JSON.parse(localStorage.getItem("user"));
-  const viewedJobId = localStorage.getItem("viewedJobId");
   const [limit, setLimit] = useState(5);
   const [startIndex, setStartIndex] = useState(0);
   const [buttonstatus, setButtonstatus] = useState(true);
-  const [jobid, setJobid] = useState("");
   const { id } = useParams();
   const navigate=useNavigate()
 
 
 
 
-  const handlegoback = (e) => {
-    e.preventDefault();
-    setActiveComponent("myjobs");
-  };
 
   const headers = {
     Authorization: `Bearer ${token}`,
