@@ -20,11 +20,18 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    # path('admin/', admin.site.urls),
+    # path('api/authentication/',include('authentication.urls')),
+    # path('api/company/',include('company.urls')),
+    # path('api/jobseeker/',include('jobseeker.urls')),
+    # path('api/adminn/',include('adminn.urls')),
+
     path('admin/', admin.site.urls),
     path('authentication/',include('authentication.urls')),
     path('company/',include('company.urls')),
     path('jobseeker/',include('jobseeker.urls')),
     path('adminn/',include('adminn.urls')),
+
 
 
 ]

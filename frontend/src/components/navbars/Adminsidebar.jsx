@@ -15,16 +15,14 @@ import NotificationContext from "../../context/NotificationContext";
 const AdminSideBar = () => {
   const path = useLocation().pathname;
   const token = Cookies.get("token");
-  const { notifications } = useContext(NotificationContext);
+  const { notifications,updateNotification } = useContext(NotificationContext);
 
-
-  const headers = {
-    Authorization: `Bearer ${token}`,
-  };
-
+  useEffect(()=>{
+    updateNotification()
+  },[])
 
   return (
-    <div className=" w-52 border-r-2 hidden sm:block transition-transform -translate-x-full sm:translate-x-0 h-full">
+    <div className=" w-52 border-r-2 hidden sm:block transition-transform -translate-x-full sm:translate-x-0 h-full bg-white">
       <aside
         id="default-sidebar"
         className="w-52 transition-transform -translate-x-full sm:translate-x-0"
@@ -38,11 +36,11 @@ const AdminSideBar = () => {
                 className={`flex items-center p-2 rounded-lg group ${
                   path === "/admin/dashboard"
                     ? "bg-slate-900 text-white"
-                    : "text-gray-500 hover:bg-gray-100"
+                    : "text-black hover:bg-gray-100"
                 }`}
               >
                 <IoHome
-                  className={`w-5 h-5 text-gray-500 transition duration-75 ${
+                  className={`w-5 h-5 text-black transition duration-75 ${
                     path === "/admin/dashboard"
                       ? "group-hover:text-white text-white"
                       : "group-hover:text-gray-900"
@@ -65,11 +63,11 @@ const AdminSideBar = () => {
                 className={`flex items-center p-2 rounded-lg group ${
                   path === "/admin/viewcompanies"
                     ? "bg-slate-900 text-white"
-                    : "text-gray-500 hover:bg-gray-100"
+                    : "text-black hover:bg-gray-100"
                 }`}
               >
                 <FaUsersLine
-                  className={`w-5 h-5 text-gray-500 transition duration-75 ${
+                  className={`w-5 h-5 text-black transition duration-75 ${
                     path === "/admin/viewcompanies"
                       ? "group-hover:text-white text-white"
                       : "group-hover:text-gray-900"
@@ -92,11 +90,11 @@ const AdminSideBar = () => {
                 className={`flex items-center p-2 rounded-lg group ${
                   path === "/admin/viewjobseekers"
                     ? "bg-slate-900 text-white"
-                    : "text-gray-500 hover:bg-gray-100"
+                    : "text-black hover:bg-gray-100"
                 }`}
               >
                 <HiUsers
-                  className={`w-5 h-5 text-gray-500 transition duration-75 ${
+                  className={`w-5 h-5 text-black transition duration-75 ${
                     path === "/admin/viewjobseekers"
                       ? "group-hover:text-white text-white"
                       : "group-hover:text-gray-900"
@@ -119,11 +117,11 @@ const AdminSideBar = () => {
                 className={`flex items-center p-2 rounded-lg group ${
                   path === "/admin/viewjobs"
                     ? "bg-slate-900 text-white"
-                    : "text-gray-500 hover:bg-gray-100"
+                    : "text-black hover:bg-gray-100"
                 }`}
               >
                 <RiTimelineView
-                  className={`w-5 h-5 text-gray-500 transition duration-75 ${
+                  className={`w-5 h-5 text-black transition duration-75 ${
                     path === "/admin/viewjobs"
                       ? "group-hover:text-white text-white"
                       : "group-hover:text-gray-900"
@@ -146,7 +144,7 @@ const AdminSideBar = () => {
                 className={`relative flex items-center p-2 rounded-lg group ${
                   path === "/admin/notifications"
                     ? "bg-slate-900 text-white"
-                    : "text-gray-500 hover:bg-gray-100"
+                    : "text-black hover:bg-gray-100"
                 }`}
               >
                 <div className="absolute left-1 bottom-5 w-4 h-4 flex justify-center items-center bg-red-500 rounded-full">
@@ -155,7 +153,7 @@ const AdminSideBar = () => {
                     </span>
                   </div>
                 <IoNotifications
-                  className={`w-5 h-5 text-gray-500 transition duration-75 ${
+                  className={`w-5 h-5 text-black transition duration-75 ${
                     path === "/admin/notifications"
                       ? "group-hover:text-white text-white"
                       : "group-hover:text-gray-900"

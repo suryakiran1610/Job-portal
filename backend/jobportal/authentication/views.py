@@ -45,17 +45,14 @@ class LoginView(APIView):
                 'id': user1.id,
                 'username': user1.username,
                 'email': user1.email,
-                'usertype':'superuser',
-                'companyname':user1.companyname,
+                'user_type':'superuser',
                 }    
             else:
                 user_details = {
                 'id': user1.id,
                 'username': user1.username,
                 'email': user1.email,
-                'usertype': user1.usertype,
-                'companyname':user1.companyname,
-                'fullname':user1.fullname
+                'user_type': user1.user_type,
                 }    
             
             return Response({'token': str(refresh.access_token), 'user': user_details}, status=status.HTTP_200_OK)

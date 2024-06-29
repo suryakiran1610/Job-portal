@@ -13,8 +13,6 @@ function Login() {
   const [errors, setErrors] = useState({});
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [fullname,setFullname]=useState("")
-  const [companyname, setCompanyname] = useState("");
   const [password, setPassword] = useState("");
   const [users, setUsers] = useState([]);
   const [registererror, setRegistererror] = useState(false);
@@ -45,15 +43,13 @@ function Login() {
       email,
       password,
       username,
-      fullname,
-      usertype: "jobseeker",
+      user_type: "jobseeker",
     };
 
     const newErrors = {};
     if (!email) newErrors.email = "Email is required";
     if (!password) newErrors.password = "Password is required";
     if (!username) newErrors.username = "Username is required";
-    if (!fullname) newErrors.fullname = "Fullname is required";
 
 
     if (Object.keys(newErrors).length > 0) {
@@ -63,14 +59,14 @@ function Login() {
 
     MakeApiRequest("post",`${config.baseUrl}authentication/register/`,headers,{},data)
       .then((response) => {
-        console.log(response);
+        console.log("registered_jobseeker",response);
         setRegistersuccess(true);
             console.log("Registration successful! Redirecting in 3 seconds...");
             setTimeout(() => {
                 setRegistersuccess(false);
-                setActiveComponent("login");
+                navigate(`jobseekerdetails/${response.id}`)
                 console.log("Redirecting to login component");
-            }, 4000);
+            }, 3000);
       })
       .catch((error) => {
         console.error("Error during registration:", error);
@@ -92,15 +88,13 @@ function Login() {
     const data = {
       email,
       password,
-      companyname,
       username,
-      usertype: "employer",
+      user_type: "employer",
     };
 
     const newErrors = {};
     if (!email) newErrors.email = "Email is required";
     if (!password) newErrors.password = "Password is required";
-    if (!companyname) newErrors.companyname = "Company Name is required";
     if (!username) newErrors.username = "Username is required";
 
     if (Object.keys(newErrors).length > 0) {
@@ -155,8 +149,8 @@ function Login() {
         console.log(response);
         const token = response.token;
         const user = response.user;
-        if (user && user.usertype) {
-          const userType = user.usertype;
+        if (user && user.user_type) {
+          const userType = user.user_type;
           switch (userType) {
             case "superuser":
               console.log("admin login Successful");
@@ -219,18 +213,18 @@ function Login() {
 
   //Fullname Validation//
 
-  const handleFullnameChange = (e) => {
-    const fullnameValue = e.target.value;
-    setFullname(fullnameValue);
+  // const handleFullnameChange = (e) => {
+  //   const fullnameValue = e.target.value;
+  //   setFullname(fullnameValue);
 
-    const newErrors = { ...errors };
-    if (!fullnameValue) {
-      newErrors.fullname = "FullName is required";
-    } else {
-      delete newErrors.fullname;
-    }
-    setErrors(newErrors);
-  };
+  //   const newErrors = { ...errors };
+  //   if (!fullnameValue) {
+  //     newErrors.fullname = "FullName is required";
+  //   } else {
+  //     delete newErrors.fullname;
+  //   }
+  //   setErrors(newErrors);
+  // };
 
   //Username Validation//
 
@@ -264,18 +258,18 @@ function Login() {
 
   //Company Name Validation//
 
-  const handleCompanynameChange = (e) => {
-    const companynameValue = e.target.value;
-    setCompanyname(companynameValue);
+  // const handleCompanynameChange = (e) => {
+  //   const companynameValue = e.target.value;
+  //   setCompanyname(companynameValue);
 
-    const newErrors = { ...errors };
-    if (!companynameValue) {
-      newErrors.companyname = "Company Name is required";
-    } else {
-      delete newErrors.companyname;
-    }
-    setErrors(newErrors);
-  };
+  //   const newErrors = { ...errors };
+  //   if (!companynameValue) {
+  //     newErrors.companyname = "Company Name is required";
+  //   } else {
+  //     delete newErrors.companyname;
+  //   }
+  //   setErrors(newErrors);
+  // };
 
   const handleNextClick = () => {
     if (!email) {
@@ -324,25 +318,13 @@ function Login() {
                   className="text-base text-blue-400 cursor-pointer"
                   onClick={() => {
                     setActiveComponent("email");
+                    setEmail("")
                   }}
                 >
                   (not you?)
                 </span>
               </p>
               <form onSubmit={JobseekerSubmit}>
-                <div className="mb-4">
-                  <input
-                    type="text"
-                    onChange={handleFullnameChange}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    placeholder="Full Name"
-                  />
-                  {errors.fullname && (
-                    <span className="text-red-500 text-xs">
-                      {errors.fullname}
-                    </span>
-                  )}
-                </div>
                 <div className="mb-4">
                   <input
                     type="text"
@@ -452,25 +434,13 @@ function Login() {
                   className="text-base text-blue-400 cursor-pointer"
                   onClick={() => {
                     setActiveComponent("email");
+                    setEmail("")
                   }}
                 >
                   (not you?)
                 </span>
               </p>
               <form onSubmit={EmployerSubmit}>
-                <div className="mb-4">
-                  <input
-                    type="text"
-                    onChange={handleCompanynameChange}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    placeholder="Company Name"
-                  />
-                  {errors.companyname && (
-                    <span className="text-red-500 text-xs">
-                      {errors.companyname}
-                    </span>
-                  )}
-                </div>
                 <div className="mb-4">
                   <input
                     type="text"

@@ -22,7 +22,7 @@ function JobseekerNavbar() {
     const handleLogout = () => {
         Cookies.remove('token')
         localStorage.removeItem('user');
-        navigatee('/login')
+        navigatee('/')
     };  
   
       useEffect(() => {
@@ -113,8 +113,8 @@ function JobseekerNavbar() {
                 >
                   <img
                     className="inline-block size-[38px] rounded-full"
-                      src={`http://127.0.0.1:8000${profile.profile_image}`}
-                    alt="profile"
+                      src={`${config.imagebaseurl}${profile.profile_image}`}
+                    alt={profile.fullname}
                   />
                 </button>
 

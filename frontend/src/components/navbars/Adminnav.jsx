@@ -14,6 +14,8 @@ import { HiUsers } from "react-icons/hi";
 import { IoNotifications } from "react-icons/io5";
 import { RiTimelineView } from "react-icons/ri";
 import ProfileContext from "../../context/ProfileContext";
+import NotificationContext from "../../context/NotificationContext";
+
 
 const AdminNav = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +24,8 @@ const AdminNav = () => {
   const navigate = useNavigate();
   const path = useLocation().pathname;
   const token = Cookies.get("token");
+  const { notifications } = useContext(NotificationContext);
+
   
 
   const handleClose = () => setIsOpen(false);
@@ -34,7 +38,7 @@ const AdminNav = () => {
   const handleLogout = () => {
     Cookies.remove("token");
     localStorage.removeItem("user");
-    navigate("/login");
+    navigate("/");
   };
 
   const handleProfileClick = () => {
@@ -77,7 +81,6 @@ const AdminNav = () => {
   return (
     <div >
       <Navbar fluid className="border-b-2 px-4" style={{ backgroundColor: "#A91D3A" }}>
-        <Navbar.Brand>
           <div className="flex items-center">
             <GiHamburgerMenu
               className="mr-4 cursor-pointer block sm:hidden text-lg text-gray-500"
@@ -89,7 +92,6 @@ const AdminNav = () => {
                 JobPortal
             </Link>
           </div>
-        </Navbar.Brand>
         <div className="flex md:order-2 items-center gap-3">
           <Dropdown
             arrowIcon={false}
@@ -97,8 +99,8 @@ const AdminNav = () => {
             label={
                 <img
                 className="inline-block size-[38px] rounded-full"
-                src={`http://127.0.0.1:8000${profile.profile_image}`}
-                alt="Image Description"
+                src={`${config.imagebaseurl}${profile.profile_image}`}
+                alt={profile.companyname}
               />
             }
           >
@@ -138,11 +140,11 @@ const AdminNav = () => {
                       className={`flex items-center p-2 rounded-lg group ${
                         path === "/admin/dashboard"
                           ? "bg-slate-900 text-white"
-                          : "text-gray-500 hover:bg-gray-100"
+                          : "text-black hover:bg-gray-100"
                       }`}
                     >
                       <IoHome
-                        className={`w-5 h-5 text-gray-500 transition duration-75 ${
+                        className={`w-5 h-5 text-black transition duration-75 ${
                           path === "/admin/dashboard"
                             ? "group-hover:text-white text-white"
                             : "group-hover:text-gray-900"
@@ -163,11 +165,11 @@ const AdminNav = () => {
                       className={`flex items-center p-2 rounded-lg group ${
                         path === "/admin/viewcompanies"
                           ? "bg-slate-900 text-white"
-                          : "text-gray-500 hover:bg-gray-100"
+                          : "text-black hover:bg-gray-100"
                       }`}
                     >
                       <FaUsersLine 
-                        className={`w-5 h-5 text-gray-500 transition duration-75 ${
+                        className={`w-5 h-5 text-black transition duration-75 ${
                           path === "/admin/viewcompanies"
                             ? "group-hover:text-white text-white"
                             : "group-hover:text-gray-900"
@@ -188,11 +190,11 @@ const AdminNav = () => {
                       className={`flex items-center p-2 rounded-lg group ${
                         path === "/admin/viewjobseekers"
                           ? "bg-slate-900 text-white"
-                          : "text-gray-500 hover:bg-gray-100"
+                          : "text-black hover:bg-gray-100"
                       }`}
                     >
                       <HiUsers
-                        className={`w-5 h-5 text-gray-500 transition duration-75 ${
+                        className={`w-5 h-5 text-black transition duration-75 ${
                           path === "/admin/viewjobseekers"
                             ? "group-hover:text-white text-white"
                             : "group-hover:text-gray-900"
@@ -213,11 +215,11 @@ const AdminNav = () => {
                       className={`flex items-center p-2 rounded-lg group ${
                         path === "/admin/viewjobs"
                           ? "bg-slate-900 text-white"
-                          : "text-gray-500 hover:bg-gray-100"
+                          : "text-black hover:bg-gray-100"
                       }`}
                     >
                       <RiTimelineView
-                        className={`w-5 h-5 text-gray-500 transition duration-75 ${
+                        className={`w-5 h-5 text-black transition duration-75 ${
                           path === "/admin/viewjobs"
                             ? "group-hover:text-white text-white"
                             : "group-hover:text-gray-900"
@@ -235,14 +237,19 @@ const AdminNav = () => {
                     </Link>
                     <Link
                       to="/admin/notifications"
-                      className={`flex items-center p-2 rounded-lg group ${
+                      className={`relative flex items-center p-2 rounded-lg group ${
                         path === "/admin/notifications"
                           ? "bg-slate-900 text-white"
-                          : "text-gray-500 hover:bg-gray-100"
+                          : "text-black hover:bg-gray-100"
                       }`}
                     >
+                        <div className="absolute left-1 bottom-5 w-4 h-4 flex justify-center items-center bg-red-500 rounded-full">
+                            <span className="text-sm text-white p-1">
+                                {notifications.unreadnotificationcount}
+                            </span>
+                        </div>
                       <IoNotifications
-                        className={`w-5 h-5 text-gray-500 transition duration-75 ${
+                        className={`w-5 h-5 text-black transition duration-75 ${
                           path === "/admin/notifications"
                             ? "group-hover:text-white text-white"
                             : "group-hover:text-gray-900"

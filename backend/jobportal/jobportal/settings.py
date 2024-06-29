@@ -197,7 +197,8 @@ AUTHENTICATION_BACKENDS = (
 )
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
+    # "https://renesoftware.com/"
+    "http://localhost:3000"
 ]
 CORS_ALLOW_ALL_ORIGINS = True
 

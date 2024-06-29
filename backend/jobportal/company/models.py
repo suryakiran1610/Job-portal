@@ -23,3 +23,5 @@ class jobpost(models.Model):
 
 class jobcategories(models.Model):
     jobcategory=models.CharField(max_length=255,null=True,blank=True)
+    isapproved=models.BooleanField(default=False,blank=True, null=True)
+    category_added_by=models.IntegerField(null=True,blank=True)

@@ -7,13 +7,17 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.db.models import Q
+
 
 from .models import jobpost
 from .models import jobcategories
 from authentication.models import user
 from jobseeker.models import applyjob
+from adminn.models import notification
 from authentication.serializers import userserializer
 from jobseeker.serializers import applyjobserializer
+from adminn.serializers import notificationserializer
 from .serializers import jobpostserializer
 from .serializers import jobcategoriesserializer
 
@@ -22,10 +26,33 @@ class Jobcategory(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self,request):
-        category=jobcategories.objects.all()
+        category=jobcategories.objects.filter(isapproved=1)
         serializer=jobcategoriesserializer(category,many=True)
         return Response(serializer.data)
+    
+    def post(self,request):
+        Companyname = request.query_params.get('companyname')
+        Companyid = int(request.query_params.get('companyid'))
+        data = request.data.copy()
+        data['isapproved'] = False
+        serializer=jobcategoriesserializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
 
+            jobcategory = serializer.data.get('jobcategory')
+            id=serializer.data.get('id')
+
+            notification.objects.create(
+                message=f"New Job Category Added: {jobcategory}",
+                companyname=Companyname,
+                companyid=Companyid,
+                notificationtype="add_jobcategory_request",
+                jobcategoryid=id
+
+            )
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -170,6 +197,33 @@ class AllApplicants(APIView):
         return Response(serializer.data)    
 
 
+class GetallPostedJobs(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        id=int(request.query_params.get('user_id'))
+        limit = int(request.query_params.get('limit', 6))
+        start_index = int(request.query_params.get('startIndex', 0))
+        keywords = request.query_params.get('keywords', '').strip()
+        location = request.query_params.get('location', '').strip()
+
+        filters = Q()
+        if keywords:
+            filters &= (
+                Q(jobtitle__icontains=keywords) |
+                Q(companyname__icontains=keywords) |
+                Q(jobkeywords__icontains=keywords)
+            )
+
+        if location:
+            filters &= (
+                Q(joblocation__icontains=location) |
+                Q(joblocationstate__icontains=location)
+            )
+
+        jobs = jobpost.objects.filter(filters,company_user_id=id).order_by('-jobposteddate')[start_index:start_index + limit]
+        serializer = jobpostserializer(jobs, many=True)
+        return Response(serializer.data)
 
 
 

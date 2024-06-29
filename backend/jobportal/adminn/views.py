@@ -12,10 +12,34 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 from company.models import jobpost
 from authentication.models import user
+from company.models import jobcategories
 from .models import notification
 from company.serializers import jobpostserializer
+from company.serializers import jobcategoriesserializer
 from authentication.serializers import userserializer
 from .serializers import notificationserializer
+
+class AddJobcategory(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        print(request.data)
+        data = request.data.copy()
+        data['isapproved'] = True
+        serializer=jobcategoriesserializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def put(self,request):
+        print(request.data)
+        categoryid=int(request.query_params.get('categoryid'))
+        category = jobcategories.objects.get(id=categoryid)
+        category.isapproved = 1
+        category.save()
+        return Response({'message': 'category approved'}, status=status.HTTP_200_OK)
+
 
 class GetallJobs(APIView):
     permission_classes = [IsAuthenticated]
@@ -74,7 +98,6 @@ class Getallcompany(APIView):
         company.is_active = 1
         company.save()
         return Response({'message': 'user actiated'}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -174,6 +197,15 @@ class GetallNotification(APIView):
         }
         
         return Response(response_data)
+    
+class AllJobcategory(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+        category=jobcategories.objects.all()
+        serializer=jobcategoriesserializer(category,many=True)
+        return Response(serializer.data)  
+      
 
 class Deletecompany_DeleteNotification(APIView): 
     permission_classes = [IsAuthenticated]
@@ -190,6 +222,23 @@ class Deletecompany_DeleteNotification(APIView):
         company.delete()
         notifications.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class Deletecategory_DeleteNotification(APIView): 
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        print(request.data)
+        categoryid = int(request.query_params.get('categoryid'))
+        try:
+            category = jobcategories.objects.get(id=categoryid)
+            notifications=notification.objects.get(jobcategoryid=categoryid)
+        except user.DoesNotExist:
+            return Response({'error': 'company not found'}, status=404)
+
+        category.delete()
+        notifications.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class DeleteNotification(APIView): 
     permission_classes = [IsAuthenticated]
@@ -218,5 +267,4 @@ class Notificationn_Readed(APIView):
         notifications.isread = 1
         notifications.save()
         return Response({'message': 'Notification Readed'}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
    

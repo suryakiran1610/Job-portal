@@ -26,7 +26,10 @@ export const NotificationProvider = ({ children }) => {
     )
       .then((response) => {
         console.log("notification", response);
-        setNotifications(response);
+        setNotifications({
+          notification: response.notification,
+          unreadnotificationcount: response.unreadnotificationcount,
+        });
       })
       .catch((error) => {
         console.error("Error:", error);

@@ -26,42 +26,10 @@ function CompanyNavbar() {
     const handleLogout = () => {
       Cookies.remove('token')
       localStorage.removeItem('user');
-      navigatee('/login')
+      navigatee('/')
     };
 
-    const updateUserProfile = (updatedProfile) => {
-      setProfile(updatedProfile);
-    };
-
-    const fetchUserProfile = () => {
-      const params = {
-        userid: userdetails.id,
-    };
     
-
-    MakeApiRequest(
-    "get",
-    `${config.baseUrl}company/users/`,
-    headers,
-    params,
-    {}
-    )
-    .then((response) => {
-        console.log("profile", response);
-        setProfile(response);
-    })
-    .catch((error) => {
-        console.error("Error:", error);
-        if (error.response && error.response.status === 401) {
-        console.log(
-            "Unauthorized access. Token might be expired or invalid."
-        );
-        } else {
-        console.error("Unexpected error occurred:", error);
-        }
-    });
-  } 
-
 
     useEffect(() => {
       const params = {
@@ -161,8 +129,8 @@ function CompanyNavbar() {
                   >
                     <img
                       className="inline-block size-[38px] rounded-full"
-                      src={`http://127.0.0.1:8000${profile.profile_image}`}
-                      alt="Image Description"
+                      src={`${config.imagebaseurl}${profile.profile_image}`}
+                      alt={profile.companyname}
                     />
                   </button>
 
@@ -204,7 +172,7 @@ function CompanyNavbar() {
                       </a>
                       <Link
                         to="/employer/employerprofile"
-                        onClick={()=>{setActiveComponent('profile')}}
+                        // onClick={()=>{setActiveComponent('profile')}}
                         className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
                         href="#"
                       >
