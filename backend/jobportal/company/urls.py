@@ -2,6 +2,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('companypersonalinfo/',views.CompanyPersonalInfo.as_view(),name="companypersonalinfo"),
+    path('updatesectoranddepartments/',views.UpdateSectorAndDepartments.as_view(),name="updatesectoranddepartments"),
     path('getallpostedjobs/',views.GetallPostedJobs.as_view(),name="getallpostedjobs"),
     path('postjob/',views.PostJob.as_view(),name="postjob"),
     path('viewjob/',views.ViewJob.as_view(),name="viewjob"),

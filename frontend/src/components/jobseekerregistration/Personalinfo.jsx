@@ -4,12 +4,12 @@ import React, { useState } from "react";
 import Cookies from "js-cookie";
 import config from "../../Functions/config";
 import MakeApiRequest from "../../Functions/AxiosApi";
+import { useParams } from "react-router-dom";
 
-function PersonalDetails() {
-  const user_id = Cookies.get("user_id");
-  const access_token = Cookies.get("access_token");
+function PersonalDetails({ setActiveComponent }) {
+  const { id } = useParams();
   const [personalinfo, setPersonalinfo] = useState({
-    user_id: user_id,
+    user_id: id,
     full_name: "",
     dob: "",
     mobile: "",
@@ -34,7 +34,7 @@ function PersonalDetails() {
   });
 
   function HandleNextDetails() {
-    setDetails(false);
+    setActiveComponent("education");
   }
 
   const handleFileChange = (e) => {
@@ -161,12 +161,15 @@ function PersonalDetails() {
     return isValid;
   };
 
-  const headers = {
-    Authorization: `Bearer ${access_token}`,
-  };
+ 
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const params = {
+        user_id: id,
+      };
+
     if (validateForm()) {
       const formData = new FormData();
       for (let key in personalinfo) {
@@ -176,12 +179,12 @@ function PersonalDetails() {
 
       MakeApiRequest(
         "post",
-        `${config.baseUrl}employee/employee/${user_id}/`,
-        headers,
+        `${config.baseUrl}jobseeker/jobseekerpersonalinfo/`,
+        {},
+        params,
         formData
       )
         .then((response) => {
-          // Handle the API response
           console.log(response);
         })
         .catch((error) => {
@@ -193,8 +196,6 @@ function PersonalDetails() {
 
   return (
     <>
-      {details ? (
-        <form onSubmit={handleSubmit}>
           <div className="flex justify-evenly pt-10 max-sm:flex-col-reverse max-sm:justify-normal max-sm:pt-3">
             <div className="flex flex-col gap-2 max-sm:p-8">
               <div className="fill-personal font-bold text-xl ">
@@ -327,6 +328,7 @@ function PersonalDetails() {
               <button
                 className=" px-1 py-2 mt-6 text-white"
                 style={{ backgroundColor: "#A91D3A" }}
+                onClick={handleSubmit}
                 type="submit"
               >
                 Continue <FontAwesomeIcon icon={faArrowRight} color="white" />
@@ -354,12 +356,7 @@ function PersonalDetails() {
               )}
             </div>
           </div>
-          {/* <button >Submit</button> */}
-        </form>
-      ) : (
-        // _____________________________________________________
-        <div></div>
-      )}
+
     </>
   );
 }

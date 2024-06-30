@@ -12,6 +12,9 @@ from django.db.models import Q
 
 from .models import jobpost
 from .models import jobcategories
+from .models import Company
+from .models import CompanySector
+from .models import CompanyDepartment
 from authentication.models import user
 from jobseeker.models import applyjob
 from adminn.models import notification
@@ -20,10 +23,56 @@ from jobseeker.serializers import applyjobserializer
 from adminn.serializers import notificationserializer
 from .serializers import jobpostserializer
 from .serializers import jobcategoriesserializer
+from .serializers import CompanySerializer
 
+
+class CompanyPersonalInfo(APIView):
+    def post(self, request):
+        user_id = int(request.query_params.get('user_id'))
+        try:
+            company = Company.objects.get(company_user_id=user_id)
+            serializer = CompanySerializer(company, data=request.data)
+        except Company.DoesNotExist:
+            serializer = CompanySerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class UpdateSectorAndDepartments(APIView):
+    def post(self, request):
+        user_id = request.data.get("user_id")
+        sectors = request.data.get("sectors", [])
+        departments = request.data.get("departments", [])
+
+        try:
+            User = Company.objects.get(company_user_id=user_id)
+        except user.DoesNotExist:
+            return Response("User not found.", status=status.HTTP_404_NOT_FOUND)
+
+        for sector_name in sectors:
+            sector, _ = CompanySector.objects.get_or_create(sector_name=sector_name)
+            User.company_sectors.add(sector)
+
+        for department_data in departments:
+            sector_name = department_data.get("sector_name")
+            department_name = department_data.get("department_name")
+
+            sector, _ = CompanySector.objects.get_or_create(sector_name=sector_name)
+            department, _ = CompanyDepartment.objects.get_or_create(
+                sector=sector,
+                department_name=department_name,
+            )
+
+        return Response(
+            f"Sectors and departments updated for user ID {user_id}.",
+            status=status.HTTP_200_OK,
+        )    
 
 class Jobcategory(APIView):
-    permission_classes = [IsAuthenticated]
 
     def get(self,request):
         category=jobcategories.objects.filter(isapproved=1)

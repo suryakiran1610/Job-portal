@@ -1,6 +1,16 @@
 from rest_framework import serializers
 from .models import jobpost
 from .models import jobcategories
+from .models import Company
+
+
+class CompanySerializer(serializers.ModelSerializer):
+    company_sectors = serializers.StringRelatedField(many=True)
+
+    class Meta:
+        model = Company
+        fields = "__all__"
+
 
 class jobpostserializer(serializers.ModelSerializer):
     class Meta:

@@ -109,7 +109,7 @@ function Login() {
             console.log("Registration successful! Redirecting in 3 seconds...");
             setTimeout(() => {
                 setRegistersuccess(false);
-                setActiveComponent("login");
+                navigate(`companydetails/${response.id}`)
                 console.log("Redirecting to login component");
             }, 4000);
       })

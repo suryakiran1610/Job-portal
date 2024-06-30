@@ -1,6 +1,37 @@
 from django.db import models
 from authentication.models import user
 
+class Department(models.Model):
+    name = models.CharField(max_length=100)
+
+class CompanySector(models.Model):
+    sector_name = models.CharField(max_length=100, unique=True)
+    departments = models.ManyToManyField(Department) 
+    is_verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.sector_name
+
+class Company(models.Model):
+    company_user_id = models.ForeignKey(user, on_delete=models.CASCADE, blank=True, null=True)
+    company_name = models.CharField(max_length=255, unique=True)
+    address_line1 = models.CharField(max_length=255, blank=True, null=True)
+    address_line2 = models.CharField(max_length=255, blank=True, null=True)
+    mobile = models.CharField(max_length=20, blank=True, null=True)
+    city = models.CharField(max_length=255, blank=True, null=True)
+    state = models.CharField(max_length=255, blank=True, null=True)
+    pin_code = models.CharField(max_length=10, blank=True, null=True)
+    profile_image = models.ImageField(upload_to="company_logo", null=True)
+    is_verified = models.BooleanField(default=False)
+    company_website = models.CharField(max_length=100, null=True)
+    company_sectors = models.ManyToManyField(CompanySector, blank=True)
+
+class CompanyDepartment(models.Model):
+    department_name = models.CharField(max_length=100, null=True)
+    sector = models.ForeignKey(CompanySector, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return self.department_name    
 
 class jobpost(models.Model):
     company_user_id = models.ForeignKey(user, on_delete=models.CASCADE, blank=True, null=True)

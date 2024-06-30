@@ -29,6 +29,7 @@ import ViewJobs from './pages/admin/viewjobs';
 import Viewjobseeker from './pages/admin/viewjobseekers';
 import Pagenotfound from './pages/pagenotfound/Pagenotfound';
 import Jobseekerdetails from './pages/loginpage/jobseekerdetails';
+import Companydetails from './pages/loginpage/companydetails';
 
 function App() {
   const location = useLocation();
@@ -67,6 +68,7 @@ function App() {
           <Route path='/' element={<Login/>}/>
           <Route path="*" element={<Pagenotfound/>}/>
           <Route path='jobseekerdetails/:id' element={<Jobseekerdetails/>}/>
+          <Route path='companydetails/:id' element={<Companydetails/>}/>
 
             <Route path='/admin'>
                 <Route path='dashboard' element={<Admindashboard/>}/>
