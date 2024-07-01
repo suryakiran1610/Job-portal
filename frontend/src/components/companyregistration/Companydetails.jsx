@@ -161,7 +161,12 @@ function CompanyDetails() {
                                 ))}
                                 <button className='bg-primary_blue text-black w-10 rounded-lg self-end mt-3' onClick={addNewRow}>+</button>
                             </div>
-                            <div className="continue-btn float-right px-5 py-2 mt-6" onClick={SubmitSecDep}>Continue <FontAwesomeIcon icon={faArrowRight} className='text-blue-500' color='#ffffff' /></div>
+                            <div 
+                            style={{ backgroundColor: "#A91D3A" }}
+                            className="continue-btn float-right px-5 py-2 mt-6 text-white" 
+                            onClick={SubmitSecDep}>
+                            Continue 
+                            <FontAwesomeIcon icon={faArrowRight} className='text-white ml-2' color='#ffffff' /></div>
                         </div>
                     </div>
                 </div>

@@ -44,7 +44,7 @@ class JobseekerPersonalInfo(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class JobseekerEducation(APIView):
+class Jobseekereducation(APIView):
 
     def post(self, request, *args, **kwargs):
         serializer = JobseekerEducationSerializer(data=request.data)
@@ -53,9 +53,18 @@ class JobseekerEducation(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request):
+        user_id = request.query_params.get('user_id')
+        if user_id is not None:
+            education = JobseekerEducation.objects.filter(user_id=user_id)
+            serializer = JobseekerEducationSerializer(education, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": "User ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+    
 
-
-class JobseekerExperience(APIView):
+class Jobseekerexperience(APIView):
     def post(self, request, *args, **kwargs):
         serializer = JobseekerExperienceSerializer(data=request.data)
 
@@ -63,6 +72,16 @@ class JobseekerExperience(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request):
+        user_id = request.query_params.get('user_id')
+        if user_id is not None:
+            experience = JobseekerExperience.objects.filter(user_id=user_id)
+            serializer = JobseekerExperienceSerializer(experience, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": "User ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+    
 
 class UploadResume(APIView):
     def post(self, request, *args, **kwargs):

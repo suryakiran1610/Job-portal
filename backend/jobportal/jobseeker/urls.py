@@ -3,8 +3,8 @@ from . import views
 
 urlpatterns = [
     path('jobseekerpersonalinfo/',views.JobseekerPersonalInfo.as_view(),name="jobseekerpersonalinfo"),
-    path('jobseekereducation/',views.JobseekerEducation.as_view(),name="jobseekereducation"),
-    path('jobseekerexperience/',views.JobseekerExperience.as_view(),name="jobseekerexperience"),
+    path('jobseekereducation/',views.Jobseekereducation.as_view(),name="jobseekereducation"),
+    path('jobseekerexperience/',views.Jobseekerexperience.as_view(),name="jobseekerexperience"),
     path('uploadresume/',views.UploadResume.as_view(),name="uploadresume"),
     path('jobcategorycreate/',views.JobCategoryCreate.as_view(),name="jobcategorycreate"),
     path('jobseekerskills/',views.JobseekerSkills.as_view(),name="jobseekerskills"),

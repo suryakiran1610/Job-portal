@@ -66,7 +66,7 @@ function App() {
     <>
         <Routes>
           <Route path='/' element={<Login/>}/>
-          <Route path="*" element={<Pagenotfound/>}/>
+          {/* <Route path="*" element={<Pagenotfound/>}/> */}
           <Route path='jobseekerdetails/:id' element={<Jobseekerdetails/>}/>
           <Route path='companydetails/:id' element={<Companydetails/>}/>
 

@@ -31,6 +31,7 @@ class Jobseeker(models.Model):
     job_category = models.ForeignKey(jobcategories, on_delete=models.CASCADE, blank=True, null=True)
     resume = models.FileField(upload_to="resumes", null=True) 
 
+
 class JobseekerEducation(models.Model):
     user_id = models.ForeignKey(user, on_delete=models.CASCADE, null=True)
     course_name = models.CharField(max_length=255, null=True)
@@ -40,8 +41,6 @@ class JobseekerEducation(models.Model):
     to_date = models.DateField()
     education_document = models.FileField(upload_to="ed_documents/", null=True)    
 
-    def __str__(self):
-        return self.course_name
     
 class JobseekerExperience(models.Model):
     user_id = models.ForeignKey(user, on_delete=models.CASCADE, null=True)

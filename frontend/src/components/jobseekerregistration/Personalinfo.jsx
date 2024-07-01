@@ -236,7 +236,7 @@ function PersonalDetails({ setActiveComponent }) {
                 <div className="flex gap-3">
                   <input
                     type="text"
-                    value="+91"
+                    defaultValue="+91"
                     className="border border-gray-300 w-14 h-8 ml-2"
                   />
                   <input

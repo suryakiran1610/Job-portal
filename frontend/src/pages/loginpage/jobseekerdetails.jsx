@@ -12,7 +12,7 @@ function Jobseekerdetails() {
   return (
     <div>
         <RegisterNavbar/>
-        <div className="w-full h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-1 mx-auto" style={{ backgroundColor: "#EEEEEE" }}>
+        <div className=" min-h-screen" style={{ backgroundColor: "#EEEEEE" }}>
             {activeComponent === 'personalinfo' && <Personalinfo setActiveComponent={setActiveComponent}/> }
             {activeComponent === "education" &&<Education  setActiveComponent={setActiveComponent}/>}
             {activeComponent === "experience" && <Experience setActiveComponent={setActiveComponent}/>}

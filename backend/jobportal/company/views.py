@@ -66,6 +66,7 @@ class UpdateSectorAndDepartments(APIView):
                 sector=sector,
                 department_name=department_name,
             )
+            User.department_name.add(department)
 
         return Response(
             f"Sectors and departments updated for user ID {user_id}.",

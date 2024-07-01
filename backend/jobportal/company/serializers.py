@@ -6,6 +6,7 @@ from .models import Company
 
 class CompanySerializer(serializers.ModelSerializer):
     company_sectors = serializers.StringRelatedField(many=True)
+    department_name = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Company

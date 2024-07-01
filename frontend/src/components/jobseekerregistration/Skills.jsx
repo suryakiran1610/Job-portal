@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-// import successicon from "../../../../Assets/Images/success.png";
-import Cookies from "js-cookie";
 import Select from "react-select";
 import config from "../../Functions/config";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import { useParams } from "react-router-dom";
 
-
 function Skills() {
-  const user_id = Cookies.get("user_id");
   const [tags, setTags] = useState([]);
   const [success, setSuccess] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -18,39 +14,32 @@ function Skills() {
   const [resumeFile, setResumeFile] = useState(null);
   const [jobCategories, setJobCategories] = useState([]);
   const { id } = useParams();
-
-
-
   const [errors, setErrors] = useState({
     tags: "",
     selectedCategory: "",
     resumeFile: "",
   });
 
-
   useEffect(() => {
     MakeApiRequest(
-        "get",
-        `${config.baseUrl}company/jobcategory/`,
-        {},
-        {},
-        {}
-      )
-        .then((response) => {
-          console.log(response);
-          setJobCategories(response);
-
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          if (error.response && error.response.status === 401) {
-            console.log(
-              "Unauthorized access. Token might be expired or invalid."
-            );
-          } else {
-            console.error("Unexpected error occurred:", error);
-          }
-        });
+      "get",
+      `${config.baseUrl}company/jobcategory/`,
+      {},
+      {},
+      {}
+    )
+      .then((response) => {
+        console.log(response);
+        setJobCategories(response);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        if (error.response && error.response.status === 401) {
+          console.log("Unauthorized access. Token might be expired or invalid.");
+        } else {
+          console.error("Unexpected error occurred:", error);
+        }
+      });
   }, []);
 
   const options = jobCategories.map((category) => ({
@@ -58,13 +47,10 @@ function Skills() {
     label: category.jobcategory,
   }));
 
-
-
   const handleInputChange = (event) => {
     const value = event.target.value;
     setInputValue(value.charAt(0).toUpperCase() + value.slice(1));
   };
-
 
   const handleInputKeyPress = (event) => {
     if (event.key === "Enter" || event.key === ",") {
@@ -196,108 +182,128 @@ function Skills() {
     // Add skills
     const data = { skills: tags };
     const params = {
-        user_id: id,
-      };
-      MakeApiRequest(
-        "post",
-        `${config.baseUrl}jobseeker/jobseekerskills/`,
-        {},
-        params,
-        data
-      )
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          // Handle any errors
-        });
+      user_id: id,
+    };
+    MakeApiRequest(
+      "post",
+      `${config.baseUrl}jobseeker/jobseekerskills/`,
+      {},
+      params,
+      data
+    )
+      .then((response) => {
+        console.log(response);
+        setSuccess(true);
+      })
+      .catch((error) => {
+        console.log(error)
+      });
   };
+  useEffect(() => {
+    if (success) {
+      const redirectTimer = setTimeout(() => {
+        window.location.href = "/";
+      }, 5000);
 
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [success]);
 
   return (
     <>
-      <form onSubmit={handleSubmit} encType="multipart/form-data" className="flex flex-col items-center">
+      <form
+        onSubmit={handleSubmit}
+        encType="multipart/form-data"
+        className="flex flex-col items-center p-4 max-w-lg mx-auto"
+      >
+        {/* Header */}
+        <div className="text-center text-2xl font-bold mt-5 mb-5">Add Job Details</div>
+
         {/* Skills */}
-        <div className="text-center text-2xl font-bold">Skills</div>
-        <div className="">
-          <div className="tag-input-container w-[300px] text-base font-semibold">
-            Add Skills you have
-            <div className="tag-list px-2 py-2 ml-4">
-              {tags.map((tag, index) => (
-                <div key={index} className="tag text-sm font-thin">
-                  {tag}
-                  <button
-                    className="tag-remove-button"
-                    onClick={() => handleTagRemove(index)}
-                  >
-                    &times;
-                  </button>
-                </div>
-              ))}
+        <div className="w-full">
+          <div className="tag-input-container text-base font-semibold mb-5">
+            <label className="block mb-2">Add Skills you have</label>
+            <div className="tag-list flex flex-wrap items-center border px-3 py-2 rounded-md">
               <input
                 type="text"
-                className="tag-input font-thin"
+                className="tag-input flex-grow bg-transparent outline-none"
                 value={inputValue}
                 placeholder="Enter a Skill"
                 onChange={handleInputChange}
                 onKeyPress={handleInputKeyPress}
               />
             </div>
+            <ul className="flex flex-wrap gap-2 mt-2">
+              {tags.map((tag, index) => (
+                <li
+                  key={index}
+                  className="tag flex items-center bg-gray-200 px-3 py-1 rounded-full text-sm font-bold"
+                >
+                  {tag}
+                  <button
+                    className="ml-2 text-red-500 hover:text-red-700"
+                    onClick={() => handleTagRemove(index)}
+                  >
+                    &times;
+                  </button>
+                </li>
+              ))}
+            </ul>
             {errors.tags && (
-              <span className="error-message text-red-700">{errors.tags}</span>
+              <span className="error-message text-red-700 mt-2">{errors.tags}</span>
             )}
           </div>
         </div>
+
         {/* Job Category */}
-        <div className="text-center mt-5 text-2xl font-bold">Job Category</div>
-        <div className="w-[300px] text-base font-semibold flex flex-col gap-1 mt-3">
-          Select your job Category
+        <div className="w-full mb-5">
+          <label className="block text-base font-semibold mb-2">Select your job Category</label>
           <Select
-            className="mt-4"
+            className="mt-1"
             isClearable
             options={options}
             placeholder="Select a category"
             onChange={handleCategoryChange}
           />
           {errors.selectedCategory && (
-            <span className="error-message text-red-700">
-              {errors.selectedCategory}
-            </span>
+            <span className="error-message text-red-700 mt-2">{errors.selectedCategory}</span>
           )}
         </div>
+
         {/* Upload Resume */}
-        <div className="text-center mt-5 text-2xl font-bold">Upload Resume</div>
-        <div className="w-[300px] text-base font-semibold flex flex-col gap-1 mt-3">
+        <div className="w-full mb-5">
+          <label className="block text-base font-semibold mb-2">Upload Resume</label>
           <input
             type="file"
             accept=".pdf,.doc,.docx"
             onChange={handleResumeChange}
+            className="w-full p-2 border rounded-md"
           />
           {errors.resumeFile && (
-            <span className="error-message text-red-700">
-              {errors.resumeFile}
-            </span>
+            <span className="error-message text-red-700 mt-2">{errors.resumeFile}</span>
           )}
         </div>
+
         {/* Submit Button */}
         <button
           type="submit"
-          className="continue-btn px-5 py-2 float-right mt-2"
+          style={{ backgroundColor: "#A91D3A" }}
+          className="continue-btn text-white px-5 py-2 rounded-md flex items-center"
         >
-          Continue <FontAwesomeIcon icon={faArrowRight} color="white" />
+          Continue <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
         </button>
       </form>
-      {/* Success Message */}
+
       {success && (
-        <div className="success-bg-main absolute w-full h-full top-0 flex justify-center items-center">
-          <div className="success-box flex flex-col items-center w-6/12 h-3/6 bg-white rounded-lg max-sm:w-10/12">
-            <div className="mt-10">
-              <img src={successicon} alt="" />
+        <div className="success-bg-main fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-75">
+          <div className="success-box flex flex-col items-center w-10/12 md:w-6/12 lg:w-4/12 bg-white rounded-lg p-5">
+            <div className="mt-5">
+              {/* <img src={successicon} alt="Success" /> */}
             </div>
-            <div className="text-3xl font-semibold text-sky-900 mt-5">
+            <div className="text-2xl font-semibold text-sky-900 mt-5">
               Profile created!
             </div>
-            <div className="text-1xl font-semibold text-sky-900 mt-5 max-sm:px-5 text-center">
+            <div className="text-lg font-semibold text-sky-900 mt-5 text-center">
               Get ready for exciting job opportunities ahead
             </div>
           </div>

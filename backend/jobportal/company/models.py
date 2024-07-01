@@ -11,6 +11,13 @@ class CompanySector(models.Model):
 
     def __str__(self):
         return self.sector_name
+    
+class CompanyDepartment(models.Model):
+    department_name = models.CharField(max_length=100, null=True)
+    sector = models.ForeignKey(CompanySector, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return self.department_name        
 
 class Company(models.Model):
     company_user_id = models.ForeignKey(user, on_delete=models.CASCADE, blank=True, null=True)
@@ -25,13 +32,9 @@ class Company(models.Model):
     is_verified = models.BooleanField(default=False)
     company_website = models.CharField(max_length=100, null=True)
     company_sectors = models.ManyToManyField(CompanySector, blank=True)
+    department_name = models.ManyToManyField(CompanyDepartment, null=True)
 
-class CompanyDepartment(models.Model):
-    department_name = models.CharField(max_length=100, null=True)
-    sector = models.ForeignKey(CompanySector, on_delete=models.CASCADE, null=True)
 
-    def __str__(self):
-        return self.department_name    
 
 class jobpost(models.Model):
     company_user_id = models.ForeignKey(user, on_delete=models.CASCADE, blank=True, null=True)
