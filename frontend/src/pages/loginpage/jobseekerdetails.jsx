@@ -7,7 +7,7 @@ import Skills from "../../components/jobseekerregistration/Skills";
 
 
 function Jobseekerdetails() {
-    const [activeComponent, setActiveComponent] = useState("skills");
+    const [activeComponent, setActiveComponent] = useState("personalinfo");
 
   return (
     <div>

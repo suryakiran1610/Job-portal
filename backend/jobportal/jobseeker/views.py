@@ -102,6 +102,7 @@ class UploadResume(APIView):
 class JobCategoryCreate(APIView):
 
     def post(self, request, *args, **kwargs):
+        
         category_id = request.data.get("category_id")
         user_id = int(request.query_params.get('user_id'))
         if not category_id:

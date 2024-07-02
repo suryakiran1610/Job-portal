@@ -100,6 +100,7 @@ function Experience({ setActiveComponent }) {
     validateField(name, value);
   }
 
+
   const validateField = (name, value) => {
     let errorMessage = "";
 

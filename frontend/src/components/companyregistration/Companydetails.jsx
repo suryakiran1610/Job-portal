@@ -7,11 +7,11 @@ import config from '../../Functions/config';
 import MakeApiRequest from '../../Functions/AxiosApi';
 import Cookies from "js-cookie";
 import { useParams } from "react-router-dom";
+import BeatLoader from "react-spinners/BeatLoader";
 
 
-function CompanyDetails() {
-    const user_id = Cookies.get('user_id')
-    const access_token = Cookies.get('access_token')
+
+function CompanyDetails({ setActiveComponent }) {
     const [file, setFile] = useState();
     const { id } = useParams();
     const [details, setDetails] = useState(true);
@@ -21,11 +21,56 @@ function CompanyDetails() {
     const [companyDepartments, setCompanyDepartments] = useState([]);
     const [rows, setRows] = useState([{ companyType: null, companyDepartments: null }]);
     const [errors, setErrors] = useState([{ companyType: "", companyDepartments: "" }]);
+    const [isloading, setIsloading] = useState(false);
+
+
 
     useEffect(() => {
-        setCompanyTypes([{ label: 'Type A' }, { label: 'Type B', value: 'type_b' }, { label: 'Type C', value: 'type_c' }]);
-        setCompanyDepartments([{ label: 'HR', value: 'hr' }, { label: 'Finance', value: 'finance' }, { label: 'Marketing', value: 'marketing' }]);
-    }, []);
+        setIsloading(true)
+        const fetchSectors = MakeApiRequest(
+          "get",
+          `${config.baseUrl}company/getcompanysector/`,
+          {},
+          {},
+          {}
+        )
+          .then((response) => {
+            console.log("Sectorall", response);
+            setCompanyTypes(response.map(sector => ({ value: sector.sector_name, label: sector.sector_name })));
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            if (error.response && error.response.status === 401) {
+              console.log("Unauthorized access. Token might be expired or invalid.");
+            } else {
+              console.error("Unexpected error occurred:", error);
+            }
+          });
+    
+        const fetchDepartments = MakeApiRequest(
+          "get",
+          `${config.baseUrl}company/getdepartments/`,
+          {},
+          {},
+          {}
+        )
+          .then((response) => {
+            console.log("departmentsall", response);
+            setCompanyDepartments(response.map(department => ({ value: department.name, label: department.name })));
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            if (error.response && error.response.status === 401) {
+              console.log("Unauthorized access. Token might be expired or invalid.");
+            } else {
+              console.error("Unexpected error occurred:", error);
+            }
+          });
+    
+        Promise.all([fetchSectors, fetchDepartments]).then(() => {
+            setIsloading(false);
+        });
+      }, []);
 
     function HandleNextDetails() {
         setDetails(false)
@@ -80,9 +125,7 @@ function CompanyDetails() {
         return newErrors.every(rowError => Object.keys(rowError).length === 0);
     };
 
-    const headers = {
-        'Authorization': `Bearer ${access_token}`
-    }
+    
 
     const SubmitSecDep = () => {
         if (!validateRows()) {
@@ -122,7 +165,7 @@ function CompanyDetails() {
           )
             .then((response) => {
               console.log(response);
-
+              setActiveComponent("employeedetails");
             })
             .catch((error) => {
               // Handle any errors
@@ -131,6 +174,11 @@ function CompanyDetails() {
 
     return (
         <>
+        {isloading ? (
+        <div className="h-screen flex justify-center items-center px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto" style={{ backgroundColor: "#EEEEEE" }}>
+          <BeatLoader color="#6b7280" margin={1} size={50} />
+        </div>
+      ) : (  
                 <div>
                     <div className='text-center text-2xl font-semibold text-primary_blue'>Company Sectors and Departments</div>
                     <div className='flex justify-evenly pt-4 max-sm:flex-col-reverse max-sm:px-5'>
@@ -139,7 +187,7 @@ function CompanyDetails() {
                                 {rows.map((row, index) => (
                                     <div className='flex w-full gap-5' key={index}>
                                         <label className='flex flex-col gap-1 text-xs mt-4'>
-                                            Company Type
+                                            Company Sector
                                             <Creatable
                                                 value={row.companyType}
                                                 onChange={(selectedOption) => handleCompanyTypeChange(selectedOption, index)}
@@ -170,6 +218,7 @@ function CompanyDetails() {
                         </div>
                     </div>
                 </div>
+      )}
         </>
     )
 }

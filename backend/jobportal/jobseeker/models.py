@@ -31,6 +31,8 @@ class Jobseeker(models.Model):
     job_category = models.ForeignKey(jobcategories, on_delete=models.CASCADE, blank=True, null=True)
     resume = models.FileField(upload_to="resumes", null=True) 
 
+    def __str__(self):
+        return self.full_name
 
 class JobseekerEducation(models.Model):
     user_id = models.ForeignKey(user, on_delete=models.CASCADE, null=True)

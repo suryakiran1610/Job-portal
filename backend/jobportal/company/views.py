@@ -15,6 +15,8 @@ from .models import jobcategories
 from .models import Company
 from .models import CompanySector
 from .models import CompanyDepartment
+from .models import Department
+from .models import CompanyEmployee
 from authentication.models import user
 from jobseeker.models import applyjob
 from adminn.models import notification
@@ -24,6 +26,10 @@ from adminn.serializers import notificationserializer
 from .serializers import jobpostserializer
 from .serializers import jobcategoriesserializer
 from .serializers import CompanySerializer
+from .serializers import DepartmentSerializer
+from .serializers import CompanyDepartmentSerializer
+from .serializers import CompanySectorSerializer
+from .serializers import CompanyEmployeeSerializer
 
 
 class CompanyPersonalInfo(APIView):
@@ -41,6 +47,49 @@ class CompanyPersonalInfo(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+
+
+class Companyemployee(APIView):
+
+    def post(self, request):
+        user_id = int(request.query_params.get('user_id'))
+        data = request.data
+        data["company_user_id"] = user_id
+        serializer = CompanyEmployeeSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request):
+        user_id = int(request.query_params.get('user_id'))
+        company_employees = CompanyEmployee.objects.filter(
+            company_user_id=user_id
+        )
+        serializer = CompanyEmployeeSerializer(company_employees, many=True)
+        return Response(serializer.data)
+      
+    
+class GetCompanydepartment(APIView):
+    def get(self,request):
+        user_id = int(request.query_params.get('user_id'))
+        depts=CompanyDepartment.objects.filter(companyid=user_id)
+        serializer=CompanyDepartmentSerializer(depts,many=True)
+        return Response(serializer.data)    
+
+class GetCompanysector(APIView):
+    def get(self,request):
+        sector=CompanySector.objects.filter(is_verified=1)
+        serializer=CompanySectorSerializer(sector,many=True)
+        return Response(serializer.data)
+
+class GetDepartments(APIView):
+    def get(self,request):
+        dept=Department.objects.all()
+        serializer=DepartmentSerializer(dept,many=True)
+        return Response(serializer.data)
+
+
 
 class UpdateSectorAndDepartments(APIView):
     def post(self, request):
@@ -65,6 +114,7 @@ class UpdateSectorAndDepartments(APIView):
             department, _ = CompanyDepartment.objects.get_or_create(
                 sector=sector,
                 department_name=department_name,
+                companyid=user_id
             )
             User.department_name.add(department)
 

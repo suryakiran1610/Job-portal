@@ -5,12 +5,16 @@ import Select from "react-select";
 import config from "../../Functions/config";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import { useParams } from "react-router-dom";
+import { SiTicktick } from "react-icons/si";
+import BeatLoader from "react-spinners/BeatLoader";
+
 
 function Skills() {
   const [tags, setTags] = useState([]);
   const [success, setSuccess] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [isloading, setIsloading] = useState(false);
   const [resumeFile, setResumeFile] = useState(null);
   const [jobCategories, setJobCategories] = useState([]);
   const { id } = useParams();
@@ -21,6 +25,7 @@ function Skills() {
   });
 
   useEffect(() => {
+    setIsloading(true);
     MakeApiRequest(
       "get",
       `${config.baseUrl}company/jobcategory/`,
@@ -31,6 +36,7 @@ function Skills() {
       .then((response) => {
         console.log(response);
         setJobCategories(response);
+        setIsloading(false);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -133,72 +139,56 @@ function Skills() {
 
     if (!validateForm()) return;
 
-    // Upload resume
-    if (resumeFile) {
-      const resumeFormData = new FormData();
-      resumeFormData.append("resume", resumeFile);
+    try {
+      // Upload resume
+      if (resumeFile) {
+        const resumeFormData = new FormData();
+        resumeFormData.append("resume", resumeFile);
 
-      const params = {
-        user_id: id,
-      };
+        const params = { user_id: id };
 
-      MakeApiRequest(
+        await MakeApiRequest(
+          "post",
+          `${config.baseUrl}jobseeker/uploadresume/`,
+          {},
+          params,
+          resumeFormData
+        );
+      }
+
+      // Add job category
+      if (selectedCategory) {
+        const categoryData = { category_id: selectedCategory.value };
+        const params = { user_id: id };
+
+        await MakeApiRequest(
+          "post",
+          `${config.baseUrl}jobseeker/jobcategorycreate/`,
+          {},
+          params,
+          categoryData
+        );
+      }
+
+      // Add skills
+      const data = { skills: tags };
+      const params = { user_id: id };
+
+      await MakeApiRequest(
         "post",
-        `${config.baseUrl}jobseeker/uploadresume/`,
+        `${config.baseUrl}jobseeker/jobseekerskills/`,
         {},
         params,
-        resumeFormData
-      )
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          // Handle any errors
-        });
+        data
+      );
+
+      setSuccess(true);
+    } catch (error) {
+      console.error("Error during form submission:", error);
     }
-
-    // Add job category
-    if (selectedCategory) {
-      const categoryData = { category_id: selectedCategory.value };
-      const params = {
-        user_id: id,
-      };
-
-      MakeApiRequest(
-        "post",
-        `${config.baseUrl}jobseeker/jobcategorycreate/`,
-        {},
-        params,
-        categoryData
-      )
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          // Handle any errors
-        });
-    }
-
-    // Add skills
-    const data = { skills: tags };
-    const params = {
-      user_id: id,
-    };
-    MakeApiRequest(
-      "post",
-      `${config.baseUrl}jobseeker/jobseekerskills/`,
-      {},
-      params,
-      data
-    )
-      .then((response) => {
-        console.log(response);
-        setSuccess(true);
-      })
-      .catch((error) => {
-        console.log(error)
-      });
   };
+
+
   useEffect(() => {
     if (success) {
       const redirectTimer = setTimeout(() => {
@@ -211,6 +201,11 @@ function Skills() {
 
   return (
     <>
+    {isloading ? (
+        <div className="h-screen flex justify-center items-center px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto" style={{ backgroundColor: "#EEEEEE" }}>
+          <BeatLoader color="#6b7280" margin={1} size={50} />
+        </div>
+      ) : (  
       <form
         onSubmit={handleSubmit}
         encType="multipart/form-data"
@@ -293,12 +288,13 @@ function Skills() {
           Continue <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
         </button>
       </form>
+      )}
 
       {success && (
         <div className="success-bg-main fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-75">
           <div className="success-box flex flex-col items-center w-10/12 md:w-6/12 lg:w-4/12 bg-white rounded-lg p-5">
             <div className="mt-5">
-              {/* <img src={successicon} alt="Success" /> */}
+                <SiTicktick  className="text-8xl text-green-600"/>
             </div>
             <div className="text-2xl font-semibold text-sky-900 mt-5">
               Profile created!

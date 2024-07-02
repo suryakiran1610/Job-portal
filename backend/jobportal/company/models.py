@@ -3,6 +3,9 @@ from authentication.models import user
 
 class Department(models.Model):
     name = models.CharField(max_length=100)
+        
+    def __str__(self):
+        return self.name
 
 class CompanySector(models.Model):
     sector_name = models.CharField(max_length=100, unique=True)
@@ -15,6 +18,7 @@ class CompanySector(models.Model):
 class CompanyDepartment(models.Model):
     department_name = models.CharField(max_length=100, null=True)
     sector = models.ForeignKey(CompanySector, on_delete=models.CASCADE, null=True)
+    companyid=models.IntegerField(null=True,blank=True)
 
     def __str__(self):
         return self.department_name        
@@ -34,6 +38,13 @@ class Company(models.Model):
     company_sectors = models.ManyToManyField(CompanySector, blank=True)
     department_name = models.ManyToManyField(CompanyDepartment, null=True)
 
+class CompanyEmployee(models.Model):
+    company_user_id = models.ForeignKey(user, on_delete=models.CASCADE, null=True)
+    employee_name = models.CharField(max_length=100, null=True)
+    employee_position = models.CharField(max_length=100, null=True)
+    employee_phone_number = models.CharField(max_length=20, null=True)
+    employee_email = models.CharField(max_length=50, null=True)
+    employee_department = models.CharField(max_length=255, null=True)
 
 
 class jobpost(models.Model):
@@ -59,3 +70,6 @@ class jobcategories(models.Model):
     jobcategory=models.CharField(max_length=255,null=True,blank=True)
     isapproved=models.BooleanField(default=False,blank=True, null=True)
     category_added_by=models.IntegerField(null=True,blank=True)
+
+    def __str__(self):
+        return self.jobcategory

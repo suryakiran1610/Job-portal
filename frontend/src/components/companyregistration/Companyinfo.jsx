@@ -137,7 +137,7 @@ function Companyinfo({ setActiveComponent }) {
                     </label>
                     <label className='flex flex-col mb-1 gap-1 text-xs'>Mobile
                         <div className='flex gap-3'>
-                            <input type='text' value="+91" className='signup-input border border-gray-300 w-14 h-8 ml-2' />
+                            <div className='flex justify-center items-center text-base border bg-white border-gray-300 w-14 h-8 ml-2'>+91</div>
                             <input
                                 type='number'
                                 value={companyinfo.mobile}
