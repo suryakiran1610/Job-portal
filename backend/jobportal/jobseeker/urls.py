@@ -13,5 +13,11 @@ urlpatterns = [
     path('savejob/', views.SaveJobView.as_view(), name='savejob'),
     path('limitsavejobview/', views.LimitSaveJobView.as_view(), name='limitsavejobview'),
     path('limitappliedjobview/', views.LimitAppliedJobView.as_view(), name='limitappliedjobview'),
+    path('jobseekerprofileview/', views.JobseekerprofileView.as_view(), name='jobseekerprofileview'),
+    path('jobseekereducationview/', views.JobseekerEducationView.as_view(), name='jobseekereducationview'),
+    path('jobseekerexperienceview/', views.JobseekerExperienceView.as_view(), name='jobseekerexperienceview'),
+    path('jobseekerskillsview/', views.JobseekerSkillsView.as_view(), name='jobseekerskillsview'),
+
+
 
 ]

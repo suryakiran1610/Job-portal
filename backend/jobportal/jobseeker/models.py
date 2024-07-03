@@ -6,30 +6,24 @@ from company.models import jobcategories
 
 
 class Skill(models.Model):
-    name = models.CharField(unique=True, max_length=255)
+    user_id = models.IntegerField(blank=True, null=True)
+    name = models.CharField(max_length=255, blank=True, null=True)
 
 
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        self.name = self.name.capitalize()
-        super().save(*args, **kwargs)
 
 class Jobseeker(models.Model):
     user_id = models.ForeignKey(user, on_delete=models.CASCADE)
-    full_name = models.CharField(max_length=255)
-    profile_image = models.ImageField(upload_to="profile_image")
-    dob = models.DateField()
-    mobile = models.CharField(max_length=20)
-    address_line1 = models.CharField(max_length=255)
+    full_name = models.CharField(max_length=255,blank=True, null=True)
+    profile_image = models.ImageField(upload_to="profile_image",blank=True, null=True)
+    dob = models.DateField(blank=True, null=True)
+    mobile = models.CharField(max_length=20,blank=True, null=True)
+    address_line1 = models.CharField(max_length=255,blank=True, null=True)
     address_line2 = models.CharField(max_length=255,blank=True, null=True)
-    city = models.CharField(max_length=255)
-    state = models.CharField(max_length=255)
-    pin_code = models.CharField(max_length=10)
-    skills = models.ManyToManyField(Skill,blank=True, null=True)
+    city = models.CharField(max_length=255,blank=True, null=True)
+    state = models.CharField(max_length=255,blank=True, null=True)
+    pin_code = models.CharField(max_length=10,blank=True, null=True)
     job_category = models.ForeignKey(jobcategories, on_delete=models.CASCADE, blank=True, null=True)
-    resume = models.FileField(upload_to="resumes", null=True) 
+    resume = models.FileField(upload_to="resumes",blank=True, null=True) 
 
     def __str__(self):
         return self.full_name

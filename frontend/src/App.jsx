@@ -9,6 +9,8 @@ import JobseekerProfile from './pages/jobseeker/jobseekerprofile';
 import Jobseekersearch from './pages/jobseeker/jobseekersearch';
 import Savedjobs from './pages/jobseeker/savedjobs';
 import Viewjobdetails from './pages/jobseeker/viewjobdetails';
+import Jobseekereducation from './pages/jobseeker/Jobseekereducation';
+import Jobseekerexperience from './pages/jobseeker/Jobseekerexperience';
 import Applicants from './pages/company/applicants';
 import Companysearch from './pages/company/companysearch';
 import Editjobs from './pages/company/editjobs';
@@ -98,6 +100,8 @@ function App() {
             <Route path='/jobseeker'>
                 <Route path='appliedjobs' element={<Appliedjobs/>}/>
                 <Route path='jobseekerprofile' element={<JobseekerProfile/>}/>
+                <Route path='jobseekerexperience' element={<Jobseekerexperience/>}/>
+                <Route path='jobseekereducation' element={<Jobseekereducation/>}/>
                 <Route path='jobseekersearch' element={<Jobseekersearch/>}/>
                 <Route path='savedjobs' element={<Savedjobs/>}/>
                 <Route path='jobdetails/:id' element={<Viewjobdetails/>}/>

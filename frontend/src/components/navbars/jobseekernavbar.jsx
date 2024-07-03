@@ -4,6 +4,9 @@ import Cookies from "js-cookie";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import React, {useContext, useEffect, useState } from "react";
 import ProfileContext from "../../context/ProfileContext";
+import { LiaAddressCard } from "react-icons/lia";
+import { LiaAccusoft } from "react-icons/lia";
+
 
 function JobseekerNavbar() {
   const { profile, setProfile } = useContext(ProfileContext);
@@ -131,29 +134,7 @@ function JobseekerNavbar() {
                     </p>
                   </div>
                   <div className="mt-2 py-2 first:pt-0 last:pb-0">
-                    <a
-                      onClick={handleLogout}
-                      className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
-                      href="#"
-                    >
-                      <svg
-                        className="flex-shrink-0 size-4"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
-                        <path d="M12 12v9" />
-                        <path d="m8 17 4 4 4-4" />
-                      </svg>
-                      Logout
-                    </a>
+                    
                     <Link
                         to="/jobseeker/jobseekerprofile"
                         // onClick={()=>{setActiveComponent('profile')}}
@@ -179,6 +160,45 @@ function JobseekerNavbar() {
                       </svg>
                       Profile
                     </Link>
+                    <Link
+                        to="/jobseeker/jobseekereducation"
+                      className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
+                      href="#"
+                    >  
+                      <LiaAccusoft />
+                      Education
+                    </Link>
+                    <Link
+                        to="/jobseeker/jobseekerexperience"
+                      className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
+                      href="#"
+                    >  
+                      <LiaAddressCard />
+                      Experience
+                    </Link>
+                    <a
+                      onClick={handleLogout}
+                      className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
+                      href="#"
+                    >
+                      <svg
+                        className="flex-shrink-0 size-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+                        <path d="M12 12v9" />
+                        <path d="m8 17 4 4 4-4" />
+                      </svg>
+                      Logout
+                    </a>
                   </div>
                 </div>
               </div>

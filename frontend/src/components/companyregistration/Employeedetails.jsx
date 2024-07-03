@@ -206,7 +206,7 @@ function EmployeeDetails() {
         if (success) {
         const redirectTimer = setTimeout(() => {
             window.location.href = "/";
-        }, 50000);
+        }, 5000);
 
         return () => clearTimeout(redirectTimer);
         }

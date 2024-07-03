@@ -9,7 +9,6 @@ class Department(models.Model):
 
 class CompanySector(models.Model):
     sector_name = models.CharField(max_length=100, unique=True)
-    departments = models.ManyToManyField(Department) 
     is_verified = models.BooleanField(default=False)
 
     def __str__(self):

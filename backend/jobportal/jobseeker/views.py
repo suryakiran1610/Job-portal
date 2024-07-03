@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404
 
 from company.models import jobpost
 from company.models import jobcategories
+from authentication.models import user
 from .models import savejob
 from .models import applyjob
 from .models import Jobseeker
@@ -21,6 +22,7 @@ from .models import JobseekerExperience
 from .models import Skill
 from company.serializers import jobpostserializer
 from company.serializers import jobcategoriesserializer
+from authentication.serializers import userserializer
 from .serializers import savejobserializer
 from .serializers import applyjobserializer
 from .serializers import JobseekerSerializer
@@ -134,13 +136,103 @@ class JobseekerSkills(APIView):
             )
 
         for skill_name in skill_names:
-            skill, created = Skill.objects.get_or_create(name=skill_name)
-            employee.skills.add(skill)
+            skill= Skill.objects.create(name=skill_name,user_id=user_id)
 
         return Response(
             {"message": "Skills added successfully"}, status=status.HTTP_201_CREATED
         )
+    
+class JobseekerprofileView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request, *args, **kwargs):
+        user_id = int(request.query_params.get('user_id'))
+        print("Logged-in user's id:", user_id)
+        try:
+            jobseeker = Jobseeker.objects.get(user_id=user_id)
+            job_category_name = jobseeker.job_category.jobcategory if jobseeker.job_category else None
+            serializer = JobseekerSerializer(jobseeker)
+            data = serializer.data
+            data['job_category_name'] = job_category_name
+            return Response(data)
+        except Jobseeker.DoesNotExist:
+            return Response({"error": "Employee not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+    def put(self, request):
+        print(request.data)  # Log the request data
+        user_id = int(request.query_params.get('user_id'))
+        try:
+            editprofile = Jobseeker.objects.get(user_id=user_id)
+        except Jobseeker.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = JobseekerSerializer(editprofile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            job_category_name = editprofile.job_category.jobcategory if editprofile.job_category else None
+            data = serializer.data
+            data['job_category_name'] = job_category_name
+            return Response(data)
+        else:
+            print(serializer.errors)  # Log the serializer errors
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+class JobseekerSkillsView(APIView):
+    permission_classes = [IsAuthenticated]  
+    def get(self, request):
+        user_id = int(request.query_params.get('user_id'))
+        try:
+            skill = Skill.objects.filter(user_id=user_id)
+            serializer = SkillSerializer(skill, many=True)
+            return Response(serializer.data)
+        except Skill.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND) 
+
+    def put(self, request):
+        print(request.data) 
+        user_id = int(request.query_params.get('user_id'))
+        print(user_id)
+
+        Skill.objects.filter(user_id=user_id).delete()
+
+        skills = request.data.getlist('name')
+
+        skill_objects = []
+
+        for skill in skills:
+            skill_objects.append(Skill(name=skill, user_id=user_id))
+
+        Skill.objects.bulk_create(skill_objects)
+
+        new_skills = Skill.objects.filter(user_id=user_id)
+        serializer = SkillSerializer(new_skills, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        
+class JobseekerEducationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_id = int(request.query_params.get('user_id'))
+        try:
+            education = JobseekerEducation.objects.filter(user_id=user_id)
+            serializer = JobseekerEducationSerializer(education, many=True)
+            return Response(serializer.data)
+        except JobseekerEducation.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)  
+        
+class JobseekerExperienceView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_id = int(request.query_params.get('user_id'))
+        try:
+            experience = JobseekerExperience.objects.filter(user_id=user_id)
+            serializer = JobseekerExperienceSerializer(experience, many=True)
+            return Response(serializer.data)
+        except JobseekerExperience.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)              
 
 
 

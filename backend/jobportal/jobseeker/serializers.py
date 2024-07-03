@@ -14,18 +14,10 @@ class SkillSerializer(serializers.ModelSerializer):
 
 
 class JobseekerSerializer(serializers.ModelSerializer):
-    skills = serializers.StringRelatedField(many=True)
-
     class Meta:
         model = Jobseeker
         fields = "__all__"
 
-class JobseekerSKillSerializer(serializers.ModelSerializer):
-    skills = serializers.StringRelatedField(many=True)
-
-    class Meta:
-        model = Jobseeker
-        fields = ["user_id", "skills"]
 
 class JobseekerEducationSerializer(serializers.ModelSerializer):
     class Meta:

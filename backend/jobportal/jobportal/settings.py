@@ -87,8 +87,8 @@ WSGI_APPLICATION = 'jobportal.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
-        'NAME':'jobportal',
-        'USER': 'suryakirans',
+        'NAME':'jobportal3',
+        'USER': 'suryakiran',
         'PASSWORD':'123',
         'HOST':'localhost',
         'PORT':'3306'
