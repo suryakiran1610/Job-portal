@@ -11,6 +11,8 @@ import Savedjobs from './pages/jobseeker/savedjobs';
 import Viewjobdetails from './pages/jobseeker/viewjobdetails';
 import Jobseekereducation from './pages/jobseeker/Jobseekereducation';
 import Jobseekerexperience from './pages/jobseeker/Jobseekerexperience';
+import Addeducation from './pages/jobseeker/Addeducation';
+import Addexperience from './pages/jobseeker/Addexperience';
 import Applicants from './pages/company/applicants';
 import Companysearch from './pages/company/companysearch';
 import Editjobs from './pages/company/editjobs';
@@ -19,6 +21,7 @@ import Postjob from './pages/company/postjob';
 import Profile from './pages/company/profile';
 import UserProfile from './pages/company/userprofile';
 import Viewjob from './pages/company/viewjob';
+import Depts_Sectors from './pages/company/Depts_Sectors';
 import Admindashboard from './pages/admin/admindashboard';
 import Adminprofile from './pages/admin/adminprofile';
 import Companyprofile from './pages/admin/companyprofile';
@@ -95,6 +98,7 @@ function App() {
                 <Route path='employerprofile' element={<Profile/>}/>
                 <Route path='jobseekerprofile/:id' element={<UserProfile/>}/>
                 <Route path='jobdetails/:id' element={<Viewjob/>}/>
+                <Route path='departments_sectors' element={<Depts_Sectors/>}/>
             </Route>
 
             <Route path='/jobseeker'>
@@ -102,6 +106,8 @@ function App() {
                 <Route path='jobseekerprofile' element={<JobseekerProfile/>}/>
                 <Route path='jobseekerexperience' element={<Jobseekerexperience/>}/>
                 <Route path='jobseekereducation' element={<Jobseekereducation/>}/>
+                <Route path='addeducation' element={<Addeducation/>}/>
+                <Route path='addexperience' element={<Addexperience/>}/>
                 <Route path='jobseekersearch' element={<Jobseekersearch/>}/>
                 <Route path='savedjobs' element={<Savedjobs/>}/>
                 <Route path='jobdetails/:id' element={<Viewjobdetails/>}/>

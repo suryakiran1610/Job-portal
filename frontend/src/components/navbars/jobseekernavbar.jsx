@@ -30,12 +30,12 @@ function JobseekerNavbar() {
   
       useEffect(() => {
         const params = {
-            userid: userdetails.id,
+            user_id: userdetails.id,
         };
   
         MakeApiRequest(
         "get",
-        `${config.baseUrl}company/users/`,
+        `${config.baseUrl}jobseeker/jobseekerprofileview/`,
         headers,
         params,
         {}
@@ -216,7 +216,6 @@ function JobseekerNavbar() {
             <div className="snap-center shrink-0 pe-5 sm:pe-8 sm:last-pe-0">
               <Link
                 to="/jobseeker/jobseekersearch"
-                // onClick={()=>{setActiveComponent('search')}}
                 className="inline-flex items-center gap-x-2 hover:text-gray-500 dark:text-neutral-400 dark:hover:text-neutral-500"
                 href="#"
               >

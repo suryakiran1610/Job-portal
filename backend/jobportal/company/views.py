@@ -121,7 +121,16 @@ class UpdateSectorAndDepartments(APIView):
         return Response(
             f"Sectors and departments updated for user ID {user_id}.",
             status=status.HTTP_200_OK,
-        )    
+        )  
+    
+class CompanydepartmentView(APIView):
+    permission_classes=[IsAuthenticated]
+
+    def get(self,request):
+        user_id = int(request.query_params.get('user_id'))
+        depts=CompanyDepartment.objects.filter(companyid=user_id)
+        serializer=CompanyDepartmentSerializer(depts,many=True)
+        return Response(serializer.data)       
 
 class Jobcategory(APIView):
 
@@ -153,6 +162,37 @@ class Jobcategory(APIView):
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CompanyprofileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user_id = int(request.query_params.get('user_id'))
+        print("Logged-in user's id:", user_id)
+        try:
+            company = Company.objects.get(company_user_id=user_id)
+            serializer = CompanySerializer(company)
+            data = serializer.data
+            return Response(data)
+        except Company.DoesNotExist:
+            return Response({"error": "Company not found"}, status=status.HTTP_404_NOT_FOUND)  
+
+    def put(self, request):
+        print(request.data)  # Log the request data
+        user_id = int(request.query_params.get('user_id'))
+        try:
+            editprofile = Company.objects.get(company_user_id=user_id)
+        except Company.DoesNotExist:
+            return Response({'error': 'Company not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CompanySerializer(editprofile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            print(serializer.errors)  # Log the serializer errors
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)      
 
 
 

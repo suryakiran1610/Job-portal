@@ -24,18 +24,18 @@ class CompanyDepartment(models.Model):
 
 class Company(models.Model):
     company_user_id = models.ForeignKey(user, on_delete=models.CASCADE, blank=True, null=True)
-    company_name = models.CharField(max_length=255, unique=True)
+    company_name = models.CharField(max_length=255, unique=True,blank=True, null=True)
     address_line1 = models.CharField(max_length=255, blank=True, null=True)
     address_line2 = models.CharField(max_length=255, blank=True, null=True)
     mobile = models.CharField(max_length=20, blank=True, null=True)
     city = models.CharField(max_length=255, blank=True, null=True)
     state = models.CharField(max_length=255, blank=True, null=True)
     pin_code = models.CharField(max_length=10, blank=True, null=True)
-    profile_image = models.ImageField(upload_to="company_logo", null=True)
-    is_verified = models.BooleanField(default=False)
-    company_website = models.CharField(max_length=100, null=True)
-    company_sectors = models.ManyToManyField(CompanySector, blank=True)
-    department_name = models.ManyToManyField(CompanyDepartment, null=True)
+    profile_image = models.ImageField(upload_to="company_logo",blank=True, null=True)
+    is_verified = models.BooleanField(default=False,blank=True, null=True)
+    company_website = models.CharField(max_length=100,blank=True, null=True)
+    company_sectors = models.ManyToManyField(CompanySector,blank=True, null=True)
+    department_name = models.ManyToManyField(CompanyDepartment,blank=True, null=True)
 
 class CompanyEmployee(models.Model):
     company_user_id = models.ForeignKey(user, on_delete=models.CASCADE, null=True)

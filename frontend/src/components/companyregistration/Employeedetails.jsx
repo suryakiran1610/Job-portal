@@ -303,7 +303,9 @@ function EmployeeDetails() {
                 )}
               </label>
             </div>
-            <div className=" flex max-sm:flex-col mt-5">
+            <label className="flex flex-col  gap-1 text-xs mb-2 mt-3">
+                Department of Working
+            <div className=" flex max-sm:flex-col">
               <div>
                 <CreatableSelect
                   isClearable
@@ -321,6 +323,7 @@ function EmployeeDetails() {
                 />
               </div>
             </div>
+            </label>
             {errors.employee_department && (
                   <span className="error-message text-red-700 mt-1 text-xs">
                     {errors.employee_department}

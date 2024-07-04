@@ -221,7 +221,34 @@ class JobseekerEducationView(APIView):
             return Response(serializer.data)
         except JobseekerEducation.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)  
+
+    def delete(self, request):
+        print(request.data)
+        educationid = int(request.query_params.get('education_id'))
+        try:
+            education = JobseekerEducation.objects.get(id=educationid)
+        except JobseekerEducation.DoesNotExist:
+            return Response({'error': 'education not found'}, status=404)
+
+        education.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)    
         
+    def put(self, request):
+        print(request.data)  # Log the request data
+        educationid = int(request.query_params.get('education_id'))
+        try:
+            editeducation = JobseekerEducation.objects.get(id=educationid)
+        except JobseekerEducation.DoesNotExist:
+            return Response({'error': 'education not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = JobseekerEducationSerializer(editeducation, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            print(serializer.errors)  # Log the serializer errors
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class JobseekerExperienceView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -232,7 +259,34 @@ class JobseekerExperienceView(APIView):
             serializer = JobseekerExperienceSerializer(experience, many=True)
             return Response(serializer.data)
         except JobseekerExperience.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)              
+            return Response(status=status.HTTP_404_NOT_FOUND)   
+
+    def delete(self, request):
+        print(request.data)
+        experienceid = int(request.query_params.get('experience_id'))
+        try:
+            experience = JobseekerExperience.objects.get(id=experienceid)
+        except JobseekerExperience.DoesNotExist:
+            return Response({'error': 'experience not found'}, status=404)
+
+        experience.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)    
+        
+    def put(self, request):
+        print(request.data)  # Log the request data
+        experienceid = int(request.query_params.get('experience_id'))
+        try:
+            editeducation = JobseekerExperience.objects.get(id=experienceid)
+        except JobseekerExperience.DoesNotExist:
+            return Response({'error': 'experience not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = JobseekerExperienceSerializer(editeducation, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            print(serializer.errors)  # Log the serializer errors
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)               
 
 
 

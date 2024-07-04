@@ -106,10 +106,6 @@ function JobseekerProfile() {
         console.log("profile", response);
         setCredentials(response);
         setInitialcredential(response)
-        setEditedcredential({
-          username: response.username || "",
-          email: response.email || ""
-      })
       })
       .catch((error) => {
         setIsloading(false);
@@ -145,19 +141,7 @@ function JobseekerProfile() {
         console.log("profile", response);
         setProfile(response);
         setInitialprofiledetails(response);
-        setEditedprofile({
-          mobile: response.mobile || "",
-          dob: response.dob || "",
-          full_name: response.full_name || "",
-          address_line1: response.address_line1 || "",
-          address_line2: response.address_line2 || "",
-          city: response.city || "",
-          state: response.state || "",
-          pin_code: response.pin_code || "",
-          job_category: response.job_category || "",
-          profile_image: "",
-          resume: "",
-        });
+        setEditedprofile(profile)
         setIsloading(false);
       })
       .catch((error) => {
@@ -237,11 +221,16 @@ function JobseekerProfile() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const isChanged = Object.keys(editedprofile).some(
+    const isProfileChanged = Object.keys(editedprofile).some(
       (key) => editedprofile[key] !== initialprofiledetails[key]
     );
 
-    if (!isChanged) {
+    const isSkillsChanged = !arraysAreEqual(
+      editedskill.skills,
+      initialskills.map((skill) => skill.name)
+    );
+
+    if (!isProfileChanged && !isSkillsChanged) {
       setMessage("No changes detected");
       return;
     }
@@ -262,7 +251,7 @@ function JobseekerProfile() {
         }
       }
     }
-
+    if (isProfileChanged) {
     MakeApiRequest(
       "put",
       `${config.baseUrl}jobseeker/jobseekerprofileview/`,
@@ -288,12 +277,14 @@ function JobseekerProfile() {
           console.error("Unexpected error occurred:", error);
         }
       });
+    }
 
     editedskill.skills.forEach((skill) => {
       formData.append("name", skill);
     });
     formData.append("user_id", userdetails.id);
 
+    if (isSkillsChanged) {
     MakeApiRequest(
       "put",
       `${config.baseUrl}jobseeker/jobseekerskillsview/`,
@@ -318,7 +309,17 @@ function JobseekerProfile() {
           console.error("Unexpected error occurred:", error);
         }
       });
+    }
   };
+
+  const arraysAreEqual = (arr1, arr2) => {
+    if (arr1.length !== arr2.length) return false;
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) return false;
+    }
+    return true;
+  };
+  
   const DownloadResume = (resumeUrl) => {
     const doc = `${config.imagebaseurl}${resumeUrl}`;
     saveAs(doc, resumeUrl);
@@ -332,7 +333,7 @@ function JobseekerProfile() {
       setErrors((prev) => ({ ...prev, email: "Invalid email address" }));
       return false;
     } else if (
-      users.some((user) => user.email === email && user.email !== profile.email)
+      users.some((user) => user.email === email && user.email !== credentials.email)
     ) {
       setErrors((prev) => ({ ...prev, email: "Email already exists" }));
       return false;
@@ -347,6 +348,9 @@ function JobseekerProfile() {
 
   const handleeditmodal = () => {
     setToggleeditmodal(true);
+    setEditedcredential(credentials)
+    setMessage("")
+    setErrors("")
   };
 
   const handleCloseModal = () => {
@@ -356,6 +360,8 @@ function JobseekerProfile() {
   };
   const handlepasswordeditmodal = () => {
     setTogglepasswordmodal(true);
+    setMessage("")
+    setErrors("")
   };
 
   const handleclosemodal = () => {
@@ -393,7 +399,7 @@ function JobseekerProfile() {
         // Check if email already exists in users array
         if (
           users.some(
-            (user) => user.email === value && user.email !== profile.email
+            (user) => user.email === value && user.email !== credentials.email
           )
         ) {
           setErrors((prevErrors) => ({
@@ -758,7 +764,7 @@ function JobseekerProfile() {
                           onClick={() => {
                             DownloadResume(profile.resume);
                           }}
-                          className="hs-tooltip-toggle py-1.5 px-2 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-s-md bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
+                          className="hs-tooltip-toggle py-1.5 px-2 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-s-md bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 cursor-pointer"
                         >
                           <svg
                             className="size-5"
@@ -833,7 +839,7 @@ function JobseekerProfile() {
               <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-black bg-opacity-50">
                 <div className="bg-white rounded-lg shadow-lg max-w-md w-full">
                   <div className="flex justify-between items-center py-3 px-4 border-b">
-                    <h3 className="font-bold text-gray-800">Edit Profile</h3>
+                    <h3 className="font-bold text-gray-800">Edit Credentials</h3>
                     <button
                       onClick={handleCloseModal}
                       type="button"
@@ -862,7 +868,7 @@ function JobseekerProfile() {
                       </label>
                       <input
                         onChange={Handlecredentials}
-                        defaultValue={credentials.email}
+                        defaultValue={editedcredential.email}
                         name="email"
                         type="email"
                         className="py-2 px-2 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"
@@ -879,7 +885,7 @@ function JobseekerProfile() {
                       </label>
                       <input
                         onChange={Handlecredentials}
-                        defaultValue={credentials.username}
+                        defaultValue={editedcredential.username}
                         name="username"
                         type="text"
                         className="py-2 px-22 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"
@@ -920,7 +926,7 @@ function JobseekerProfile() {
                           className="mt-2 bg-teal-100 border border-teal-200 text-sm text-teal-800 rounded-lg p-4 dark:bg-teal-800/10 dark:border-teal-900 dark:text-teal-500"
                           role="alert"
                         >
-                          <span className="font-bold">Success:</span> Profile
+                          <span className="font-bold">Success:</span> Credentials
                           updated successfully.
                         </div>
                       ))}
@@ -932,7 +938,7 @@ function JobseekerProfile() {
               <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-black bg-opacity-50">
                 <div className="bg-white rounded-lg shadow-lg max-w-md w-full">
                   <div className="flex justify-between items-center py-3 px-4 border-b">
-                    <h3 className="font-bold text-gray-800">Edit Profile</h3>
+                    <h3 className="font-bold text-gray-800">Edit Password</h3>
                     <button
                       onClick={handleclosemodal}
                       type="button"
@@ -1001,7 +1007,7 @@ function JobseekerProfile() {
                       >
                         Close
                       </button>
-                      {isPasswordFormValid || validateEmail ? (
+                      {isPasswordFormValid ? (
                         <button
                           type="submit"
                           className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700"
@@ -1035,15 +1041,7 @@ function JobseekerProfile() {
                           <span className="font-bold">Warning:</span> Old
                           Password is Incorrect.
                         </div>
-                      ) : (
-                        <div
-                          className="mt-2 bg-yellow-100 border border-yellow-200 text-sm text-yellow-800 rounded-lg p-4 dark:bg-yellow-800/10 dark:border-yellow-900 dark:text-yellow-500"
-                          role="alert"
-                        >
-                          <span className="font-bold">Warning:</span> No changes
-                          detected. You should check in on some of those fields.
-                        </div>
-                      ))}
+                      ) :null )}
                   </form>
                 </div>
               </div>

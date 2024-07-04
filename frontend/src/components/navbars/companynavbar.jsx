@@ -4,17 +4,13 @@ import config from "../../Functions/config";
 import Cookies from "js-cookie";
 import React, {useContext, useEffect, useState } from "react";
 import ProfileContext from "../../context/ProfileContext";
-
-
-
+import { FiLayout } from "react-icons/fi";
 
 function CompanyNavbar() {
     const { profile, setProfile } = useContext(ProfileContext);
-    const [activeComponent, setActiveComponent] = useState("myjobs");
     const userdetails=JSON.parse(localStorage.getItem("user"))
     const navigatee=useNavigate()
     const path = useLocation().pathname;
-
     const token = Cookies.get("token");
 
 
@@ -32,39 +28,33 @@ function CompanyNavbar() {
     
 
     useEffect(() => {
-      const params = {
-          userid: userdetails.id,
-      };
-
-      MakeApiRequest(
-      "get",
-      `${config.baseUrl}company/users/`,
-      headers,
-      params,
-      {}
-      )
-      .then((response) => {
-          console.log("profile", response);
-          setProfile(response);
-      })
-      .catch((error) => {
-          console.error("Error:", error);
-          if (error.response && error.response.status === 401) {
-          console.log(
-              "Unauthorized access. Token might be expired or invalid."
-          );
-          } else {
-          console.error("Unexpected error occurred:", error);
-          }
-      });
-  }, []);
-
-  const updateUserProfileImage = (newImage) => {
-    setProfile(prevState => ({
-        ...prevState,
-        profile_image: newImage
-    }));
-};
+        const params = {
+            user_id: userdetails.id,
+        };
+  
+        MakeApiRequest(
+        "get",
+        `${config.baseUrl}company/companyprofileview/`,
+        headers,
+        params,
+        {}
+        )
+        .then((response) => {
+            console.log("Comapnydetails", response);
+            setProfile(response);
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            if (error.response && error.response.status === 401) {
+            console.log(
+                "Unauthorized access. Token might be expired or invalid."
+            );
+            } else {
+            console.error("Unexpected error occurred:", error);
+            }
+        });
+    }, []);
+  
 
 
 
@@ -82,7 +72,6 @@ function CompanyNavbar() {
             <div className="me-5 md:me-8 flex">
               <Link
                 to="/employer/employersearch"
-                // onClick={()=>{setActiveComponent('companysearch')}}
                 className="flex-none text-xl font-semibold text-white"
                 href="#"
                 aria-label="Brand"
@@ -147,6 +136,39 @@ function CompanyNavbar() {
                       </p>
                     </div>
                     <div className="mt-2 py-2 first:pt-0 last:pb-0">
+                      
+                      <Link
+                        to="/employer/employerprofile"
+                        className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
+                        href="#"
+                      >
+                        <svg
+                          className="flex-shrink-0 size-4"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                          <circle cx="9" cy="7" r="4" />
+                          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        Profile
+                      </Link>
+                      <Link
+                        to="/employer/departments_sectors"
+                        className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
+                        href="#"
+                      >
+                        <FiLayout />
+                        Depts&Sectors
+                      </Link>
                       <a
                         onClick={handleLogout}
                         className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
@@ -170,31 +192,6 @@ function CompanyNavbar() {
                         </svg>
                         Logout
                       </a>
-                      <Link
-                        to="/employer/employerprofile"
-                        // onClick={()=>{setActiveComponent('profile')}}
-                        className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
-                        href="#"
-                      >
-                        <svg
-                          className="flex-shrink-0 size-4"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                          <circle cx="9" cy="7" r="4" />
-                          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                        </svg>
-                        Profile
-                      </Link>
                     </div>
                   </div>
                 </div>

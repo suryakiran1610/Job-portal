@@ -37,6 +37,8 @@ class CompanySectorSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CompanyDepartmentSerializer(serializers.ModelSerializer):
+    sector_name = serializers.CharField(source='sector.sector_name', read_only=True)
+    
     class Meta:
         model = CompanyDepartment
         fields = '__all__'
