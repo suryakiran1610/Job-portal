@@ -8,8 +8,6 @@ from .models import CompanySector
 from .models import CompanyEmployee
 
 class CompanySerializer(serializers.ModelSerializer):
-    company_sectors = serializers.StringRelatedField(many=True)
-    department_name = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Company

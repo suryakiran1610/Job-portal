@@ -197,7 +197,6 @@ function JobseekerProfile() {
   function Handleprofiledetails(e) {
     const { name, value, type, files } = e.target;
 
-    // Update editedprofile state based on input type
     if (type === "file") {
       setEditedprofile((prevState) => ({
         ...prevState,
@@ -222,8 +221,12 @@ function JobseekerProfile() {
     e.preventDefault();
 
     const isProfileChanged = Object.keys(editedprofile).some(
-      (key) => editedprofile[key] !== initialprofiledetails[key]
-    );
+      (key) =>{
+        if (key === "profile_image" || key === "resume") {
+          return editedprofile[key] instanceof File;
+        }  
+        return editedprofile[key] !== initialprofiledetails[key]
+  });
 
     const isSkillsChanged = !arraysAreEqual(
       editedskill.skills,
@@ -263,6 +266,8 @@ function JobseekerProfile() {
         console.log(response);
         setMessage("Profile Updated successfully");
         setProfile(response);
+        setInitialprofiledetails(response)
+        setEditedprofile(response);
         setTimeout(() => {
           setMessage("");
         }, 2000);
@@ -295,6 +300,7 @@ function JobseekerProfile() {
       .then((response) => {
         console.log(response);
         setMessage("skills Updated successfully");
+        setInitialskills(response)
         setTimeout(() => {
           setMessage("");
         }, 2000);
@@ -319,7 +325,7 @@ function JobseekerProfile() {
     }
     return true;
   };
-  
+
   const DownloadResume = (resumeUrl) => {
     const doc = `${config.imagebaseurl}${resumeUrl}`;
     saveAs(doc, resumeUrl);

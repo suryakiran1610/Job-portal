@@ -16,7 +16,6 @@ function RegisterNavbar() {
             <div className="me-5 md:me-8 flex">
               <a
                 className="flex-none text-xl font-semibold text-white"
-                href="#"
                 aria-label="Brand"
               >
                 Job Portal

@@ -275,7 +275,7 @@ function Experience({ setActiveComponent }) {
                     </span>
                   )}
                 </label>
-                <label className="flex flex-col gap-1 text-xs pl-10 mb-2">
+                <label className="flex flex-col gap-1 text-xs mb-2">
                   To
                   <input
                     type="date"

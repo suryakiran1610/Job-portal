@@ -13,6 +13,7 @@ function EmployeeDetails() {
   const [success, setSuccess] = useState(false);
   const { id } = useParams();
   const [message, setMessage] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [employeeData, setEmployeeData] = useState();
   const [isloading, setIsloading] = useState(false);
   const [employeeInfo, setEmployeeInfo] = useState({
@@ -77,7 +78,7 @@ function EmployeeDetails() {
     )
       .then((response) => {
         console.log(response);
-        setSuccess(true);
+        setIsSubmitted(true);
         GetEmployeeDetailList();
         setEmployeeInfo({
             company_user_id: id,
@@ -203,7 +204,8 @@ function EmployeeDetails() {
       };
 
      const navigatetonext=()=> {
-        if (success) {
+        if (isSubmitted) {
+            setMessage(true)
         const redirectTimer = setTimeout(() => {
             window.location.href = "/";
         }, 5000);
@@ -375,7 +377,7 @@ function EmployeeDetails() {
       )}
       {success && (
         <div className="success-bg-main absolute w-full h-full top-0 flex justify-center items-center">
-          <div className="success-box flex flex-col items-center w-5/12 h-2/5 bg-white rounded-lg max-sm:w-10/12">
+          <div className="success-box flex flex-col items-center w-10/12 md:w-6/12 bg-white rounded-lg max-sm:w-10/12">
             <div className=" mt-10">
             <SiTicktick  className="text-8xl text-green-600"/>
             </div>

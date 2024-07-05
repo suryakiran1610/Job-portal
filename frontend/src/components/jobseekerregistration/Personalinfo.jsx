@@ -195,9 +195,9 @@ function PersonalDetails({ setActiveComponent }) {
   };
 
   return (
-    <>
+    <>  
           <div className="flex justify-evenly pt-10 max-sm:flex-col-reverse max-sm:justify-normal max-sm:pt-3">
-            <div className="flex flex-col gap-2 max-sm:p-8">
+            <div className="flex flex-col gap-2 max-sm:p-8 ">
               <div className="fill-personal font-bold text-xl ">
                 Add your Personal Information
               </div>

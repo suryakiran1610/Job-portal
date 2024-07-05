@@ -34,8 +34,6 @@ class Company(models.Model):
     profile_image = models.ImageField(upload_to="company_logo",blank=True, null=True)
     is_verified = models.BooleanField(default=False,blank=True, null=True)
     company_website = models.CharField(max_length=100,blank=True, null=True)
-    company_sectors = models.ManyToManyField(CompanySector,blank=True, null=True)
-    department_name = models.ManyToManyField(CompanyDepartment,blank=True, null=True)
 
 class CompanyEmployee(models.Model):
     company_user_id = models.ForeignKey(user, on_delete=models.CASCADE, null=True)

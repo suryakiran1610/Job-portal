@@ -68,14 +68,69 @@ class Companyemployee(APIView):
         )
         serializer = CompanyEmployeeSerializer(company_employees, many=True)
         return Response(serializer.data)
-      
+
+
+
+class AddNewDepartment(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user_id = request.data.get("user_id")
+        sectors = request.data.get("sectors", [])
+        departments = request.data.get("departments", [])
+
+        added_departments = []
+
+        for sector_name in sectors:
+            sector, _ = CompanySector.objects.get_or_create(sector_name=sector_name)
+
+        for department_data in departments:
+            sector_name = department_data.get("sector_name")
+            department_name = department_data.get("department_name")
+
+            sector, _ = CompanySector.objects.get_or_create(sector_name=sector_name)
+            department, created = CompanyDepartment.objects.get_or_create(
+                sector=sector,
+                department_name=department_name,
+                companyid=user_id
+            )
+            if created:
+                added_departments.append({
+                    "sector_name": sector_name,
+                    "department_name": department_name
+                })
+
+        return Response(
+            added_departments,
+            status=status.HTTP_200_OK,
+        )
+
     
 class GetCompanydepartment(APIView):
     def get(self,request):
         user_id = int(request.query_params.get('user_id'))
         depts=CompanyDepartment.objects.filter(companyid=user_id)
         serializer=CompanyDepartmentSerializer(depts,many=True)
-        return Response(serializer.data)    
+        return Response(serializer.data)
+
+    def delete(self, request):
+        sector_name = request.query_params.get('sector_name')
+        user_id = request.query_params.get('user_id')
+
+        try:
+            user_id = int(user_id)
+        except ValueError:
+            return Response({'error': 'Invalid user_id'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            sector = CompanySector.objects.get(sector_name=sector_name)
+            CompanyDepartment.objects.filter(companyid=user_id, sector=sector).delete()
+            sector.delete()
+        except CompanySector.DoesNotExist:
+            return Response({'error': 'Sector not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class GetCompanysector(APIView):
     def get(self,request):
@@ -104,7 +159,6 @@ class UpdateSectorAndDepartments(APIView):
 
         for sector_name in sectors:
             sector, _ = CompanySector.objects.get_or_create(sector_name=sector_name)
-            User.company_sectors.add(sector)
 
         for department_data in departments:
             sector_name = department_data.get("sector_name")
@@ -116,13 +170,38 @@ class UpdateSectorAndDepartments(APIView):
                 department_name=department_name,
                 companyid=user_id
             )
-            User.department_name.add(department)
 
         return Response(
             f"Sectors and departments updated for user ID {user_id}.",
             status=status.HTTP_200_OK,
         )  
-    
+
+
+
+class DeleteDepartment(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        sectorname = request.data.get("sector_name")
+        departmentname = request.data.get("department_name")
+        user_id = request.data.get("user_id")
+
+        try:
+            user_id = int(user_id)
+        except ValueError:
+            return Response({'error': 'Invalid user_id'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            sector = CompanySector.objects.get(sector_name=sectorname)
+            CompanyDepartment.objects.filter(companyid=user_id, sector=sector, department_name=departmentname).delete()
+        except CompanySector.DoesNotExist:
+            return Response({'error': 'Sector not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+
 class CompanydepartmentView(APIView):
     permission_classes=[IsAuthenticated]
 

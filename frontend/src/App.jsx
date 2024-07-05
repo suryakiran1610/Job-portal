@@ -22,6 +22,7 @@ import Profile from './pages/company/profile';
 import UserProfile from './pages/company/userprofile';
 import Viewjob from './pages/company/viewjob';
 import Depts_Sectors from './pages/company/Depts_Sectors';
+import Addsector from './pages/company/Addsector';
 import Admindashboard from './pages/admin/admindashboard';
 import Adminprofile from './pages/admin/adminprofile';
 import Companyprofile from './pages/admin/companyprofile';
@@ -99,6 +100,7 @@ function App() {
                 <Route path='jobseekerprofile/:id' element={<UserProfile/>}/>
                 <Route path='jobdetails/:id' element={<Viewjob/>}/>
                 <Route path='departments_sectors' element={<Depts_Sectors/>}/>
+                <Route path='addsector' element={<Addsector/>}/>
             </Route>
 
             <Route path='/jobseeker'>

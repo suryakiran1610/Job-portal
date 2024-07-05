@@ -15,7 +15,7 @@ function Profile() {
   const [isloading, setIsloading] = useState(false);
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
-  const [initialcredential,setInitialcredential]=useState({})
+  const [initialcredential, setInitialcredential] = useState({});
   const [errors, setErrors] = useState({});
   const [credentials, setCredentials] = useState("");
   const [initialprofiledetails, setInitialprofiledetails] = useState({});
@@ -30,7 +30,6 @@ function Profile() {
     pin_code: "",
     profile_image: "",
   });
-
 
   const [editedcredential, setEditedcredential] = useState({
     email: "",
@@ -63,7 +62,6 @@ function Profile() {
         console.error("Error fetching users:", error);
       });
 
-
     const params = {
       userid: userdetails.id,
     };
@@ -77,7 +75,7 @@ function Profile() {
       .then((response) => {
         console.log("profile", response);
         setCredentials(response);
-        setInitialcredential(response)
+        setInitialcredential(response);
       })
       .catch((error) => {
         setIsloading(false);
@@ -91,8 +89,6 @@ function Profile() {
         }
       });
   }, []);
-
-
 
   useEffect(() => {
     const params = {
@@ -110,7 +106,7 @@ function Profile() {
         console.log("profile", response);
         setProfile(response);
         setInitialprofiledetails(response);
-        setEditedprofile(profile)
+        setEditedprofile(profile);
         setIsloading(false);
       })
       .catch((error) => {
@@ -124,9 +120,7 @@ function Profile() {
           console.error("Unexpected error occurred:", error);
         }
       });
-
   }, []);
-
 
   function Handleprofiledetails(e) {
     const { name, value, type, files } = e.target;
@@ -145,14 +139,15 @@ function Profile() {
     }
   }
 
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const isProfileChanged = Object.keys(editedprofile).some(
-      (key) => editedprofile[key] !== initialprofiledetails[key]
-    );
-
+    const isProfileChanged = Object.keys(editedprofile).some((key) => {
+      if (key === "profile_image") {
+        return editedprofile[key] instanceof File;
+      }
+      return editedprofile[key] !== initialprofiledetails[key];
+    });
 
     if (!isProfileChanged) {
       setMessage("No changes detected");
@@ -166,7 +161,7 @@ function Profile() {
     const formData = new FormData();
     for (let key in editedprofile) {
       if (editedprofile[key]) {
-        if (key === "profile_image" || key === "resume") {
+        if (key === "profile_image") {
           if (editedprofile[key] instanceof File) {
             formData.append(key, editedprofile[key]);
           }
@@ -176,33 +171,34 @@ function Profile() {
       }
     }
     if (isProfileChanged) {
-    MakeApiRequest(
-      "put",
-      `${config.baseUrl}company/companyprofileview/`,
-      headers,
-      params,
-      formData
-    )
-      .then((response) => {
-        console.log(response);
-        setMessage("Profile Updated successfully");
-        setProfile(response);
-        setTimeout(() => {
-          setMessage("");
-        }, 2000);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        if (error.response && error.response.status === 401) {
-          console.log(
-            "Unauthorized access. Token might be expired or invalid."
-          );
-        } else {
-          console.error("Unexpected error occurred:", error);
-        }
-      });
+      MakeApiRequest(
+        "put",
+        `${config.baseUrl}company/companyprofileview/`,
+        headers,
+        params,
+        formData
+      )
+        .then((response) => {
+          console.log(response);
+          setMessage("Profile Updated successfully");
+          setProfile(response);
+          setInitialprofiledetails(response);
+          setEditedprofile(response);
+          setTimeout(() => {
+            setMessage("");
+          }, 2000);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          if (error.response && error.response.status === 401) {
+            console.log(
+              "Unauthorized access. Token might be expired or invalid."
+            );
+          } else {
+            console.error("Unexpected error occurred:", error);
+          }
+        });
     }
-
   };
 
   const validateEmail = (email) => {
@@ -213,7 +209,9 @@ function Profile() {
       setErrors((prev) => ({ ...prev, email: "Invalid email address" }));
       return false;
     } else if (
-      users.some((user) => user.email === email && user.email !== credentials.email)
+      users.some(
+        (user) => user.email === email && user.email !== credentials.email
+      )
     ) {
       setErrors((prev) => ({ ...prev, email: "Email already exists" }));
       return false;
@@ -228,26 +226,26 @@ function Profile() {
 
   const handleeditmodal = () => {
     setToggleeditmodal(true);
-    setEditedcredential(credentials)
-    setMessage("")
-    setErrors("")
+    setEditedcredential(credentials);
+    setMessage("");
+    setErrors("");
   };
 
   const handleCloseModal = () => {
     setToggleeditmodal(false);
     setMessage("");
-    setErrors("")
+    setErrors("");
   };
   const handlepasswordeditmodal = () => {
     setTogglepasswordmodal(true);
-    setMessage("")
-    setErrors("")
+    setMessage("");
+    setErrors("");
   };
 
   const handleclosemodal = () => {
     setTogglepasswordmodal(false);
     setMessage("");
-    setErrors("")
+    setErrors("");
   };
 
   function Handlepassword(e) {
@@ -315,8 +313,8 @@ function Profile() {
 
     const formData = new FormData();
     for (let key in editedcredential) {
-        formData.append(key, editedcredential[key]);
-      }
+      formData.append(key, editedcredential[key]);
+    }
 
     MakeApiRequest(
       "put",
@@ -344,7 +342,6 @@ function Profile() {
         }
       });
   };
-
 
   useEffect(() => {
     if (changepassword.newpassword !== changepassword.confirmpassword) {
@@ -422,10 +419,10 @@ function Profile() {
                 <div className="mb-8">
                   <div className="flex justify-between">
                     <h2 className="text-xl font-bold text-gray-800 dark:text-neutral-200">
-                      Profile
+                      Company Profile
                     </h2>
                     <button
-                    onClick={handleeditmodal}
+                      onClick={handleeditmodal}
                       className="px-2 py-2 bg-gray-800 text-white hover:bg-gray-900 rounded-md"
                     >
                       Update Credentials
@@ -625,7 +622,9 @@ function Profile() {
               <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-black bg-opacity-50">
                 <div className="bg-white rounded-lg shadow-lg max-w-md w-full">
                   <div className="flex justify-between items-center py-3 px-4 border-b">
-                    <h3 className="font-bold text-gray-800">Edit Credentials</h3>
+                    <h3 className="font-bold text-gray-800">
+                      Edit Credentials
+                    </h3>
                     <button
                       onClick={handleCloseModal}
                       type="button"
@@ -647,7 +646,10 @@ function Profile() {
                       </svg>
                     </button>
                   </div>
-                  <form onSubmit={handleSubmitcredential} encType="multipart/form-data">
+                  <form
+                    onSubmit={handleSubmitcredential}
+                    encType="multipart/form-data"
+                  >
                     <div className="p-2">
                       <label className="block text-sm font-medium mb-2">
                         Email
@@ -678,12 +680,12 @@ function Profile() {
                       />
                     </div>
                     <div className="flex justify-end items-center gap-x-2 py-3 px-4 border-t">
-                    <button
-                      onClick={handlepasswordeditmodal}
-                      className="px-2 py-2 bg-gray-800 text-white hover:bg-gray-900 rounded-md text-sm"
-                    >
-                      Change Password
-                    </button>
+                      <button
+                        onClick={handlepasswordeditmodal}
+                        className="px-2 py-2 bg-gray-800 text-white hover:bg-gray-900 rounded-md text-sm"
+                      >
+                        Change Password
+                      </button>
                       <button
                         onClick={handleCloseModal}
                         type="button"
@@ -712,8 +714,8 @@ function Profile() {
                           className="mt-2 bg-teal-100 border border-teal-200 text-sm text-teal-800 rounded-lg p-4 dark:bg-teal-800/10 dark:border-teal-900 dark:text-teal-500"
                           role="alert"
                         >
-                          <span className="font-bold">Success:</span> Credentials
-                          updated successfully.
+                          <span className="font-bold">Success:</span>{" "}
+                          Credentials updated successfully.
                         </div>
                       ))}
                   </form>
@@ -827,7 +829,7 @@ function Profile() {
                           <span className="font-bold">Warning:</span> Old
                           Password is Incorrect.
                         </div>
-                      ) :null )}
+                      ) : null)}
                   </form>
                 </div>
               </div>

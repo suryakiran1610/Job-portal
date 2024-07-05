@@ -8,25 +8,37 @@ import MakeApiRequest from "../../Functions/AxiosApi";
 import Cookies from "js-cookie";
 import { useParams } from "react-router-dom";
 import BeatLoader from "react-spinners/BeatLoader";
-import { SiTicktick } from "react-icons/si";
+import CompanyNavbar from "../../components/navbars/companynavbar";
 import { FaPlusCircle } from "react-icons/fa";
 import { FaMinusCircle } from "react-icons/fa";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 
-function CompanyDetails() {
-  const { id } = useParams();
-  const [success, setSuccess] = useState(false);
+
+function Addsector() {
+  const [isLoading, setIsLoading] = useState(false);
+  const userDetails = JSON.parse(localStorage.getItem("user"));
   const [companyTypes, setCompanyTypes] = useState([]);
+  const [deptSectors, setDeptSectors] = useState([]);
+  const token = Cookies.get("token");
   const [companyDepartments, setCompanyDepartments] = useState([]);
+  const navigate = useNavigate();
   const [rows, setRows] = useState([
     { companyType: null, companyDepartments: null },
   ]);
   const [errors, setErrors] = useState([
     { companyType: "", companyDepartments: "" },
   ]);
-  const [isloading, setIsloading] = useState(false);
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
 
   useEffect(() => {
-    setIsloading(true);
+    const params = {
+        user_id: userDetails.id,
+      };
+  
+    setIsLoading(true);
     const fetchSectors = MakeApiRequest(
       "get",
       `${config.baseUrl}company/getcompanysector/`,
@@ -81,11 +93,41 @@ function CompanyDetails() {
         }
       });
 
-    Promise.all([fetchSectors, fetchDepartments]).then(() => {
-      setIsloading(false);
+      const fetchCompanyDepartments = MakeApiRequest(
+        "get",
+        `${config.baseUrl}company/companydepartmentview/`,
+        headers,
+        params,
+        {}
+      )
+        .then((response) => {
+            console.log(response)
+          setDeptSectors(response);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          if (error.response && error.response.status === 401) {
+            console.log(
+              "Unauthorized access. Token might be expired or invalid."
+            );
+          } else {
+            console.error("Unexpected error occurred:", error);
+          }
+        });
+
+    Promise.all([fetchSectors, fetchDepartments,fetchCompanyDepartments]).then(() => {
+      setIsLoading(false);
     });
   }, []);
 
+  const sectors = deptSectors.reduce((acc, dept) => {
+    const sector = dept.sector_name;
+    if (!acc[sector]) {
+      acc[sector] = [];
+    }
+    acc[sector].push(dept.department_name);
+    return acc;
+  }, {});
 
   const addNewRow = () => {
     setRows([...rows, { companyType: null, companyDepartments: null }]);
@@ -108,9 +150,16 @@ function CompanyDetails() {
     setRows(updatedRows);
 
     const updatedErrors = [...errors];
-    updatedErrors[rowIndex].companyType = selectedOption
-      ? ""
-      : "Company type is required";
+    if (selectedOption) {
+      // Check if the selected sector already exists
+      if (sectors[selectedOption.label]) {
+        updatedErrors[rowIndex].companyType = "Sector already exists";
+      } else {
+        updatedErrors[rowIndex].companyType = "";
+      }
+    } else {
+      updatedErrors[rowIndex].companyType = "Company type is required";
+    }
     setErrors(updatedErrors);
   };
 
@@ -132,6 +181,8 @@ function CompanyDetails() {
       const rowErrors = {};
       if (!row.companyType) {
         rowErrors.companyType = "Company type is required";
+      }else if (sectors[row.companyType.label]) {
+        rowErrors.companyType = "Sector already exists";
       }
       if (!row.companyDepartments || row.companyDepartments.length === 0) {
         rowErrors.companyDepartments = "Company department is required";
@@ -148,7 +199,7 @@ function CompanyDetails() {
     }
 
     const userData = {
-      user_id: id,
+      user_id: userDetails.id,
       sectors: [],
       departments: [],
     };
@@ -180,119 +231,90 @@ function CompanyDetails() {
     )
       .then((response) => {
         console.log(response);
-        setSuccess(true);
+        navigate(`/employer/departments_sectors`);
+
       })
-      .catch((error) => {
-        // Handle any errors
-      });
+      .catch((error) => {});
   };
-
-  useEffect(() => {
-    if (success) {
-      const redirectTimer = setTimeout(() => {
-        window.location.href = "/";
-      }, 5000);
-
-      return () => clearTimeout(redirectTimer);
-    }
-  }, [success]);
 
   return (
     <>
-      {isloading ? (
-        <div
-          className="h-screen flex justify-center items-center px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto"
-          style={{ backgroundColor: "#EEEEEE" }}
-        >
-          <BeatLoader color="#6b7280" margin={1} size={50} />
+      <CompanyNavbar />
+      {isLoading ? (
+        <div className="flex items-center justify-center min-h-screen bg-gray-200">
+          <BeatLoader color="#6b7280" size={50} />
         </div>
-           ) : (
-            <div className="min-h-screen bg-gray-200">
-              <div className="container mx-auto px-4 py-8">
-                <div className="text-center text-2xl font-semibold text-primary_blue mb-6">
-                Company Sectors and Departments
-                </div>
-                <div className="space-y-6">
-                  {rows.map((row, index) => (
-                    <div
-                      className="flex flex-col sm:flex-row gap-4 md:px-11 lg:px-11"
-                      key={index}
-                    >
-                      <label className="flex flex-col w-full sm:w-1/2 ">
-                        <span className="text-xs font-semibold mb-2">
-                          Company Sector
-                        </span>
-                        <Creatable
-                          value={row.companyType}
-                          onChange={(selectedOption) =>
-                            handleCompanyTypeChange(selectedOption, index)
-                          }
-                          options={companyTypes}
-                        />
-                        {errors[index]?.companyType && (
-                          <span className="text-red-500 text-xs mt-1">
-                            {errors[index].companyType}
-                          </span>
-                        )}
-                      </label>
-                      <label className="flex flex-col w-full sm:w-1/2 ">
-                        <span className="text-xs font-semibold mb-2">
-                          Company Departments
-                        </span>
-                        <Creatable
-                          value={row.companyDepartments}
-                          onChange={(selectedOptions) =>
-                            handleCompanyDepartmentsChange(selectedOptions, index)
-                          }
-                          options={companyDepartments}
-                          isMulti
-                        />
-                        {errors[index]?.companyDepartments && (
-                          <span className="text-red-500 text-xs mt-1">
-                            {errors[index].companyDepartments}
-                          </span>
-                        )}
-                      </label>
-                      <button
-                        className="bg-primary_blue text-black px-4 py-2 rounded-lg self-end mt-4"
-                        onClick={() => removeRow(index)}
-                      >
-                        <FaMinusCircle className="text-lg" />
-                      </button>
-                    </div>
-                  ))}
+      ) : (
+        <div className="min-h-screen bg-gray-200">
+          <div className="container mx-auto px-4 py-8">
+            <div className="text-center text-2xl font-semibold text-primary_blue mb-6">
+              Add Sector and Department
+            </div>
+            <div className="space-y-6">
+              {rows.map((row, index) => (
+                <div
+                  className="flex flex-col sm:flex-row gap-4 md:px-11 lg:px-11"
+                  key={index}
+                >
+                  <label className="flex flex-col w-full sm:w-1/2 ">
+                    <span className="text-xs font-semibold mb-2">
+                      Company Sector
+                    </span>
+                    <Creatable
+                      value={row.companyType}
+                      onChange={(selectedOption) =>
+                        handleCompanyTypeChange(selectedOption, index)
+                      }
+                      options={companyTypes}
+                    />
+                    {errors[index]?.companyType && (
+                      <span className="text-red-500 text-xs mt-1">
+                        {errors[index].companyType}
+                      </span>
+                    )}
+                  </label>
+                  <label className="flex flex-col w-full sm:w-1/2 ">
+                    <span className="text-xs font-semibold mb-2">
+                      Company Departments
+                    </span>
+                    <Creatable
+                      value={row.companyDepartments}
+                      onChange={(selectedOptions) =>
+                        handleCompanyDepartmentsChange(selectedOptions, index)
+                      }
+                      options={companyDepartments}
+                      isMulti
+                    />
+                    {errors[index]?.companyDepartments && (
+                      <span className="text-red-500 text-xs mt-1">
+                        {errors[index].companyDepartments}
+                      </span>
+                    )}
+                  </label>
                   <button
                     className="bg-primary_blue text-black px-4 py-2 rounded-lg self-end mt-4"
-                    onClick={addNewRow}
+                    onClick={() => removeRow(index)}
                   >
-                    <FaPlusCircle className="text-lg" />
+                    <FaMinusCircle className="text-lg" />
                   </button>
                 </div>
-                <div className="flex justify-center mt-6">
-                  <button
-                    style={{ backgroundColor: "#A91D3A" }}
-                    className="continue-btn px-5 py-2 text-white rounded-lg"
-                    onClick={SubmitSecDep}
-                  >
-                    Add Sector
-                    <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
-                  </button>
-                </div>
-              </div>
+              ))}
+              <button
+                className="bg-primary_blue text-black px-4 py-2 rounded-lg self-end mt-4"
+                onClick={addNewRow}
+              >
+                <FaPlusCircle className="text-lg" />
+              </button>
             </div>
-          )}
-
-      {success && (
-        <div className="success-bg-main fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-75">
-          <div className="success-box flex flex-col items-center w-10/12 md:w-6/12 lg:w-4/12 bg-white rounded-lg p-5">
-            <div className="mt-5">
-              <SiTicktick className="text-8xl text-green-600" />
-            </div>
-            <div className="text-2xl font-semibold text-sky-900 mt-5">
-              Profile created!
-            </div>
-            <div className="text-lg font-semibold text-sky-900 mt-5 text-center">
-              Get ready for exciting job opportunities ahead
+            <div className="flex justify-center mt-6">
+              <button
+                style={{ backgroundColor: "#A91D3A" }}
+                className="continue-btn px-5 py-2 text-white rounded-lg"
+                onClick={SubmitSecDep}
+              >
+                Add Sector
+                <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
+              </button>
             </div>
           </div>
         </div>
@@ -301,4 +323,4 @@ function CompanyDetails() {
   );
 }
 
-export default CompanyDetails;
+export default Addsector;
