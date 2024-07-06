@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import user
 from adminn.models import notification
+from adminn.models import Admin
+
 
 class userserializer(serializers.ModelSerializer):
     class Meta:
@@ -19,12 +21,6 @@ class userserializer(serializers.ModelSerializer):
             username=validated_data.get('username'),
             user_type=validated_data['user_type'],
             is_active=is_active,
-            # companyname=validated_data.get('companyname'),
-            # fullname=validated_data.get('fullname'),
-            # mobile=validated_data.get('mobile'),
-            # profile_image=validated_data.get('profile_image'),
-            # address=validated_data.get('address'),
-
         )
         user1.set_password(validated_data['password'])
         user1.save()

@@ -318,7 +318,7 @@ function Depts_Sectors() {
       ) : (
         <div style={{ backgroundColor: "#EEEEEE" }}>
           <div className="w-full min-h-screen sm:px-6 lg:px-8 lg:py-7 mx-auto">
-            <div className="flex justify-end mt-1 mr-3">
+            <div className="flex justify-end p-1">
               <button
                 onClick={AddSector}
                 className="px-2 py-2 bg-gray-800 text-white hover:bg-gray-900 rounded-md"

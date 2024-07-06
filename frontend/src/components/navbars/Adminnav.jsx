@@ -50,12 +50,12 @@ const AdminNav = () => {
 
   useEffect(() => {
     const params = {
-      userid: userdetails.id,
+      user_id: userdetails.id,
     };
 
     MakeApiRequest(
       "get",
-      `${config.baseUrl}company/users/`,
+      `${config.baseUrl}adminn/adminprofileview/`,
       headers,
       params,
       {}
@@ -100,7 +100,7 @@ const AdminNav = () => {
                 <img
                 className="inline-block size-[38px] rounded-full"
                 src={`${config.imagebaseurl}${profile.profile_image}`}
-                alt={profile.companyname}
+                alt="profile"
               />
             }
           >

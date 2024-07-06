@@ -619,7 +619,7 @@ function Profile() {
             </div>
 
             {toggleeditmodal && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-black bg-opacity-50">
+              <div className="fixed inset-0 z-50 px-4 pt-4 pb-20 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-black bg-opacity-50">
                 <div className="bg-white rounded-lg shadow-lg max-w-md w-full">
                   <div className="flex justify-between items-center py-3 px-4 border-b">
                     <h3 className="font-bold text-gray-800">
@@ -723,7 +723,7 @@ function Profile() {
               </div>
             )}
             {togglepasswordmodal && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-black bg-opacity-50">
+              <div className="fixed inset-0 z-50 px-4 pt-4 pb-20 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-black bg-opacity-50">
                 <div className="bg-white rounded-lg shadow-lg max-w-md w-full">
                   <div className="flex justify-between items-center py-3 px-4 border-b">
                     <h3 className="font-bold text-gray-800">Edit Password</h3>

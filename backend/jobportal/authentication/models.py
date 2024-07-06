@@ -6,4 +6,3 @@ class user(AbstractUser):
     email = models.EmailField(unique=True,null=True,blank=True)
     username = models.CharField(unique=True,max_length=30,null=True,blank=True)
     user_type=models.CharField(max_length=30,null=True,blank=True)
-    # profile_image=models.ImageField(upload_to='profile_image/',null=True,blank=True)

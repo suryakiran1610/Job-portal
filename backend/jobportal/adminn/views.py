@@ -14,10 +14,61 @@ from company.models import jobpost
 from authentication.models import user
 from company.models import jobcategories
 from .models import notification
+from .models import Admin
 from company.serializers import jobpostserializer
 from company.serializers import jobcategoriesserializer
 from authentication.serializers import userserializer
 from .serializers import notificationserializer
+from .serializers import adminserializer
+
+
+class AdminprofileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user_id = int(request.query_params.get('user_id'))
+        print("Logged-in user's id:", user_id)
+        try:
+            admin = Admin.objects.get(admin_user_id=user_id)
+            serializer = adminserializer(admin)
+            data = serializer.data
+            return Response(data)
+        except Admin.DoesNotExist:
+            return Response({"error": "Admin not found"}, status=status.HTTP_404_NOT_FOUND)  
+
+    def post(self, request):
+        print(request.data)  # Log the request data
+        user_id = int(request.query_params.get('user_id'))
+
+        try:
+            User = user.objects.get(id=user_id)
+        except user.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            editprofile = Admin.objects.get(admin_user_id=User)
+            # If admin exists, update the details
+            serializer = adminserializer(editprofile, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            else:
+                print(serializer.errors)  # Log the serializer errors
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Admin.DoesNotExist:
+            # If admin does not exist, create a new admin
+            data = request.data.copy()
+            data['admin_user_id'] = User.id  # Add user id to the data
+            serializer = adminserializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                print(serializer.errors)  # Log the serializer errors
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+ 
+
 
 class AddJobcategory(APIView):
     permission_classes = [IsAuthenticated]
