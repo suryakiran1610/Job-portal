@@ -34,6 +34,7 @@ class Company(models.Model):
     profile_image = models.ImageField(upload_to="company_logo",blank=True, null=True)
     is_verified = models.BooleanField(default=False,blank=True, null=True)
     company_website = models.CharField(max_length=100,blank=True, null=True)
+    date_joined = models.DateField(auto_now_add=True,blank=True, null=True)
 
 class CompanyEmployee(models.Model):
     company_user_id = models.ForeignKey(user, on_delete=models.CASCADE, null=True)

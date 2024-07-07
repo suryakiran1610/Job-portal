@@ -186,11 +186,12 @@ function PersonalDetails({ setActiveComponent }) {
       )
         .then((response) => {
           console.log(response);
+          HandleNextDetails();
         })
         .catch((error) => {
-          // Handle any errors
+          
         });
-      HandleNextDetails();
+      
     }
   };
 

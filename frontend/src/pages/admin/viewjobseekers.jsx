@@ -48,7 +48,7 @@ function Viewjobseeker() {
       {}
     )
       .then((response) => {
-        console.log(response);
+        console.log("jobseekerlist",response);
         if (response.length <5) {
           setButtonstatus(false);
         } else {
@@ -80,8 +80,8 @@ function Viewjobseeker() {
 
 
 
-  const handledeletemodal = (companyId) => {
-    setUserid(companyId);
+  const handledeletemodal = (userId) => {
+    setUserid(userId);
     setTogglemodal(true);
   };
 
@@ -116,11 +116,11 @@ function Viewjobseeker() {
       });
   };
 
-
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "numeric", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
+
 
   return (
     <>
@@ -163,21 +163,22 @@ function Viewjobseeker() {
                         </th>
 
                         <th scope="col" className="px-6 py-3 text-start">
-                          <div className="flex items-center gap-x-2 ml-12">
+                          <div className="flex items-center gap-x-2 ml-14">
                             <span className="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
-                              Email
+                              State
                             </span>
                           </div>
                         </th>
 
-                        <th scope="col" className="px-6 py-3 text-start">
+                        <th scope="col" className="px-11 py-3 text-start">
                           <div className="flex items-center gap-x-2">
                             <span className="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
                               Mobile
                             </span>
                           </div>
                         </th>
-                        <th scope="col" className="px-6 py-3 text-start">
+
+                         <th scope="col" className="px-6 py-3 text-start">
                           <div className="flex items-center gap-x-2 ml-3">
                             <span className="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
                               Created
@@ -213,20 +214,20 @@ function Viewjobseeker() {
                                 <img
                                   className="inline-block size-[38px] rounded-full"
                                   src={`${config.imagebaseurl}${users.profile_image}`}
-                                  alt={users.fullname}
+                                  alt={users.full_name}
                                 />
                                 <div className="grow">
                                   <span className="block text-sm font-semibold text-gray-800 dark:text-neutral-200">
-                                    {users.fullname}
+                                    {users.full_name}
                                   </span>
                                 </div>
                               </div>
                             </div>
                           </td>
-                          <td className="h-px w-72 whitespace-nowrap">
+                          <td className="h-px  whitespace-nowrap">
                             <div className="px-6 py-3 ml-12">
                               <span className="block text-sm font-semibold text-gray-800 dark:text-neutral-200">
-                                {users.email}
+                                {users.state}
                               </span>
                             </div>
                           </td>
@@ -248,7 +249,7 @@ function Viewjobseeker() {
                             <div className="px-6 py-3 ml-3">
                               <div className="flex items-center gap-x-3">
                                 <a
-                                  onClick={() => handleViewJobseeker(users.id)}
+                                  onClick={() => handleViewJobseeker(users.user_id)}
                                   className="text-sm text-blue-600 dark:text-neutral-500 cursor-pointer hover:text-blue-800"
                                 >
                                   View

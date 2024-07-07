@@ -24,6 +24,7 @@ class Jobseeker(models.Model):
     pin_code = models.CharField(max_length=10,blank=True, null=True)
     job_category = models.ForeignKey(jobcategories, on_delete=models.CASCADE, blank=True, null=True)
     resume = models.FileField(upload_to="resumes",blank=True, null=True) 
+    date_joined = models.DateField(auto_now_add=True,blank=True, null=True)
 
     def __str__(self):
         return self.full_name

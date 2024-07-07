@@ -195,52 +195,53 @@ function Viewcompanies() {
                           scope="col"
                           className="ps-6 lg:ps-3 xl:ps-0 pe-6 py-3 text-start"
                         >
-                          <div className="flex items-center gap-x-2 ml-4">
+                          <div className="flex items-center gap-x-2 ml-7">
                             <span className="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
                               Name
                             </span>
                           </div>
                         </th>
 
-                        <th scope="col" className="px-4 py-3 text-start">
-                          <div className="flex items-center gap-x-2 ml-7">
+                        <th scope="col" className="px-6 py-3 text-start">
+                          <div className="flex items-center gap-x-2 ml-14">
                             <span className="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
-                              Location
-                            </span>
-                          </div>
-                        </th>
-                        <th scope="col" className="px-3 py-3 text-start">
-                          <div className="flex items-center gap-x-2 ml-1">
-                            <span className="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
-                              Email
+                              State
                             </span>
                           </div>
                         </th>
 
-                        <th scope="col" className="px-3 py-3 text-start">
+                        <th scope="col" className="px-11 py-3 text-start">
+                          <div className="flex items-center gap-x-2">
+                            <span className="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
+                              Mobile
+                            </span>
+                          </div>
+                        </th>
+
+                        <th scope="col" className="px-11 py-3 text-start">
                           <div className="flex items-center gap-x-2 ml-1">
                             <span className="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
                               Status
                             </span>
                           </div>
                         </th>
-                        <th scope="col" className="px-3 py-3 text-start">
-                          <div className="flex items-center gap-x-2 ml-1">
+                        <th scope="col" className="px-6 py-3 text-start">
+                          <div className="flex items-center gap-x-2 ml-3">
                             <span className="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
                               Created
                             </span>
                           </div>
                         </th>
 
-                        <th scope="col" className="px-3 py-3 text-start">
-                          <div className="flex items-center gap-x-2 ml-1">
+                        <th scope="col" className="px-6 py-3 text-start">
+                          <div className="flex items-center gap-x-2 ml-3">
                             <span className="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
                               View
                             </span>
                           </div>
                         </th>
 
-                        <th scope="col" className="px-3 py-3 text-start ml-1">
+                        <th scope="col" className="px-6 py-3 text-start ml-1">
                           <div className="flex items-center gap-x-2">
                             <span className="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
                               Delete
@@ -260,32 +261,34 @@ function Viewcompanies() {
                                 <img
                                   className="inline-block size-[38px] rounded-full"
                                   src={`${config.imagebaseurl}${company.profile_image}`}
-                                  alt={company.companyname}
+                                  alt={company.company_name}
                                 />
                                 <div className="grow">
                                   <span className="block text-sm font-semibold text-gray-800 dark:text-neutral-200">
-                                    {company.companyname}
+                                    {company.company_name}
                                   </span>
                                 </div>
                               </div>
                             </div>
                           </td>
-                          <td className="h-px w-72 whitespace-nowrap">
-                            <div className="px-4 py-3 ml-7">
+                          <td className="h-px whitespace-nowrap">
+                            <div className="px-6 py-3 ml-12">
                               <span className="block text-sm font-semibold text-gray-800 dark:text-neutral-200">
-                                {company.address}
+                                {company.state}
                               </span>
                             </div>
                           </td>
-                          <td className="h-px w-72 whitespace-nowrap">
-                            <div className="px-3 py-3 ml-1">
-                              <span className="block text-sm font-semibold text-gray-800 dark:text-neutral-200">
-                                {company.email}
-                              </span>
-                            </div>
-                          </td>
+                          
                           <td className="size-px whitespace-nowrap">
-                            <div className="px-3 py-3 ml-1">
+                          <div className="px-6 py-3 ml-3">
+                              <span className="block text-sm font-semibold text-gray-800 dark:text-neutral-200">
+                                {company.mobile}
+                              </span>
+                            </div>
+                          </td>
+
+                          <td className="size-px whitespace-nowrap">
+                            <div className="px-6 py-3 ml-1">
                               {company.is_active ? (
                                 <span className="py-1 px-1.5 inline-flex items-center gap-x-1 text-xs font-medium bg-teal-100 text-teal-800 rounded-full dark:bg-teal-500/10 dark:text-teal-500">
                                   <svg
@@ -320,17 +323,17 @@ function Viewcompanies() {
                             </div>
                           </td>
                           <td className="size-px whitespace-nowrap">
-                            <div className="px-3 py-3 ml-1">
+                            <div className="px-6 py-3 ml-3">
                               <span className="block text-sm font-semibold text-gray-800 dark:text-neutral-200">
                                 {formatDate(company.date_joined)}
                               </span>
                             </div>
                           </td>
                           <td className="size-px whitespace-nowrap">
-                            <div className="px-3 py-3 ml-1">
+                            <div className="px-6 py-3 ml-3">
                               <div className="flex items-center gap-x-3">
                                 <a
-                                  onClick={() => handleViewCompany(company.id)}
+                                  onClick={() => handleViewCompany(company.company_user_id)}
                                   className="text-sm text-blue-600 dark:text-neutral-500 cursor-pointer hover:text-blue-800"
                                 >
                                   View

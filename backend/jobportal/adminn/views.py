@@ -13,10 +13,14 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from company.models import jobpost
 from authentication.models import user
 from company.models import jobcategories
+from jobseeker.models import Jobseeker
+from company.models import Company
 from .models import notification
 from .models import Admin
 from company.serializers import jobpostserializer
 from company.serializers import jobcategoriesserializer
+from jobseeker.serializers import JobseekerSerializer
+from company.serializers import CompanySerializer
 from authentication.serializers import userserializer
 from .serializers import notificationserializer
 from .serializers import adminserializer
@@ -112,15 +116,15 @@ class Getallcompany(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        company = user.objects.filter(usertype='employer')
-        serializer = userserializer(company, many=True)
-        company = user.objects.filter(usertype='employer').count()
+        company = Company.objects.all()
+        serializer = CompanySerializer(company, many=True)
+        company = Company.objects.all().count()
         
         # Calculate the number of job posts in the last 7 days
         seven_days_ago = now() - timedelta(days=7)
-        recent_company_count = user.objects.filter(usertype='employer',date_joined__date__gte=seven_days_ago).count()
+        recent_company_count = Company.objects.filter(date_joined__gte=seven_days_ago).count()
 
-        not_activated_companies=user.objects.filter(usertype='employer',is_active = 0).count()
+        not_activated_companies=Company.objects.filter(is_verified = 0).count()
 
         
         response_data = {
@@ -135,8 +139,8 @@ class Getallcompany(APIView):
         print(request.data)
         companyid = int(request.query_params.get('companyid'))
         try:
-            company = user.objects.get(id=companyid)
-        except user.DoesNotExist:
+            company = Company.objects.get(id=companyid)
+        except Company.DoesNotExist:
             return Response({'error': 'company not found'}, status=404)
 
         company.delete()
@@ -156,11 +160,10 @@ class Getalljobseeker(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        jobseeker = user.objects.filter(usertype='jobseeker').count()
+        jobseeker = Jobseeker.objects.all().count()
         
-        # Calculate the number of job posts in the last 7 days
         seven_days_ago = now() - timedelta(days=7)
-        recent_jobseeker_count = user.objects.filter(usertype='jobseeker',date_joined__date__gte=seven_days_ago).count()
+        recent_jobseeker_count = Jobseeker.objects.filter(date_joined__gte=seven_days_ago).count()
         
         response_data = {
             'jobseeker':jobseeker,
@@ -172,8 +175,8 @@ class Getalljobseeker(APIView):
         print(request.data)
         userid = int(request.query_params.get('userid'))
         try:
-            User = user.objects.get(id=userid)
-        except user.DoesNotExist:
+            User = Jobseeker.objects.get(id=userid)
+        except Jobseeker.DoesNotExist:
             return Response({'error': 'user not found'}, status=404)
 
         User.delete()
@@ -187,10 +190,10 @@ class LimitCompanyView(APIView):
         limit = int(request.query_params.get('limit', 5))
         start_index = int(request.query_params.get('startIndex', 0))
 
-        company =user.objects.filter(usertype='employer')
+        company =Company.objects.all()
         company=company[start_index:start_index+limit]
 
-        serializer=userserializer(company,many=True)
+        serializer=CompanySerializer(company,many=True)
         return Response(serializer.data)
 
 class LimitjobseekerView(APIView):  
@@ -200,10 +203,10 @@ class LimitjobseekerView(APIView):
         limit = int(request.query_params.get('limit', 5))
         start_index = int(request.query_params.get('startIndex', 0))
 
-        jobseeker =user.objects.filter(usertype='jobseeker')
+        jobseeker =Jobseeker.objects.all()
         jobseeker=jobseeker[start_index:start_index+limit]
 
-        serializer=userserializer(jobseeker,many=True)
+        serializer=JobseekerSerializer(jobseeker,many=True)
         return Response(serializer.data)
     
 class LimitJobsView(APIView):  

@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import userserializer
 from .models import user
+from jobseeker.models import Jobseeker
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -40,20 +41,22 @@ class LoginView(APIView):
                 return Response({"error": "Account is not active."}, status=status.HTTP_401_UNAUTHORIZED)
             
             refresh = RefreshToken.for_user(user1)
+            user_details = {
+                'id': user1.id,
+                'username': user1.username,
+                'email': user1.email,
+            }
+
             if user1.is_superuser:
-                user_details = {
-                'id': user1.id,
-                'username': user1.username,
-                'email': user1.email,
-                'user_type':'superuser',
-                }    
+                user_details['user_type'] = 'superuser'
             else:
-                user_details = {
-                'id': user1.id,
-                'username': user1.username,
-                'email': user1.email,
-                'user_type': user1.user_type,
-                }    
+                user_details['user_type'] = user1.user_type
+
+                try:
+                    jobseeker_details = Jobseeker.objects.get(user_id=user1.id)
+                    user_details['fullname'] = jobseeker_details.full_name
+                except Jobseeker.DoesNotExist:
+                    user_details['fullname'] = None
             
             return Response({'token': str(refresh.access_token), 'user': user_details}, status=status.HTTP_200_OK)
         else:
