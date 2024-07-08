@@ -25,12 +25,4 @@ class userserializer(serializers.ModelSerializer):
         user1.set_password(validated_data['password'])
         user1.save()
 
-        # if user1.usertype == 'employer':
-        #     notification.objects.create(
-        #         message="New Company Registered",
-        #         companyname=user1.companyname,
-        #         companyid=user1.id,
-        #         notificationtype="registration"
-        #     )
-
         return user1

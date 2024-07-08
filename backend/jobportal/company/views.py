@@ -149,6 +149,7 @@ class GetDepartments(APIView):
 class UpdateSectorAndDepartments(APIView):
     def post(self, request):
         user_id = request.data.get("user_id")
+        Companyname = request.data.get("companyname")
         sectors = request.data.get("sectors", [])
         departments = request.data.get("departments", [])
 
@@ -157,8 +158,12 @@ class UpdateSectorAndDepartments(APIView):
         except user.DoesNotExist:
             return Response("User not found.", status=status.HTTP_404_NOT_FOUND)
 
+        new_sectors = []
+
         for sector_name in sectors:
-            sector, _ = CompanySector.objects.get_or_create(sector_name=sector_name)
+            sector,created = CompanySector.objects.get_or_create(sector_name=sector_name)
+            if created:
+                new_sectors.append((sector.id, sector_name))
 
         for department_data in departments:
             sector_name = department_data.get("sector_name")
@@ -169,6 +174,22 @@ class UpdateSectorAndDepartments(APIView):
                 sector=sector,
                 department_name=department_name,
                 companyid=user_id
+            )
+
+        notification.objects.create(
+            message="New Company Registered",
+            companyname=User.company_name,
+            companyid=user_id,
+            notificationtype="registration"
+        )
+
+        for sector_id, sector_name in new_sectors:
+            notification.objects.create(
+                message=f"New Sector Created: {sector_name}",
+                companyid=user_id,
+                companyname=Companyname,
+                notificationtype="sector_created",
+                jobcategoryid=sector_id
             )
 
         return Response(
@@ -210,6 +231,7 @@ class CompanydepartmentView(APIView):
         depts=CompanyDepartment.objects.filter(companyid=user_id)
         serializer=CompanyDepartmentSerializer(depts,many=True)
         return Response(serializer.data)       
+
 
 class Jobcategory(APIView):
 
@@ -443,6 +465,25 @@ class GetallPostedJobs(APIView):
         jobs = jobpost.objects.filter(filters,company_user_id=id).order_by('-jobposteddate')[start_index:start_index + limit]
         serializer = jobpostserializer(jobs, many=True)
         return Response(serializer.data)
+
+class AddSectorDepartments(APIView):
+    def post(self, request):
+        user_id = request.data.get("user_id")
+        sectors = request.data.get("sectors", [])
+        departments = request.data.get("departments", [])
+
+        for sector_data in sectors:
+            sector_name = sector_data.get("sector_name")
+            sector = CompanySector.objects.create(sector_name=sector_name,is_verified=1)
+
+        for department_data in departments:
+            department_name = department_data.get("department_name")
+            department=Department.objects.create(name=department_name)
+
+        return Response(
+            f"Sectors and departments updated for user ID {user_id}.",
+            status=status.HTTP_200_OK,
+        )  
 
 
 

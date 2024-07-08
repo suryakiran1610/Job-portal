@@ -101,7 +101,7 @@ function Viewjobseeker() {
         console.log(response);
         setTogglemodal(false);
         setAllusers(
-          allusers.filter((user) => user.id !== userid)
+          allusers.filter((user) => user.user_id !== userid)
         );
       })
       .catch((error) => {
@@ -260,7 +260,7 @@ function Viewjobseeker() {
                           <td className="size-px whitespace-nowrap">
                             <div className="px-6 py-3 ml-3">
                               <span
-                                onClick={() => handledeletemodal(users.id)}
+                                onClick={() => handledeletemodal(users.user_id)}
                                 className="text-sm text-red-600 dark:text-neutral-500 cursor-pointer  hover:text-red-800"
                               >
                                 Delete

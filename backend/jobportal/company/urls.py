@@ -7,6 +7,7 @@ urlpatterns = [
     path('getcompanysector/',views.GetCompanysector.as_view(),name="getcompanysector"),
     path('getdepartments/',views.GetDepartments.as_view(),name="getdepartments"),
     path('companyemployee/',views.Companyemployee.as_view(),name="companyemployee"),
+    path('addsectordepartments/',views.AddSectorDepartments.as_view(),name="addsectordepartments"),
     path('getcompanydepartment/',views.GetCompanydepartment.as_view(),name="getcompanydepartment"),
     path('deletedepartment/',views.DeleteDepartment.as_view(),name="deletedepartment"),
     path('companyprofileview/',views.CompanyprofileView.as_view(),name="companyprofileview"),

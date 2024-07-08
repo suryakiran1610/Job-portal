@@ -200,6 +200,7 @@ function Addsector() {
 
     const userData = {
       user_id: userDetails.id,
+      companyname:userDetails.companyname,
       sectors: [],
       departments: [],
     };

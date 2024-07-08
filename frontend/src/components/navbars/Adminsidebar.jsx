@@ -151,7 +151,7 @@ const AdminSideBar = () => {
                     <span className="text-sm text-white p-1">
                       {notifications.unreadnotificationcount}
                     </span>
-                  </div>
+                </div>
                 <IoNotifications
                   className={`w-5 h-5 text-black transition duration-75 ${
                     path === "/admin/notifications"

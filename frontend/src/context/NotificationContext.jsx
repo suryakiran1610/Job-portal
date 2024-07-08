@@ -12,15 +12,12 @@ export const NotificationProvider = ({ children }) => {
     unreadnotificationcount: 0,
   });
 
-  const headers = {
-    Authorization: `Bearer ${token}`,
-  };
 
   const updateNotification = () => {
     MakeApiRequest(
       "get",
       `${config.baseUrl}adminn/getallnotification/`,
-      headers,
+      {},
       {},
       {}
     )

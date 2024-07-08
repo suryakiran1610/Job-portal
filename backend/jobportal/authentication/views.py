@@ -4,6 +4,7 @@ from rest_framework import status
 from .serializers import userserializer
 from .models import user
 from jobseeker.models import Jobseeker
+from company.models import Company
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -57,6 +58,13 @@ class LoginView(APIView):
                     user_details['fullname'] = jobseeker_details.full_name
                 except Jobseeker.DoesNotExist:
                     user_details['fullname'] = None
+
+                try:
+                    company_details = Company.objects.get(company_user_id=user1.id)
+                    user_details['companyname'] = company_details.company_name
+                except Jobseeker.DoesNotExist:
+                    user_details['companyname'] = None
+
             
             return Response({'token': str(refresh.access_token), 'user': user_details}, status=status.HTTP_200_OK)
         else:
