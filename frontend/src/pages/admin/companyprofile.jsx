@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import MakeApiRequest from "../../Functions/AxiosApi";
 import config from "../../Functions/config";
 import Cookies from "js-cookie";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import BeatLoader from "react-spinners/BeatLoader";
 import Adminsidebar from "../../components/navbars/Adminsidebar";
@@ -13,6 +14,7 @@ function Companyprofile() {
   const [togglepasswordmodal, setTogglepasswordmodal] = useState(false);
   const token = Cookies.get("token");
   const { id } = useParams();
+  const navigate = useNavigate();
   const [isloading, setIsloading] = useState(false);
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
@@ -42,6 +44,14 @@ function Companyprofile() {
     newpassword: "",
     confirmpassword: "",
   });
+
+  const handleViewActiveJob = (companyId) => {
+    navigate(`/admin/activejobs/${companyId}`);
+  };
+
+  const handleJobHistory = (companyId) => {
+    navigate(`/admin/jobhistory/${companyId}`);
+  };
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -104,7 +114,7 @@ function Companyprofile() {
       {}
     )
       .then((response) => {
-        console.log("profile", response);
+        console.log("company profile", response);
         setProfile(response);
         setInitialprofiledetails(response);
         setEditedprofile(profile);
@@ -590,6 +600,20 @@ function Companyprofile() {
                     </div>
                   </div>
                   <div className="mt-5 mb-2 flex justify-end gap-x-2">
+                    <button
+                      onClick={() => handleViewActiveJob(profile.company_user_id)}
+                      type="button"
+                      className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-red-800 text-white  disabled:opacity-50 disabled:pointer-events-none"
+                    >
+                      Active Jobs
+                    </button>
+                    <button
+                      onClick={() => handleJobHistory(profile.company_user_id)}
+                      type="button"
+                      className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-red-800 text-white  disabled:opacity-50 disabled:pointer-events-none"
+                    >
+                      Job History
+                    </button>
                     <button
                       type="submit"
                       className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"

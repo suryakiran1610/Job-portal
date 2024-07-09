@@ -17,6 +17,7 @@ from jobseeker.models import Jobseeker
 from jobseeker.models import Skill
 from jobseeker.models import savejob
 from jobseeker.models import applyjob
+from company.models import JobpostedHistory
 
 from company.models import Company
 from company.models import CompanyDepartment
@@ -24,6 +25,7 @@ from .models import notification
 from .models import Admin
 from company.models import CompanySector
 from company.serializers import jobpostserializer
+from company.serializers import jobpostedhistoryserializer
 from company.serializers import jobcategoriesserializer
 from company.serializers import CompanySectorSerializer
 from jobseeker.serializers import JobseekerSerializer
@@ -186,7 +188,7 @@ class Getallcompany(APIView):
         company_user.save()
 
         try:
-            Notification = notification.objects.get(companyid=companyid)
+            Notification = notification.objects.get(companyid=companyid,notificationtype='registration')
         except notification.DoesNotExist:
             return Response({'error': 'notification not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -299,20 +301,35 @@ class LimitJobsView(APIView):
     def get(self,request):
         limit = int(request.query_params.get('limit', 5))
         start_index = int(request.query_params.get('startIndex', 0))
+        company_name = request.query_params.get('companyname', '').strip()
+        start_date = request.query_params.get('start')       
+        end_date = request.query_params.get('end')
 
-        jobs =jobpost.objects.all()
-        jobs=jobs[start_index:start_index+limit]
-
-        serializer=jobpostserializer(jobs,many=True)
+        filters = Q()
+        if company_name:
+            filters &= Q(companyname__icontains=company_name)
+        if start_date and end_date:
+            filters &= Q(jobposteddate__range=[start_date, end_date])
+        
+        jobs = jobpost.objects.filter(filters)[start_index:start_index+limit]
+        serializer = jobpostserializer(jobs, many=True)
         return Response(serializer.data)
     
     def delete(self, request):
         print(request.data)
         jobid = int(request.query_params.get('jobid'))
+
         try:
             job = jobpost.objects.get(id=jobid)
+            jobhistory=JobpostedHistory.objects.get(jobid=jobid)
+            jobhistory.jobstatus = 0
+            jobhistory.save()
+
         except jobpost.DoesNotExist:
             return Response({'error': 'job not found'}, status=404)
+        except JobpostedHistory.DoesNotExist:
+            return Response({'error': 'job history not found'}, status=404)
+
 
         job.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -334,7 +351,26 @@ class GetallNotification(APIView):
         }
         
         return Response(response_data)
-    
+
+class LimitFilteredJobsView(APIView):  
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+        limit = int(request.query_params.get('limit', 5))
+        start_index = int(request.query_params.get('startIndex', 0))
+        start_date = request.query_params.get('start')       
+        end_date = request.query_params.get('end')
+        userid = int(request.query_params.get('user_id'))
+
+        filters = Q()
+        if start_date and end_date:
+            filters &= Q(jobposteddate__range=[start_date, end_date])
+        
+        jobs = jobpost.objects.filter(filters,company_user_id=userid)[start_index:start_index+limit]
+        serializer = jobpostserializer(jobs, many=True)
+        return Response(serializer.data)
+        
+
 class AllJobcategory(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -342,7 +378,49 @@ class AllJobcategory(APIView):
         category=jobcategories.objects.all()
         serializer=jobcategoriesserializer(category,many=True)
         return Response(serializer.data)  
-      
+
+class LimitFilteredJobsHistory(APIView):  
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+        limit = int(request.query_params.get('limit', 5))
+        start_index = int(request.query_params.get('startIndex', 0))
+        start_date = request.query_params.get('start')       
+        end_date = request.query_params.get('end')
+        userid = int(request.query_params.get('user_id'))
+
+        filters = Q()
+        if start_date and end_date:
+            filters &= Q(jobposteddate__range=[start_date, end_date])
+        
+        jobs = JobpostedHistory.objects.filter(filters,company_user_id=userid)[start_index:start_index+limit]
+        serializer = jobpostedhistoryserializer(jobs, many=True)
+        return Response(serializer.data)   
+
+    def delete(self, request):
+        jobid = int(request.query_params.get('jobid'))
+        jobhistoryid = int(request.query_params.get('jobhistoryid'))
+        print(jobid,jobhistoryid)
+
+        try:
+            job_history = JobpostedHistory.objects.get(id=jobhistoryid)
+            job = jobpost.objects.filter(id=jobid).first()
+
+            if job:
+                job.delete()
+            else:
+                job_history.jobstatus = False
+                job_history.save()
+
+            job_history.delete()
+
+        except JobpostedHistory.DoesNotExist:
+            return Response({'error': 'job history not found'}, status=404)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class Deletecompany_DeleteNotification(APIView): 
     permission_classes = [IsAuthenticated]

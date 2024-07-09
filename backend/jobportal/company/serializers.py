@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import jobpost
+from .models import JobpostedHistory
 from .models import jobcategories
 from .models import Company
 from .models import Department
@@ -18,6 +19,15 @@ class jobpostserializer(serializers.ModelSerializer):
     class Meta:
         model=jobpost
         fields='__all__'
+
+class jobpostedhistoryserializer(serializers.ModelSerializer):
+    class Meta:
+        model=JobpostedHistory
+        fields='__all__'
+        
+    def create(self, validated_data):
+        validated_data['company_user_id'] = validated_data['company_user_id'].id
+        return super().create(validated_data)    
 
 class jobcategoriesserializer(serializers.ModelSerializer):
     class Meta:

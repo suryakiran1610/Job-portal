@@ -33,6 +33,8 @@ import Notification from './pages/admin/notification';
 import Viewcompanies from './pages/admin/viewcompanies';
 import ViewJobs from './pages/admin/viewjobs';
 import Viewjobseeker from './pages/admin/viewjobseekers';
+import Activejobs from './pages/admin/Activejobs';
+import Jobhistory from './pages/admin/Jobhistory';
 import Pagenotfound from './pages/pagenotfound/Pagenotfound';
 import Jobseekerdetails from './pages/loginpage/jobseekerdetails';
 import Companydetails from './pages/loginpage/companydetails';
@@ -87,6 +89,8 @@ function App() {
                 <Route path='viewcompanies' element={<Viewcompanies/>}/>
                 <Route path='viewjobs' element={<ViewJobs/>}/>
                 <Route path='viewjobseekers' element={<Viewjobseeker/>}/>
+                <Route path='activejobs/:id' element={<Activejobs/>}/>
+                <Route path='jobhistory/:id' element={<Jobhistory/>}/>
             </Route>
 
 

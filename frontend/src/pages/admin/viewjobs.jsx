@@ -7,6 +7,8 @@ import Adminsidebar from "../../components/navbars/Adminsidebar";
 import AdminNav from "../../components/navbars/Adminnav";
 import NotificationContext from "../../context/NotificationContext";
 import BeatLoader from "react-spinners/BeatLoader";
+import { FaSearch } from "react-icons/fa";
+import { FaLocationDot } from "react-icons/fa6";
 
 function ViewJobs() {
   const [alljobs, setAlljobs] = useState([]);
@@ -17,6 +19,9 @@ function ViewJobs() {
   const { notifications, updateNotification } = useContext(NotificationContext);
   const userdetails = JSON.parse(localStorage.getItem("user"));
   const [limit, setLimit] = useState(5);
+  const [company, setCompany] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [notification, setNotification] = useState([]);
   const [startIndex, setStartIndex] = useState(0);
   const [buttonstatus, setButtonstatus] = useState(true);
@@ -59,7 +64,7 @@ function ViewJobs() {
       });
   };
 
-  const categorynotification=()=>{
+  const categorynotification = () => {
     MakeApiRequest(
       "get",
       `${config.baseUrl}adminn/getjobcategorynotification/`,
@@ -82,7 +87,7 @@ function ViewJobs() {
           console.error("Unexpected error occurred:", error);
         }
       });
-  }
+  };
 
   const approvecategory = (categoryId) => {
     const params = { categoryid: categoryId };
@@ -97,7 +102,7 @@ function ViewJobs() {
       .then((response) => {
         console.log(response);
         updateNotification();
-        categorynotification()
+        categorynotification();
         setCategoryData((prevCategoryData) =>
           prevCategoryData.map((category) =>
             category.id === categoryId
@@ -136,7 +141,7 @@ function ViewJobs() {
       .then((response) => {
         console.log(response);
         setTogglemodal2(false);
-        categorynotification()
+        categorynotification();
         updateNotification();
         setCategoryData((prevCategoryData) =>
           prevCategoryData.filter((category) => category.id !== categoryId)
@@ -156,7 +161,7 @@ function ViewJobs() {
 
   useEffect(() => {
     setIsloading(true);
-    categorynotification()
+    categorynotification();
 
     MakeApiRequest(
       "get",
@@ -246,16 +251,20 @@ function ViewJobs() {
   };
 
   useEffect(() => {
-    setIsloading(true);
     loadJobs();
   }, [limit, startIndex]);
 
   const loadJobs = () => {
     const params = {
       limit: limit,
+      user_id: userdetails.id,
       startIndex: startIndex,
+      companyname: company,
+      start: startDate,
+      end: endDate,
     };
 
+    setIsloading(true);
     MakeApiRequest(
       "get",
       `${config.baseUrl}adminn/limitjobsview/`,
@@ -328,6 +337,12 @@ function ViewJobs() {
       });
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setStartIndex(0);
+    loadJobs();
+  };
+
   return (
     <>
       <AdminNav />
@@ -343,7 +358,53 @@ function ViewJobs() {
             <BeatLoader color="#6b7280" margin={1} size={50} />
           </div>
         ) : (
-          <div className="max-w-[75rem] h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto overflow-auto">
+          <div className="max-w-[75rem] h-screen px-4 py-1 sm:px-6 lg:px-8 lg:py-1 mx-auto overflow-auto">
+            <div className="flex items-center justify-center p-4">
+              <form className="bg-white shadow-xl flex flex-col lg:flex-row md:flex-col w-full max-w-3xl border mt-5 rounded-xl overflow-hidden items-center space-y-2 md:space-y-0">
+                <div className="relative flex w-full md:flex-1 p-2">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                    <FaSearch />
+                  </span>
+                  <input
+                    onChange={(e) => setCompany(e.target.value)}
+                    type="text"
+                    placeholder="Company name"
+                    className="w-full h-full px-4 py-2 pl-12 text-sm text-gray-900 border-none rounded-t-lg md:rounded-l-lg md:rounded-t-none focus:outline-none focus:ring-0 focus:border-transparent"
+                  />
+                </div>
+
+                <div className="h-12 border-l hidden md:block"></div>
+
+                <div className="flex flex-col md:flex-row w-full md:flex-1 p-2 space-y-2 md:space-y-0 md:space-x-2">
+                  <div className="flex items-center w-full md:flex-1">
+                    <label className="text-sm text-gray-600 mb-1 mr-1">Start</label>
+                    <input
+                      onChange={(e) => setStartDate(e.target.value)}
+                      type="date"
+                      className="w-full px-4 py-2 text-sm text-gray-900 border rounded-lg focus:outline-none focus:ring-0 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="flex items-center w-full md:flex-1">
+                    <label className="text-sm text-gray-600 mb-1 mr-2">End</label>
+                    <input
+                      onChange={(e) => setEndDate(e.target.value)}
+                      type="date"
+                      className="w-full px-4 py-2 text-sm text-gray-900 border rounded-lg focus:outline-none focus:ring-0 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div className="w-full md:flex-1 p-2">
+                  <button
+                    onClick={handleSearch}
+                    className="w-full px-4 py-2 text-white bg-slate-800 hover:bg-slate-900 rounded-b-lg md:rounded-lg"
+                  >
+                    Find jobs
+                  </button>
+                </div>
+              </form>
+            </div>
+
             <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
               <div className="flex flex-col">
                 <div className="-m-1.5 overflow-x-auto">
@@ -654,7 +715,7 @@ function ViewJobs() {
                         </select>
                       </div>
                       <div className="text-red-500">{message}</div>
-                      
+
                       {notification.length > 0
                         ? notification.map((notification, index) => (
                             <div

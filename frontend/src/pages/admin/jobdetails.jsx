@@ -8,6 +8,8 @@ import BeatLoader from "react-spinners/BeatLoader";
 import { useParams } from "react-router-dom";
 import Adminsidebar from "../../components/navbars/Adminsidebar";
 import AdminNav from "../../components/navbars/Adminnav";
+import { BiCategory } from "react-icons/bi";
+
 
 function Jobdetails() {
   const token = Cookies.get("token");
@@ -78,6 +80,8 @@ function Jobdetails() {
                 <p className="text-gray-500 ml-1 mr-1">{job.joblocation}</p>
                 <CiClock2 />
                 <p className="text-gray-500 ml-1">{job.jobnature}</p>
+                <BiCategory className="text-center ml-1" />
+                <p className="text-gray-500 ml-1">{job.jobcategory}</p>
               </div>
               <div className="mt-4">
                 <h3 className="text-xl font-semibold">Job description</h3>

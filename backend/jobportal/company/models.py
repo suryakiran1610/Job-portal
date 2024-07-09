@@ -64,6 +64,27 @@ class jobpost(models.Model):
     companywebsite = models.CharField(max_length=255, blank=True, null=True)
     jobposteddate = models.DateField(auto_now_add=True,blank=True, null=True)
 
+class JobpostedHistory(models.Model):
+    company_user_id = models.IntegerField(null=True,blank=True)
+    jobtitle = models.CharField(max_length=255,null=True,blank=True)
+    jobcategory = models.CharField(max_length=255,null=True,blank=True)
+    jobnature = models.CharField(max_length=255,null=True,blank=True)
+    jobvacancy = models.IntegerField(null=True,blank=True)
+    jobsalary = models.CharField(max_length=255,null=True,blank=True)
+    joblocation = models.CharField(max_length=255,null=True,blank=True)
+    joblocationstate= models.CharField(max_length=255,null=True,blank=True)
+    jobdescription = models.CharField(max_length=1000,null=True,blank=True)
+    jobresponsibility = models.CharField(max_length=1000, null=True, blank=True)
+    jobqualification= models.CharField(max_length=1000,null=True,blank=True)
+    jobexperiance = models.IntegerField(null=True,blank=True)
+    jobkeywords = models.CharField(max_length=355,null=True,blank=True)
+    companyname = models.CharField(max_length=255,blank=True, null=True)
+    companylocation = models.CharField(max_length=255, blank=True, null=True)
+    companywebsite = models.CharField(max_length=255, blank=True, null=True)
+    jobposteddate = models.DateField(auto_now_add=True,blank=True, null=True)  
+    jobstatus= models.BooleanField(blank=True, null=True)
+    jobid=models.IntegerField(null=True,blank=True)
+
 class jobcategories(models.Model):
     jobcategory=models.CharField(max_length=255,null=True,blank=True)
     isapproved=models.BooleanField(default=False,blank=True, null=True)

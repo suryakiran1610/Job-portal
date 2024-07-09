@@ -17,6 +17,7 @@ from .models import CompanySector
 from .models import CompanyDepartment
 from .models import Department
 from .models import CompanyEmployee
+from .models import JobpostedHistory
 from authentication.models import user
 from jobseeker.models import applyjob
 from adminn.models import notification
@@ -24,6 +25,7 @@ from authentication.serializers import userserializer
 from jobseeker.serializers import applyjobserializer
 from adminn.serializers import notificationserializer
 from .serializers import jobpostserializer
+from .serializers import jobpostedhistoryserializer
 from .serializers import jobcategoriesserializer
 from .serializers import CompanySerializer
 from .serializers import DepartmentSerializer
@@ -302,11 +304,34 @@ class PostJob(APIView):
 
     def post(self, request):
         print(request.data)
-        serializer=jobpostserializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(company_user_id=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        job_post_serializer = jobpostserializer(data=request.data)
+
+        if job_post_serializer.is_valid():
+            job_post = job_post_serializer.save(company_user_id=request.user)
+            
+            job_history_data = request.data.copy()
+            job_history_data['jobid'] = job_post.id
+            
+            job_history_serializer = jobpostedhistoryserializer(data=job_history_data)
+
+            if job_history_serializer.is_valid():
+                job_history_serializer.save(company_user_id=request.user,jobstatus=1)
+                
+                return Response(job_post_serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                errors = {
+                    'job_post_errors': job_post_serializer.errors,
+                    'job_history_errors': job_history_serializer.errors
+                }
+                return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            errors = {
+                'job_post_errors': job_post_serializer.errors,
+                'job_history_errors': {}
+            }
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
     
     def get(self,request):
         limit = int(request.query_params.get('limit', 5))
@@ -349,10 +374,18 @@ class ViewJob(APIView):
     def delete(self, request):
         print(request.data)
         jobid = int(request.query_params.get('jobid'))
+
         try:
             job = jobpost.objects.get(id=jobid)
+            jobhistory=JobpostedHistory.objects.get(jobid=jobid)
+            jobhistory.jobstatus = 0
+            jobhistory.save()
+
         except jobpost.DoesNotExist:
-            return Response({'error': 'Job not found'}, status=404)
+            return Response({'error': 'job not found'}, status=404)
+        except JobpostedHistory.DoesNotExist:
+            return Response({'error': 'job history not found'}, status=404)
+
 
         job.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

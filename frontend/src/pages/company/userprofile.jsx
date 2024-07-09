@@ -101,6 +101,13 @@ function UserProfile() {
         >
           <BeatLoader color="#6b7280" margin={1} size={50} />
         </div>
+      ) : !profile ? (
+        <div
+          className="h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto"
+          style={{ backgroundColor: "#EEEEEE" }}
+        >
+          <h1 className="text-red-700">Profile Deleted...</h1>
+        </div>
       ) : (
         <div style={{ backgroundColor: "#EEEEEE" }}>
           <div className="w-full min-h-screen sm:px-6 lg:px-8 lg:py-7 mx-auto">

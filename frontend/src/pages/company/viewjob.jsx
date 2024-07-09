@@ -8,6 +8,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import CompanyNavbar from "../../components/navbars/companynavbar";
 import BeatLoader from "react-spinners/BeatLoader";
+import { BiCategory } from "react-icons/bi";
 
 
 
@@ -81,6 +82,8 @@ function Viewjob() {
             <p className="text-gray-500 ml-1 mr-1">{job.joblocation}</p>
             <CiClock2 />
             <p className="text-gray-500 ml-1">{job.jobnature}</p>
+            <BiCategory className="text-center ml-1" />
+            <p className="text-gray-500 ml-1">{job.jobcategory}</p>
           </div>
           <div className="mt-4">
             <h3 className="text-xl font-semibold">Job description</h3>

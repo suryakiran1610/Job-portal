@@ -17,6 +17,8 @@ urlpatterns = [
         path('limitjobseekerview/',views.LimitjobseekerView.as_view(),name="limitjobseekerview"),
         path('limitcompanyview/',views.LimitCompanyView.as_view(),name="limitcompanyview"),
         path('limitjobsview/',views.LimitJobsView.as_view(),name="limitjobsview"),
+        path('limitfilteredjobsview/',views.LimitFilteredJobsView.as_view(),name="limitfilteredjobsview"),
+        path('limitfilteredjobshistory/',views.LimitFilteredJobsHistory.as_view(),name="limitfilteredjobshistory"),
 
         path('getallnotification/',views.GetallNotification.as_view(),name="getallnotification"),
         path('getjobcategorynotification/',views.GetjobcategoryNotification.as_view(),name="getjobcategorynotification"),

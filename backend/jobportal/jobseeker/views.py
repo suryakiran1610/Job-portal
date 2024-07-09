@@ -296,8 +296,13 @@ class GetallJobs(APIView):
     def get(self, request):
         limit = int(request.query_params.get('limit', 6))
         start_index = int(request.query_params.get('startIndex', 0))
+        userid = request.query_params.get('user_id')
         keywords = request.query_params.get('keywords', '').strip()
         location = request.query_params.get('location', '').strip()
+
+        jobseeker = Jobseeker.objects.get(user_id=userid)
+        jobseeker_skills = Skill.objects.filter(user_id=userid).values_list('name', flat=True)
+        jobseeker_category = jobseeker.job_category
 
         filters = Q()
         if keywords:
@@ -313,18 +318,49 @@ class GetallJobs(APIView):
                 Q(joblocationstate__icontains=location)
             )
 
-        jobs = jobpost.objects.filter(filters).order_by('-jobposteddate')[start_index:start_index + limit]
+        # Apply category and skill filters only when no keywords and location are specified
+        if not keywords and not location:
+            category_filter = Q()
+            if jobseeker_category:
+                category_filter |= Q(jobcategory=jobseeker_category)
+
+            skill_filters = Q()
+            if jobseeker_skills:
+                for skill in jobseeker_skills:
+                    skill_filters |= Q(jobkeywords__icontains=skill)
+
+            filters &= (category_filter | skill_filters)
+
+        # Fetch the filtered jobs
+        filtered_jobs = jobpost.objects.filter(filters).order_by('-jobposteddate')
+        filtered_jobs_count = filtered_jobs.count()
+
+        # Determine if we need to fetch additional unfiltered jobs
+        jobs = list(filtered_jobs[start_index:start_index + limit])
+        remaining_limit = limit - len(jobs)
+
+        if remaining_limit > 0:
+            if not keywords and not location:
+                additional_jobs = jobpost.objects.exclude(filters).order_by('-jobposteddate')[:remaining_limit]
+                jobs.extend(additional_jobs)
+
         serializer = jobpostserializer(jobs, many=True)
         return Response(serializer.data)
+
 
 class ApplyJob(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        userid = request.query_params.get('user_id')
+        jobid = request.query_params.get('job_id')
         print(request.data)
+
         serializer=applyjobserializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            savejob.objects.filter(userid=userid, jobid=jobid).delete()
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     

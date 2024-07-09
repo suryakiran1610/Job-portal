@@ -53,18 +53,18 @@ class LoginView(APIView):
             else:
                 user_details['user_type'] = user1.user_type
 
-                try:
-                    jobseeker_details = Jobseeker.objects.get(user_id=user1.id)
-                    user_details['fullname'] = jobseeker_details.full_name
-                except Jobseeker.DoesNotExist:
-                    user_details['fullname'] = None
-
-                try:
-                    company_details = Company.objects.get(company_user_id=user1.id)
-                    user_details['companyname'] = company_details.company_name
-                except Jobseeker.DoesNotExist:
-                    user_details['companyname'] = None
-
+                if user1.user_type == 'jobseeker':
+                    try:
+                        jobseeker_details = Jobseeker.objects.get(user_id=user1.id)
+                        user_details['fullname'] = jobseeker_details.full_name
+                    except Jobseeker.DoesNotExist:
+                        user_details['fullname'] = None
+                elif user1.user_type == 'company':
+                    try:
+                        company_details = Company.objects.get(company_user_id=user1.id)
+                        user_details['companyname'] = company_details.company_name
+                    except Company.DoesNotExist:
+                        user_details['companyname'] = None
             
             return Response({'token': str(refresh.access_token), 'user': user_details}, status=status.HTTP_200_OK)
         else:
