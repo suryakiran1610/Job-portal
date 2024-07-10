@@ -18,6 +18,7 @@ from jobseeker.models import Skill
 from jobseeker.models import savejob
 from jobseeker.models import applyjob
 from company.models import JobpostedHistory
+from company.models import Department
 
 from company.models import Company
 from company.models import CompanyDepartment
@@ -25,6 +26,7 @@ from .models import notification
 from .models import Admin
 from company.models import CompanySector
 from company.serializers import jobpostserializer
+from company.serializers import DepartmentSerializer
 from company.serializers import jobpostedhistoryserializer
 from company.serializers import jobcategoriesserializer
 from company.serializers import CompanySectorSerializer
@@ -99,12 +101,22 @@ class AddJobcategory(APIView):
     def put(self,request):
         print(request.data)
         categoryid=int(request.query_params.get('categoryid'))
+        companyid=int(request.query_params.get('companyid'))
+        companyname=request.query_params.get('companyname')
+
         category = jobcategories.objects.get(id=categoryid)
         category.isapproved = 1
         category.save()
 
         try:
             Notification = notification.objects.get(jobcategoryid=categoryid)
+            notification.objects.create(
+                message=f"Category Approved:{category.jobcategory}",
+                companyname=companyname,
+                jobcategoryid=categoryid,
+                companyid=companyid,
+                notificationtype="category_status"
+            )
         except notification.DoesNotExist:
             return Response({'error': 'notification not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -112,6 +124,7 @@ class AddJobcategory(APIView):
         Notification.save()
 
         return Response({'message': 'category approved'}, status=status.HTTP_200_OK)
+    
 
 
 class GetallJobs(APIView):
@@ -254,12 +267,22 @@ class ChangeSectorstatus(APIView):
     def put(self,request):
         print(request.data)
         sectorid=int(request.query_params.get('sectorid'))
+        companyid=int(request.query_params.get('companyid'))
+        companyname=request.query_params.get('companyname')
+
         sector = CompanySector.objects.get(id=sectorid)
         sector.is_verified = 1
         sector.save()
 
         try:
             Notification = notification.objects.get(jobcategoryid=sectorid)
+            notification.objects.create(
+                message=f"Sector Approved:{sector.sector_name}",
+                companyname=companyname,
+                jobcategoryid=sectorid,
+                companyid=companyid,
+                notificationtype="sector_status"
+            )
         except notification.DoesNotExist:
             return Response({'error': 'notification not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -316,33 +339,37 @@ class LimitJobsView(APIView):
         return Response(serializer.data)
     
     def delete(self, request):
-        print(request.data)
         jobid = int(request.query_params.get('jobid'))
 
         try:
             job = jobpost.objects.get(id=jobid)
-            jobhistory=JobpostedHistory.objects.get(jobid=jobid)
-            jobhistory.jobstatus = 0
-            jobhistory.save()
+
+            try:
+                jobhistory = JobpostedHistory.objects.get(jobid=jobid)
+                jobhistory.jobstatus = 0
+                jobhistory.save()
+                
+            except JobpostedHistory.DoesNotExist:
+                pass 
+
+            job.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
         except jobpost.DoesNotExist:
             return Response({'error': 'job not found'}, status=404)
-        except JobpostedHistory.DoesNotExist:
-            return Response({'error': 'job history not found'}, status=404)
-
-
-        job.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 
 class GetallNotification(APIView):
 
     def get(self, request):
-        notifications = notification.objects.all()
+        notifications = notification.objects.filter(notificationtype__in=["sector_created", "add_jobcategory_request", "registration"])
         serializer = notificationserializer(notifications, many=True)
 
-        unreadnotifications = notification.objects.filter(isread=0).count()
+        unreadnotifications = notification.objects.filter(
+            isread=0,
+            notificationtype__in=["sector_created", "add_jobcategory_request", "registration"]
+        ).count()
 
         
         response_data = {
@@ -377,7 +404,19 @@ class AllJobcategory(APIView):
     def get(self,request):
         category=jobcategories.objects.all()
         serializer=jobcategoriesserializer(category,many=True)
-        return Response(serializer.data)  
+        return Response(serializer.data) 
+
+
+    def delete(self, request):
+        jobcategory = request.data.get("jobcategory")
+        try:
+            jobcategories.objects.filter(jobcategory=jobcategory).delete()
+        except jobcategories.DoesNotExist:
+            return Response({'error': 'category not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+ 
 
 class LimitFilteredJobsHistory(APIView):  
     permission_classes = [IsAuthenticated]
@@ -420,7 +459,20 @@ class LimitFilteredJobsHistory(APIView):
             return Response({'error': str(e)}, status=500)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class JobhistoryViewJob(APIView):
+    permission_classes=[IsAuthenticated]
 
+    def get(self,request):
+        print(request.data)
+        jobid=int(request.query_params.get('jobid'))
+        job=JobpostedHistory.objects.get(jobid=jobid)
+
+        if job:
+            serializer=jobpostedhistoryserializer(job)
+            return Response(serializer.data)
+        else:
+            return Response({'error': 'Job not found'}, status=404)
 
 class Deletecompany_DeleteNotification(APIView): 
     permission_classes = [IsAuthenticated]
@@ -446,9 +498,20 @@ class Deletecategory_DeleteNotification(APIView):
     def delete(self, request):
         print(request.data)
         categoryid = int(request.query_params.get('categoryid'))
+        companyid=int(request.query_params.get('companyid'))
+        companyname=request.query_params.get('companyname')
+
         try:
             category = jobcategories.objects.get(id=categoryid)
             notifications=notification.objects.get(jobcategoryid=categoryid)
+            notification.objects.create(
+                message=f"Category Rejected:{category.jobcategory}",
+                companyname=companyname,
+                jobcategoryid=categoryid,
+                companyid=companyid,
+                notificationtype="category_status"
+            )
+
         except jobcategories.DoesNotExist:
             return Response({'error': 'category not found'}, status=404)
 
@@ -462,9 +525,19 @@ class Deletesector_DeleteNotification(APIView):
     def delete(self, request):
         print(request.data)
         sectorid = int(request.query_params.get('sectorid'))
+        companyid=int(request.query_params.get('companyid'))
+        companyname=request.query_params.get('companyname')
+
         try:
             sector = CompanySector.objects.get(id=sectorid)
             notifications=notification.objects.get(jobcategoryid=sectorid)
+            notification.objects.create(
+                message=f"Sector Rejected:{sector.sector_name}",
+                companyname=companyname,
+                jobcategoryid=sectorid,
+                companyid=companyid,
+                notificationtype="sector_status"
+            )
         except CompanySector.DoesNotExist:
             return Response({'error': 'sector not found'}, status=404)
 
@@ -500,4 +573,4 @@ class Notificationn_Readed(APIView):
         notifications.isread = 1
         notifications.save()
         return Response({'message': 'Notification Readed'}, status=status.HTTP_200_OK)
-   
+

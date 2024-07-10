@@ -40,16 +40,26 @@ class CompanyPersonalInfo(APIView):
         try:
             company = Company.objects.get(company_user_id=user_id)
             serializer = CompanySerializer(company, data=request.data)
+            is_new_company = False
+
         except Company.DoesNotExist:
             serializer = CompanySerializer(data=request.data)
-
+            is_new_company = True
+            
         if serializer.is_valid():
-            serializer.save()
+            company=serializer.save()
+
+            if is_new_company:
+                notification.objects.create(
+                    message="New Company Registered",
+                    companyname=company.company_name,
+                    companyid=user_id,
+                    notificationtype="registration"
+                )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-
 
 class Companyemployee(APIView):
 
@@ -147,6 +157,26 @@ class GetDepartments(APIView):
         return Response(serializer.data)
 
 
+class GetallCompanyNotification(APIView):
+
+    def get(self, request):
+        user_id = int(request.query_params.get('user_id'))
+        notifications = notification.objects.filter(companyid=user_id,notificationtype__in=["category_status","sector_status"])
+        serializer = notificationserializer(notifications, many=True)   
+
+        unreadnotifications = notification.objects.filter(
+            isread=0,
+            companyid=user_id,
+            notificationtype__in=["category_status","sector_status"]
+        ).count()
+
+        response_data = {
+            'notification': serializer.data,
+            'unreadnotificationcount': unreadnotifications,
+        }
+
+        return Response(response_data)
+
 
 class UpdateSectorAndDepartments(APIView):
     def post(self, request):
@@ -154,6 +184,7 @@ class UpdateSectorAndDepartments(APIView):
         Companyname = request.data.get("companyname")
         sectors = request.data.get("sectors", [])
         departments = request.data.get("departments", [])
+        print("print",Companyname,user_id)
 
         try:
             User = Company.objects.get(company_user_id=user_id)
@@ -178,12 +209,7 @@ class UpdateSectorAndDepartments(APIView):
                 companyid=user_id
             )
 
-        notification.objects.create(
-            message="New Company Registered",
-            companyname=User.company_name,
-            companyid=user_id,
-            notificationtype="registration"
-        )
+        
 
         for sector_id, sector_name in new_sectors:
             notification.objects.create(
@@ -336,10 +362,15 @@ class PostJob(APIView):
     def get(self,request):
         limit = int(request.query_params.get('limit', 5))
         start_index = int(request.query_params.get('startIndex', 0))
+        start_date = request.query_params.get('start')       
+        end_date = request.query_params.get('end')
         id=int(request.query_params.get('user_id'))
 
-        jobs =jobpost.objects.filter(company_user_id=id)
-        jobs=jobs[start_index:start_index+limit]
+        filters = Q()
+        if start_date and end_date:
+            filters &= Q(jobposteddate__range=[start_date, end_date])
+
+        jobs =jobpost.objects.filter(filters,company_user_id=id)[start_index:start_index+limit]
 
         serializer=jobpostserializer(jobs,many=True)
         return Response(serializer.data)
@@ -372,23 +403,24 @@ class ViewJob(APIView):
             return Response({'error': 'Job not found'}, status=404)
 
     def delete(self, request):
-        print(request.data)
         jobid = int(request.query_params.get('jobid'))
 
         try:
             job = jobpost.objects.get(id=jobid)
-            jobhistory=JobpostedHistory.objects.get(jobid=jobid)
-            jobhistory.jobstatus = 0
-            jobhistory.save()
+
+            try:
+                jobhistory = JobpostedHistory.objects.get(jobid=jobid)
+                jobhistory.jobstatus = 0
+                jobhistory.save()
+                
+            except JobpostedHistory.DoesNotExist:
+                pass 
+
+            job.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
         except jobpost.DoesNotExist:
             return Response({'error': 'job not found'}, status=404)
-        except JobpostedHistory.DoesNotExist:
-            return Response({'error': 'job history not found'}, status=404)
-
-
-        job.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class Users(APIView):

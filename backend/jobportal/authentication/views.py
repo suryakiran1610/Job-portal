@@ -59,7 +59,7 @@ class LoginView(APIView):
                         user_details['fullname'] = jobseeker_details.full_name
                     except Jobseeker.DoesNotExist:
                         user_details['fullname'] = None
-                elif user1.user_type == 'company':
+                elif user1.user_type == 'employer':
                     try:
                         company_details = Company.objects.get(company_user_id=user1.id)
                         user_details['companyname'] = company_details.company_name

@@ -6,13 +6,14 @@ import EmployeeDetails from "../../components/companyregistration/Employeedetail
 
 function Companydetails() {
     const [activeComponent, setActiveComponent] = useState("companyinfo");
+    const [companyName, setCompanyName] = useState("");
 
   return (
     <div>
         <RegisterNavbar/>
         <div className=" min-h-screen" style={{ backgroundColor: "#EEEEEE" }}>
-            {activeComponent === 'companyinfo' && <Companyinfo setActiveComponent={setActiveComponent}/> }
-            {activeComponent === 'companydetails' && <CompanyDetails setActiveComponent={setActiveComponent}/>}
+            {activeComponent === 'companyinfo' && <Companyinfo setActiveComponent={setActiveComponent}  setCompanyName={setCompanyName} /> }
+            {activeComponent === 'companydetails' && <CompanyDetails setActiveComponent={setActiveComponent} companyName={companyName} />}
             {activeComponent === 'employeedetails' && <EmployeeDetails/>}
         </div>
     </div>

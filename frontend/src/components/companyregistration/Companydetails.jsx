@@ -12,7 +12,7 @@ import { SiTicktick } from "react-icons/si";
 import { FaPlusCircle } from "react-icons/fa";
 import { FaMinusCircle } from "react-icons/fa";
 
-function CompanyDetails() {
+function CompanyDetails({ companyName }) {
   const { id } = useParams();
   const [success, setSuccess] = useState(false);
   const [companyTypes, setCompanyTypes] = useState([]);
@@ -149,6 +149,7 @@ function CompanyDetails() {
 
     const userData = {
       user_id: id,
+      companyname:companyName,
       sectors: [],
       departments: [],
     };

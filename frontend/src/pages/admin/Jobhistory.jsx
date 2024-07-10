@@ -29,12 +29,10 @@ function Jobhistory() {
 
 
   const handleViewJob = (jobId) => {
-    navigate(`/admin/jobdetails/${jobId}`);
+    navigate(`/admin/jobhistory_details/${jobId}`);
   };
 
-  const handleEditJob = (jobId) => {
-    navigate(`/admin/editjobs/${jobId}`);
-  };
+
 
   const headers = {
     Authorization: `Bearer ${token}`,

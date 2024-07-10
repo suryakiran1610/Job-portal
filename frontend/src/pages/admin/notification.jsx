@@ -20,6 +20,8 @@ function Notification() {
   const [sectorId, setSectorid] = useState("");
   const [categoryId, setCategoryid] = useState("");
   const [isloading, setIsloading] = useState(false);
+  const [companyname,setCompanyname]=useState("")
+  const [company_Id,setCompany_Id]=useState("")
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -159,8 +161,12 @@ function Notification() {
       });
   };
 
-  const approvecategory = (categoryId) => {
-    const params = { categoryid: categoryId };
+  const approvecategory = (categoryId,companyName,companyId) => {
+    const params = { 
+      categoryid: categoryId,
+      companyname: companyName, 
+      companyid: companyId 
+    };
 
     MakeApiRequest(
       "put",
@@ -196,8 +202,10 @@ function Notification() {
     setTogglemodal(true);
   };
 
-  const handlecategorydeletemodal = (Id) => {
-    setCategoryid(Id);
+  const handlecategorydeletemodal = (categoryId,companyName,companyId) => {
+    setCategoryid(categoryId);
+    setCompanyname(companyName)
+    setCompany_Id(companyId)
     setTogglemodal2(true);
   };
 
@@ -238,7 +246,12 @@ function Notification() {
   };
 
   const deletecategory = () => {
-    const params = { categoryid: categoryId };
+    const params = { 
+      categoryid: categoryId,
+      companyname: companyname, 
+      companyid: company_Id 
+
+    };
 
     MakeApiRequest(
       "delete",
@@ -267,8 +280,13 @@ function Notification() {
       });
   };
 
-  const approvesector = (sectorId) => {
-    const params = { sectorid: sectorId };
+  const approvesector = (sectorId,companyName,companyId) => {
+    const params = { 
+      sectorid: sectorId,
+      companyname: companyName, 
+      companyid: companyId 
+
+    };
 
     MakeApiRequest(
       "put",
@@ -298,13 +316,19 @@ function Notification() {
       });
   };
 
-  const handlesectordeletemodal = (Id) => {
-    setSectorid(Id);
+  const handlesectordeletemodal = (sectorId,companyName,companyId) => {
+    setSectorid(sectorId);
+    setCompanyname(companyName)
+    setCompany_Id(companyId)
     setTogglemodal3(true);
   };
 
   const deletesector = () => {
-    const params = { sectorid: sectorId };
+    const params = { 
+      sectorid: sectorId,
+      companyname: companyname, 
+      companyid: company_Id 
+    };
 
     MakeApiRequest(
       "delete",
@@ -347,7 +371,7 @@ function Notification() {
     )
       .then((response) => {
         console.log(response);
-        setTogglemodal(false);
+        // setTogglemodal(false);
         updateNotification();
       })
       .catch((error) => {
@@ -621,7 +645,8 @@ function Notification() {
                             <div className="flex items-center justify-center w-7 h-7 border-2 hover:border-4 border-green-500 rounded-full">
                               <svg
                                 onClick={() => {
-                                  approvecategory(notification.jobcategoryid);
+                                  approvecategory(notification.jobcategoryid,notification.companyname,notification.companyid
+                                  );
                                 }}
                                 className="w-7 h-7 text-green-500"
                                 fill="none"
@@ -643,7 +668,7 @@ function Notification() {
                               <svg
                                 onClick={() => {
                                   handlecategorydeletemodal(
-                                    notification.jobcategoryid
+                                    notification.jobcategoryid,notification.companyname,notification.companyid
                                   );
                                 }}
                                 className="w-7 h-7 text-red-500"
@@ -743,7 +768,7 @@ function Notification() {
                             <div className="flex items-center justify-center w-7 h-7 border-2 hover:border-4 border-green-500 rounded-full">
                               <svg
                                 onClick={() => {
-                                  approvesector(notification.jobcategoryid);
+                                  approvesector(notification.jobcategoryid,notification.companyname,notification.companyid);
                                 }}
                                 className="w-7 h-7 text-green-500"
                                 fill="none"
@@ -765,7 +790,7 @@ function Notification() {
                               <svg
                                 onClick={() => {
                                   handlesectordeletemodal(
-                                    notification.jobcategoryid
+                                    notification.jobcategoryid,notification.companyname,notification.companyid
                                   );
                                 }}
                                 className="w-7 h-7 text-red-500"

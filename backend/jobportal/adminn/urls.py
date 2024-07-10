@@ -32,6 +32,8 @@ urlpatterns = [
         path('deletenotification/',views.DeleteNotification.as_view(),name="deletenotification"),
         path('notificationn_readed/',views.Notificationn_Readed.as_view(),name="notificationn_readed"),
         path('alljobcategory/',views.AllJobcategory.as_view(),name="alljobcategory"),
+        path('jobhistoryviewjob/',views.JobhistoryViewJob.as_view(),name="jobhistoryviewjob"),
+
 
 
 

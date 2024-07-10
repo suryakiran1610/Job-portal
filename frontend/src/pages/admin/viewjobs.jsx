@@ -13,6 +13,7 @@ import { FaLocationDot } from "react-icons/fa6";
 function ViewJobs() {
   const [alljobs, setAlljobs] = useState([]);
   const token = Cookies.get("token");
+  const [deletecategorymodal, setDeletecategorymodal] = useState(false);
   const [togglemodal2, setTogglemodal2] = useState(false);
   const [categoryId, setCategoryid] = useState("");
   const [categoryData, setCategoryData] = useState([]);
@@ -34,6 +35,9 @@ function ViewJobs() {
   const [jobcategory, setJobcategory] = useState([]);
   const [message, setMessage] = useState("");
   const [successmessage, setSuccessmessage] = useState("");
+  const [companyname, setCompanyname] = useState("");
+  const [company_Id, setCompany_Id] = useState("");
+  const [selectedCategoryToDelete, setSelectedCategoryToDelete] = useState([]);
 
   const handlecategorymodal = () => {
     setTogglecategorymodal(true);
@@ -89,8 +93,12 @@ function ViewJobs() {
       });
   };
 
-  const approvecategory = (categoryId) => {
-    const params = { categoryid: categoryId };
+  const approvecategory = (categoryId, companyName, companyId) => {
+    const params = {
+      categoryid: categoryId,
+      companyname: companyName,
+      companyid: companyId,
+    };
 
     MakeApiRequest(
       "put",
@@ -123,13 +131,19 @@ function ViewJobs() {
       });
   };
 
-  const handlecategorydeletemodal = (Id) => {
-    setCategoryid(Id);
+  const handlecategorydeletemodal = (categoryId, companyName, companyId) => {
+    setCategoryid(categoryId);
+    setCompanyname(companyName);
+    setCompany_Id(companyId);
     setTogglemodal2(true);
   };
 
   const deletecategory = () => {
-    const params = { categoryid: categoryId };
+    const params = {
+      categoryid: categoryId,
+      companyname: companyname,
+      companyid: company_Id,
+    };
 
     MakeApiRequest(
       "delete",
@@ -244,6 +258,50 @@ function ViewJobs() {
 
   const handleEditJob = (jobId) => {
     navigate(`/admin/editjobs/${jobId}`);
+  };
+
+  const handleCheckboxChange = (category) => {
+    setSelectedCategoryToDelete((prevSelected) => {
+      if (prevSelected.includes(category)) {
+        return prevSelected.filter((d) => d !== category);
+      } else {
+        return [...prevSelected, category];
+      }
+    });
+  };
+
+  const handleDeletecategory = (e) => {
+    e.preventDefault();
+
+    selectedCategoryToDelete.forEach((category) => {
+      const data = {
+        jobcategory: category.jobcategory,
+      };
+
+      MakeApiRequest(
+        "delete",
+        `${config.baseUrl}adminn/alljobcategory/`,
+        headers,
+        {},
+        data
+      )
+        .then((response) => {
+          setSelectedCategoryToDelete([]);
+          Getcategories();
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          if (error.response && error.response.status === 401) {
+            console.log(
+              "Unauthorized access. Token might be expired or invalid."
+            );
+          } else {
+            console.error("Unexpected error occurred:", error);
+          }
+        });
+    });
+
+    setDeletecategorymodal(false);
   };
 
   const headers = {
@@ -373,11 +431,11 @@ function ViewJobs() {
                   />
                 </div>
 
-                <div className="h-12 border-l hidden md:block"></div>
-
                 <div className="flex flex-col md:flex-row w-full md:flex-1 p-2 space-y-2 md:space-y-0 md:space-x-2">
                   <div className="flex items-center w-full md:flex-1">
-                    <label className="text-sm text-gray-600 mb-1 mr-1">Start</label>
+                    <label className="text-sm text-gray-600 mb-1 mr-1">
+                      Start
+                    </label>
                     <input
                       onChange={(e) => setStartDate(e.target.value)}
                       type="date"
@@ -385,7 +443,9 @@ function ViewJobs() {
                     />
                   </div>
                   <div className="flex items-center w-full md:flex-1">
-                    <label className="text-sm text-gray-600 mb-1 mr-2">End</label>
+                    <label className="text-sm text-gray-600 mb-1 mr-2">
+                      End
+                    </label>
                     <input
                       onChange={(e) => setEndDate(e.target.value)}
                       type="date"
@@ -745,7 +805,9 @@ function ViewJobs() {
                                       <svg
                                         onClick={() => {
                                           approvecategory(
-                                            notification.jobcategoryid
+                                            notification.jobcategoryid,
+                                            notification.companyname,
+                                            notification.companyid
                                           );
                                         }}
                                         className="w-7 h-7 text-green-500"
@@ -767,7 +829,9 @@ function ViewJobs() {
                                       <svg
                                         onClick={() => {
                                           handlecategorydeletemodal(
-                                            notification.jobcategoryid
+                                            notification.jobcategoryid,
+                                            notification.companyname,
+                                            notification.companyid
                                           );
                                         }}
                                         className="w-7 h-7 text-red-500"
@@ -797,6 +861,16 @@ function ViewJobs() {
                     <div className="flex justify-end items-center gap-x-2 py-3 px-4 border-t">
                       <button
                         onClick={() => {
+                          setDeletecategorymodal(true);
+                          setTogglecategorymodal(false)
+                        }}
+                        type="button"
+                        className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50"
+                      >
+                        Delete
+                      </button>
+                      <button
+                        onClick={() => {
                           setTogglecategorymodal(false);
                           setMessage("");
                         }}
@@ -821,6 +895,59 @@ function ViewJobs() {
                         {successmessage}
                       </div>
                     )}
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {deletecategorymodal && (
+              <div className="fixed inset-0 px-4 pt-4 pb-20 bg-black bg-opacity-50 flex items-center justify-center">
+                <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md ">
+                  <h3 className="text-xl font-semibold mb-4">
+                    Delete Categories
+                  </h3>
+                  <form onSubmit={handleDeletecategory}>
+                    <div className="mb-4">
+                      <label className="flex flex-col gap-1 text-xs mt-4">
+                        Job Categories
+                        <ul className="flex flex-wrap gap-2 mt-2">
+                          {jobcategory.map((category, index) => (
+                            <li key={index} className="flex items-center">
+                              <input
+                                type="checkbox"
+                                id={`category-${index}`}
+                                className="mr-2"
+                                checked={selectedCategoryToDelete.includes(
+                                  category
+                                )}
+                                onChange={() => handleCheckboxChange(category)}
+                              />
+                              <label
+                                htmlFor={`category-${index}`}
+                                className="text-sm font-bold"
+                              >
+                                {category.jobcategory}
+                              </label>
+                            </li>
+                          ))}
+                        </ul>
+                      </label>
+                    </div>
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        className="bg-gray-500 text-white px-3 py-2 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 mr-2"
+                        onClick={() => setDeletecategorymodal(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </form>
                 </div>
               </div>

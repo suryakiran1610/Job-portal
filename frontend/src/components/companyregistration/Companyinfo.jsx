@@ -7,7 +7,7 @@ import Cookies from "js-cookie";
 import { useParams } from "react-router-dom";
 
 
-function Companyinfo({ setActiveComponent }) {
+function Companyinfo({ setActiveComponent,setCompanyName }) {
     const user_id = Cookies.get('user_id')
     const { id } = useParams();
     const access_token = Cookies.get('access_token')
@@ -33,6 +33,10 @@ function Companyinfo({ setActiveComponent }) {
             ...prevState,
             [name]: value,
         }));
+
+        if (name === "company_name") {
+            setCompanyName(value); // Update company name in parent component
+        }
 
         const newErrors = { ...errors };
         if (!value.trim()) {

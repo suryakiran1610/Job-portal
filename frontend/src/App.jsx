@@ -32,6 +32,7 @@ import Jobseekerprofile from './pages/admin/jobseekerprofile';
 import Notification from './pages/admin/notification';
 import Viewcompanies from './pages/admin/viewcompanies';
 import ViewJobs from './pages/admin/viewjobs';
+import Jobhistory_jobdetails from './pages/admin/jobhistory_jobdetails';
 import Viewjobseeker from './pages/admin/viewjobseekers';
 import Activejobs from './pages/admin/Activejobs';
 import Jobhistory from './pages/admin/Jobhistory';
@@ -84,6 +85,7 @@ function App() {
                 <Route path='companyprofile/:id' element={<Companyprofile/>}/>
                 <Route path='editjobs/:id' element={<Editjobdetails/>}/>
                 <Route path='jobdetails/:id' element={<Jobdetails/>}/>
+                <Route path='jobhistory_details/:id' element={<Jobhistory_jobdetails/>}/>
                 <Route path='jobseekerprofile/:id' element={<Jobseekerprofile/>}/>
                 <Route path='notifications' element={<Notification/>}/>
                 <Route path='viewcompanies' element={<Viewcompanies/>}/>

@@ -17,6 +17,7 @@ function Viewcompanies() {
   const [sectorData, setSectorData] = useState([]);
   const [notification, setNotification] = useState([]);
   const navigate = useNavigate();
+  const [message, setMessage] = useState("");
   const [sectorId, setSectorid] = useState("");
   const [rows, setRows] = useState([
     { companyType: null, companyDepartments: null },
@@ -35,6 +36,8 @@ function Viewcompanies() {
   const [companyid_activate, setCompanyid_activate] = useState("");
   const [isloading, setIsloading] = useState(false);
   const [togglesectormodal, setTogglesectormodal] = useState(false);
+  const [companyname,setCompanyname]=useState("")
+  const [company_Id,setCompany_Id]=useState("")
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -118,23 +121,25 @@ function Viewcompanies() {
   };
 
   const SubmitSecDep = () => {
-
     const userData = {
       sectors: [],
       departments: [],
     };
 
     rows.forEach((row) => {
-      if (row.companyType && row.companyDepartments) {
+      // add sectors
+      if (row.companyType) {
         const sectorNames = row.companyType.map((type) => type.label);
-        const departmentNames = row.companyDepartments.map((dep) => dep.label);
-
         sectorNames.forEach((sectorName) => {
           userData.sectors.push({
             sector_name: sectorName,
           });
         });
+      }
 
+      //add departments
+      if (row.companyDepartments) {
+        const departmentNames = row.companyDepartments.map((dep) => dep.label);
         departmentNames.forEach((departmentName) => {
           userData.departments.push({
             department_name: departmentName,
@@ -142,6 +147,11 @@ function Viewcompanies() {
         });
       }
     });
+
+    if (userData.sectors.length === 0 && userData.departments.length === 0) {
+      setMessage("Please add at least one sector or department.");
+      return;
+    }
 
     MakeApiRequest(
       "post",
@@ -152,16 +162,24 @@ function Viewcompanies() {
     )
       .then((response) => {
         console.log(response);
+        setMessage("Data Added successfully");
+        const updatedRows = rows.map((row) => ({
+          ...row,
+          companyType: [],
+          companyDepartments: [],
+        }));
+        setRows(updatedRows);
         setTimeout(() => {
           setTogglesectormodal(false);
+          setMessage("");
         }, 2000);
       })
       .catch((error) => {
-        // Handle any errors
+        console.log(error);
       });
   };
 
-  const sectornotification=()=>{
+  const sectornotification = () => {
     MakeApiRequest(
       "get",
       `${config.baseUrl}adminn/getsectornotification/`,
@@ -184,10 +202,10 @@ function Viewcompanies() {
           console.error("Unexpected error occurred:", error);
         }
       });
-  }
+  };
 
   useEffect(() => {
-    sectornotification()
+    sectornotification();
     MakeApiRequest(
       "get",
       `${config.baseUrl}adminn/getallcompanysector/`,
@@ -210,8 +228,6 @@ function Viewcompanies() {
         }
       });
   }, []);
-
-
 
   useEffect(() => {
     setIsloading(true);
@@ -346,8 +362,13 @@ function Viewcompanies() {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const approvesector = (sectorId) => {
-    const params = { sectorid: sectorId };
+  const approvesector = (sectorId,companyName,companyId) => {
+    const params = { 
+      sectorid: sectorId,
+      companyname: companyName, 
+      companyid: companyId 
+
+    };
 
     MakeApiRequest(
       "put",
@@ -359,12 +380,10 @@ function Viewcompanies() {
       .then((response) => {
         console.log(response);
         updateNotification();
-        sectornotification()
+        sectornotification();
         setSectorData((prevSectorData) =>
           prevSectorData.map((sector) =>
-            sector.id === sectorId
-              ? { ...sector, is_verified: true }
-              : sector
+            sector.id === sectorId ? { ...sector, is_verified: true } : sector
           )
         );
       })
@@ -380,13 +399,19 @@ function Viewcompanies() {
       });
   };
 
-  const handlesectordeletemodal = (Id) => {
-    setSectorid(Id);
+  const handlesectordeletemodal = (sectorId,companyName,companyId) => {
+    setSectorid(sectorId);
+    setCompanyname(companyName)
+    setCompany_Id(companyId)
     setTogglemodal2(true);
   };
 
   const deletesector = () => {
-    const params = { sectorid: sectorId };
+    const params = { 
+      sectorid: sectorId,
+      companyname: companyname, 
+      companyid: company_Id 
+    };
 
     MakeApiRequest(
       "delete",
@@ -398,7 +423,7 @@ function Viewcompanies() {
       .then((response) => {
         console.log(response);
         setTogglemodal2(false);
-        sectornotification()
+        sectornotification();
         updateNotification();
         setSectorData((prevSectorData) =>
           prevSectorData.filter((sector) => sector.id !== sectorId)
@@ -415,7 +440,6 @@ function Viewcompanies() {
         }
       });
   };
-
 
   return (
     <>
@@ -791,11 +815,13 @@ function Viewcompanies() {
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-x-hidden overflow-y-auto">
                 <div className="bg-white rounded-lg shadow-lg w-full max-w-lg mx-4 md:mx-0">
                   <div className="flex justify-between items-center py-3 px-4 border-b">
-                    <h3 className="font-bold text-gray-800">Add Sector and Department</h3>
+                    <h3 className="font-bold text-gray-800">
+                      Add Sector and Department
+                    </h3>
                     <button
                       onClick={() => {
                         setTogglesectormodal(false);
-                        // setMessage("");
+                        setMessage("");
                       }}
                       type="button"
                       className="text-gray-800 hover:bg-gray-100 rounded-full p-1"
@@ -893,7 +919,7 @@ function Viewcompanies() {
                                       <svg
                                         onClick={() => {
                                           approvesector(
-                                            notification.jobcategoryid
+                                            notification.jobcategoryid,notification.companyname,notification.companyid
                                           );
                                         }}
                                         className="w-7 h-7 text-green-500"
@@ -915,7 +941,7 @@ function Viewcompanies() {
                                       <svg
                                         onClick={() => {
                                           handlesectordeletemodal(
-                                            notification.jobcategoryid
+                                            notification.jobcategoryid,notification.companyname,notification.companyid
                                           );
                                         }}
                                         className="w-7 h-7 text-red-500"
@@ -942,38 +968,48 @@ function Viewcompanies() {
                           ))
                         : null}
                       <div className="flex justify-end items-center gap-x-2 py-3 px-4 border-t">
-                      <button
-                        onClick={() => {
-                          setTogglesectormodal(false);
-                          // setMessage("");
-                        }}
-                        type="button"
-                        className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50"
-                      >
-                        Close
-                      </button>
-                      <button
-                      type="button"
-                        onClick={SubmitSecDep}
-                        className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700"
-                      >
-                        Save changes
-                      </button>
-                    </div>
-                    </div>
-                    {/* {successmessage && (
-                      <div
-                        className="mt-2 bg-teal-100 border border-teal-200 text-sm text-teal-800 rounded-lg p-4"
-                        role="alert"
-                      >
-                        <span className="font-bold">Success:</span>{" "}
-                        {successmessage}
+                        <button
+                          onClick={() => {
+                            setTogglesectormodal(false);
+                            setMessage("");
+                          }}
+                          type="button"
+                          className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50"
+                        >
+                          Close
+                        </button>
+                        <button
+                          type="button"
+                          onClick={SubmitSecDep}
+                          className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700"
+                        >
+                          Save changes
+                        </button>
                       </div>
-                    )} */}
+                    </div>
+                    {message &&
+                      (message === "Data Added successfully" ? (
+                        <div
+                          className="mt-2 bg-teal-100 border border-teal-200 text-sm text-teal-800 rounded-lg p-4 dark:bg-teal-800/10 dark:border-teal-900 dark:text-teal-500"
+                          role="alert"
+                        >
+                          <span className="font-bold">Success:</span> Data Added
+                          successfully.
+                        </div>
+                      ) : (
+                        <div
+                          className="mt-2 bg-yellow-100 border border-yellow-200 text-sm text-yellow-800 rounded-lg p-4 dark:bg-yellow-800/10 dark:border-yellow-900 dark:text-yellow-500"
+                          role="alert"
+                        >
+                          <span className="font-bold">Warning:</span> No changes
+                          detected. You should check in on some of those fields.
+                        </div>
+                      ))}
                   </form>
                 </div>
               </div>
             )}
+
             {togglemodal2 && (
               <div className="fixed inset-0 z-50 overflow-y-auto">
                 <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
@@ -1014,7 +1050,6 @@ function Viewcompanies() {
                 </div>
               </div>
             )}
-         
           </div>
         )}
       </div>
